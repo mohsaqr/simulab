@@ -175,7 +175,7 @@ Distribution names are never evaluated, so `gamma()`, `beta()`, `t()` and
 A parameter that refers to an undefined variable is reported by name rather
 than silently resolving to a base function.
 
-`list_distributions()` reports the catalogue: 47 distributions, all built on
+`list_distributions()` reports the catalogue: 79 distributions, all built on
 base R with no added dependency. Every one is checked against its theoretical
 mean in `tests/testthat/test-distributions.R` and in
 `inst/distribution-check.R`.
@@ -188,6 +188,84 @@ define_variables(
   score = mixture(normal(0, 1), normal(5, 1), weights = c(0.3, 0.7)),
   group = categorical(probs = c(0.2, 0.5, 0.3)),
   sick  = binary(prob = plogis(-4 + 0.06 * age))
+)
+```
+
+A parameter that leaves its distribution's support is reported by name rather
+than returning a column of missing values, so `poisson(lambda = x)` on an `x`
+that can be negative raises `simulab_invalid_parameter` naming the variable.
+
+### The same specification reaches every simulator
+
+A specification written as distribution calls is accepted wherever one is
+taken. `augment_study()` generates it into data that already exists, and a
+parameter may refer to a column that was already there:
+
+```r
+augment_study(
+  data.frame(id = 1:100, treated = rep(0:1, each = 50)),
+  specification = define_variables(
+    outcome = normal(mean = 3 + 2 * treated, sd = 1),
+    visits  = poisson(lambda = exp(0.2 * outcome))
+  ),
+  seed = 3
+)
+```
+
+`simulate_copula()` uses it as the marginals of a Gaussian copula, so each
+variable keeps its own distribution while the set is correlated:
+
+```r
+simulate_copula(
+  n = 500,
+  specification = define_variables(
+    score  = normal(mean = 10, sd = 2),
+    visits = poisson(lambda = 4),
+    rate   = beta(shape1 = 2, shape2 = 5)
+  ),
+  rho = 0.6, seed = 1
+)
+```
+
+A copula marginal has to be invertible, so `list_distributions(copula = TRUE)`
+reports the 69 distributions that carry a quantile function. Naming one of the
+other ten raises `simulab_no_quantile` rather than failing later.
+
+### Conditions and hazards
+
+`define_conditions()` states a rule as a condition and a distribution.
+Repeating the variable name gives it one rule per condition, and every
+distribution in the catalogue is available:
+
+```r
+apply_conditions(
+  data.frame(id = 1:200, group = rep(0:1, 100)),
+  specification = define_conditions(
+    outcome = when(group == 1, normal(mean = 5, sd = 1)),
+    outcome = when(group == 0, poisson(lambda = 2)),
+    bonus   = when(group == 1, gamma(shape = 2, rate = 0.5))
+  ),
+  seed = 1
+)
+```
+
+Rules are applied in order, so a later rule may replace what an earlier one
+wrote, and `when(TRUE, ...)` is the rule that applies to every row. A row no
+rule selects is left missing.
+
+`define_survivals()` states a process as a hazard, whose log rate is an
+expression over the covariates. Repeating the event name gives a piecewise
+hazard, where `from` is the time the segment begins:
+
+```r
+simulate_survival(
+  n = 500,
+  specification = define_survivals(
+    time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3),
+    time = hazard(log_rate = -5 + 0.5 * treatment, shape = 0.3, from = 60)
+  ),
+  covariates = data.frame(id = 1:500, treatment = rep(0:1, each = 250)),
+  seed = 1
 )
 ```
 
@@ -233,7 +311,9 @@ be mixed in one call.
 `define_survivals()`, `define_missingnesses()` and `define_conditions()` take
 the same two forms, with the columns their own specifications require.
 
-Seventeen distributions are available: `beta`, `binary`, `binomial`,
+Seventeen distributions are available in this lane -- fewer than the 79 a
+distribution call reaches, because each is parameterized by a mean and a
+dispersion rather than by its own parameters: `beta`, `binary`, `binomial`,
 `categorical`, `cluster_size`, `custom`, `deterministic`, `exponential`,
 `gamma`, `mixture`, `negative_binomial`, `normal`, `no_zero_poisson`,
 `poisson`, `treatment`, `uniform` and `uniform_integer`.
@@ -250,6 +330,26 @@ columns `variable`, `distribution`, `formula`, `variance` and `link`.
 `apply_conditions()` applies different generating rules to different subsets of
 the same data. It takes a data frame and rules built by `define_condition()`,
 where each rule pairs a logical expression with a generating formula.
+
+### Which lane to use
+
+The two lanes are not two spellings of one thing, and neither is deprecated.
+
+A **distribution call** parameterizes a distribution by its own parameters:
+`gamma(shape = 2, rate = 0.5)` says shape and rate. It reaches all 79
+distributions, nests, and takes expressions directly.
+
+A **specification column** parameterizes it by a mean and a dispersion on a
+link scale: `formula` is the mean or linear predictor, `link` is the scale it
+is written on, and `variance` is the dispersion. That is the parameterization
+`calibrate_distribution()`, `calibrate_icc()` and `calibrate_logistic()` speak,
+the one `read_definitions()` reads from a CSV, and the one the multilevel and
+longitudinal simulators build programmatically. `link` is meaningful only here;
+in a call, a link is a function inside the expression.
+
+Reach for calls when you know the distribution's parameters, and for columns
+when you know a mean and a dispersion. `calibrate_moments()` converts between
+them.
 
 ## Simulator catalogue
 
@@ -541,8 +641,43 @@ an `igraph` graph.
 
 ## Calibration
 
+`calibrate_moments()` solves a distribution's own parameters from a target mean
+and variance, across 36 distributions. The result names the parameters a
+distribution call takes, so a moment target becomes a specification.
+
+```r
+calibrate_moments("lognormal", mean = 10, variance = 25)
+#>   distribution mean variance parameter     value
+#> 1    lognormal   10       25   meanlog 2.1910133
+#> 2    lognormal   10       25     sdlog 0.4723807
+
+define_variables(income = lognormal(meanlog = 2.1910133, sdlog = 0.4723807))
+```
+
+A one-parameter family takes the mean alone, because its mean already fixes its
+variance, and the reported `variance` is the one that follows. Targets recycle,
+so `calibrate_moments("gamma", mean = c(5, 10, 20), variance = 9)` is one call.
+Moments no member of the family attains -- a beta variance at or above
+`mean * (1 - mean)`, a negative binomial less dispersed than a Poisson -- raise
+`simulab_unattainable_moments` rather than returning a nonsense parameter.
+`calibrate_moments()` with no arguments reports what it can invert.
+
+Most solves are closed form. For a scale family whose shape is fixed by the
+coefficient of variation alone -- Weibull, log-logistic, Frechet, Nakagami --
+the shape is found by root finding and the scale then follows exactly. Some
+families cannot reach every pair, and say so: a Nakagami squared coefficient of
+variation is at most `pi / 2 - 1`, a Lomax with a finite variance always has
+one above 1.
+
+Each inversion is checked by integrating the quantile function it produced,
+which recovers the target mean and variance to about 1e-9 -- a check the
+algebra cannot fake, and one a sampling test cannot make, because the sample
+variance of a heavy tail is still per cent-accurate at half a million draws.
+
 `calibrate_distribution()` converts a mean and dispersion into the shape
-parameters of a beta, gamma or negative binomial distribution.
+parameters of a beta, gamma or negative binomial distribution. That is the
+parameterization the specification columns use, and it agrees with
+{simstudy}'s.
 
 `calibrate_icc()` returns the random-effect variance that produces a target
 intraclass correlation, for normal, binary, Poisson, gamma and negative
@@ -623,14 +758,18 @@ Version 0.4.0 is the first release under the simulab name. The version
 continues the line of Saqrlab (0.4.1), which has never been on CRAN. The
 package is a CRAN release candidate and a new submission.
 
-The test suite contains 389 assertions across 23 files and covers 90.7% of
+The test suite contains 612 assertions across 26 files and covers 89.9% of
 package lines, measured with `covr`. With every suggested package installed
 there are no skips. Tests include statistical calibration checks, seeded
 regression checks, recovery checks for transition networks and grouped models,
 error-path checks by condition class, equivalence tests against simstudy, and
-identity checks between the matrix and long-form call styles.
+identity checks between the matrix and long-form call styles. Every
+distribution is checked against its theoretical mean, every entry that carries
+both a sampler and a quantile function is checked for agreeing with itself, and
+every moment inversion is checked by integrating the quantile function it
+produced.
 
-All 121 exported functions carry runnable examples, which `R CMD check`
+All 123 exported functions carry runnable examples, which `R CMD check`
 executes. `R CMD check --as-cran` reports one note, the standard note for a
 first submission, on R 4.5.2 under macOS on arm64. GitHub Actions runs the
 same check on macOS, Windows and Ubuntu across R release, devel and
@@ -693,7 +832,7 @@ Empirical and functional: `simulate_synthetic()`, `augment_synthetic()`,
 `spline_basis()`, `spline_curves()`, `linear_formula()`, `mixture_formula()`,
 `categorical_formula()`.
 
-Calibration: `calibrate_distribution()`, `calibrate_icc()`,
+Calibration: `calibrate_moments()`, `calibrate_distribution()`, `calibrate_icc()`,
 `calibrate_logistic()`.
 
 Workflows: `scenario_grid()`, `simulate_scenarios()`, `parameter_grid()`,

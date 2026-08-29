@@ -19,8 +19,11 @@ simulate_copula(
 \arguments{
 \item{n}{Number of observations.}
 
-\item{specification}{Variable definitions with supported marginal
-distributions.}
+\item{specification}{Variable definitions from \code{\link[=define_variables]{define_variables()}}. In the
+distribution-call form every marginal must carry a quantile function;
+\code{list_distributions(copula = TRUE)} reports which do. In the
+\code{formula}/\code{variance} column form the marginal is stated as a mean and a
+dispersion.}
 
 \item{rho}{Optional latent Pearson correlation.}
 
@@ -48,7 +51,26 @@ tidy latent-correlation table.
 \description{
 Simulate correlated general-distribution variables with a Gaussian copula
 }
+\section{Conditions}{
+
+\code{simulab_no_quantile} when a distribution call names a marginal with no
+quantile function, such as \code{rice()} or \code{mixture()}.
+}
+
 \examples{
+# Distribution calls. Each marginal keeps its own distribution while the
+# variables are correlated through a Gaussian copula.
+result <- simulate_copula(
+  n = 200,
+  specification = define_variables(
+    score  = normal(mean = 10, sd = 2),
+    visits = poisson(lambda = 4),
+    rate   = beta(shape1 = 2, shape2 = 5)
+  ),
+  rho = 0.5, seed = 1
+)
+head(result)
+
 specification <- define_variables(
   define_variable("normal_var", formula = "0", variance = "1", distribution = "normal"),
   define_variable("count_var", formula = "3", variance = "0", distribution = "poisson")

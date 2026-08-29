@@ -9,7 +9,8 @@ apply_conditions(data, specification, seed = NULL, envir = parent.frame())
 \arguments{
 \item{data}{Input base \code{data.frame}.}
 
-\item{specification}{Rules from \code{define_conditions()}.}
+\item{specification}{Rules from \code{\link[=define_conditions]{define_conditions()}}, in either the rule
+form written with \code{when()} or the \code{formula}/\code{variance} column form.}
 
 \item{seed}{Optional random seed.}
 
@@ -20,10 +21,22 @@ A \code{simulab_sim} base \code{data.frame} with conditional variables added.
 }
 \description{
 Rules are evaluated in order, so later rules may intentionally replace
-values written by earlier rules.
+values written by earlier rules. A row no rule selects is left missing.
 }
 \examples{
 data <- data.frame(id = 1:100, group = rep(0:1, each = 50))
+
+# Rules written with when() may use any distribution in the catalogue.
+result <- apply_conditions(
+  data,
+  specification = define_conditions(
+    outcome = when(group == 1, normal(mean = 5, sd = 1)),
+    outcome = when(group == 0, poisson(lambda = 2))
+  ),
+  seed = 1
+)
+head(result)
+
 specification <- define_conditions(
   define_condition("outcome", condition = "group == 1",
                    formula = "2", variance = "1", distribution = "normal"),

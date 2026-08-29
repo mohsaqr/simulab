@@ -4,24 +4,32 @@
 \alias{list_distributions}
 \title{List the distributions a specification may use}
 \usage{
-list_distributions(pattern = NULL)
+list_distributions(pattern = NULL, copula = NULL)
 }
 \arguments{
 \item{pattern}{Optional regular expression matched against distribution
 names.}
+
+\item{copula}{If \code{TRUE}, keep only distributions usable as copula marginals;
+if \code{FALSE}, keep only those that are not. \code{NULL}, the default, keeps every
+distribution.}
 }
 \value{
 A base \code{data.frame} with one row per distribution and columns
-\code{distribution}, \code{parameters} and \code{n_parameters}.
+\code{distribution}, \code{parameters}, \code{n_parameters} and \code{copula}.
 }
 \description{
 \code{list_distributions()} reports the distribution catalogue. Each row names one
-distribution and the parameters it takes, in the order a positional call
-supplies them.
+distribution, the parameters it takes in the order a positional call supplies
+them, and whether it carries a quantile function. Only a distribution with a
+quantile function can be a marginal in \code{\link[=simulate_copula]{simulate_copula()}}.
 }
 \examples{
 head(list_distributions())
 
 # Distributions whose name mentions normal.
 list_distributions("normal")
+
+# Distributions that cannot be a copula marginal.
+list_distributions(copula = FALSE)
 }

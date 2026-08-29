@@ -1,6 +1,6 @@
 Package: simulab
 Title: Unified Simulation of Statistical and Study Data
-Version: 0.4.0
+Version: 0.4.1
 Authors@R: person("Mohammed", "Saqr", email = "saqr@saqr.me", role = c("aut", "cre"))
 Author: Mohammed Saqr [aut, cre]
 Maintainer: Mohammed Saqr <saqr@saqr.me>
@@ -22,6 +22,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends:
     R (>= 4.1.0)
+Imports:
+    stats,
+    utils
 Suggests:
     testthat (>= 3.0.0),
     knitr,

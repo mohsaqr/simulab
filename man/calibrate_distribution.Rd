@@ -18,11 +18,14 @@ calibrate_distribution(
 \item{dispersion}{Beta precision or gamma/negative-binomial dispersion.}
 }
 \value{
-A base \code{data.frame} with one row per input value and the corresponding
-base-R distribution parameters.
+A base \code{data.frame} with one row per input value and parameter, and
+columns \code{distribution}, \code{mean}, \code{dispersion}, \code{parameter} and \code{value}.
 }
 \description{
-Convert mean/dispersion parameterizations
+\code{calibrate_distribution()} inverts the mean and dispersion parameterization
+used by the \code{formula}/\code{variance} specification columns into the shape
+parameters base R's samplers take. For a mean and a \emph{variance}, and for the
+wider catalogue, use \code{\link[=calibrate_moments]{calibrate_moments()}}.
 }
 \examples{
 calibrate_distribution("beta", mean = 0.4, dispersion = 8)

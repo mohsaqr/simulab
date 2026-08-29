@@ -16,7 +16,8 @@ simulate_study(
 \item{n}{Number of observational units.}
 
 \item{specification}{A tidy definition table created with
-\code{define_variables()}.}
+\code{\link[=define_variables]{define_variables()}}, in either the distribution-call form or the
+\code{formula}/\code{variance} column form.}
 
 \item{id}{Name of the identifier column.}
 

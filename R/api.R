@@ -28,7 +28,8 @@ simulate_correlation <- function(n, means = 0, sds = 1, rho = 0,
 #' Simulate baseline data with survival outcomes
 #'
 #' @param n Number of observations.
-#' @param specification Survival definitions from `define_survivals()`.
+#' @param specification Survival definitions from [define_survivals()], in
+#'   either the `hazard()` call form or the column form.
 #' @param covariates Optional baseline base `data.frame` with `n` rows.
 #' @param id Identifier name used when covariates are omitted.
 #' @param seed,digits,envir Arguments passed to `augment_survival()`.
@@ -43,6 +44,13 @@ simulate_correlation <- function(n, means = 0, sds = 1, rho = 0,
 #'   seed = 1
 #' )
 #' head(result)
+#'
+#' # A hazard call states the same process, with the log rate as an expression.
+#' head(simulate_survival(
+#'   n = 100,
+#'   specification = define_survivals(time = hazard(log_rate = -8, shape = 0.3)),
+#'   seed = 1
+#' ))
 simulate_survival <- function(n, specification, covariates = NULL, id = "id",
                               seed = NULL, digits = NULL,
                               envir = parent.frame()) {

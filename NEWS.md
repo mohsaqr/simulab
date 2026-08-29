@@ -1,3 +1,139 @@
+# simulab 0.4.1
+
+## The distribution-call lane reaches every simulator
+
+A specification written as distribution calls is now accepted wherever one is
+taken. Previously only `simulate_study()` understood it.
+
+- `augment_study()` generates a call specification into data that already
+  exists. A parameter may refer to a column that was already there as readily
+  as to a variable defined earlier in the same specification. A variable that
+  already exists is refused with the new condition class
+  `simulab_existing_variable`, in both specification lanes.
+
+- `simulate_copula()` takes a call specification as the marginals of a
+  Gaussian copula, so each variable keeps its own distribution while the set
+  is correlated. A marginal must be invertible;
+  `list_distributions(copula = TRUE)` reports the 69 distributions that carry
+  a quantile function, and naming one of the other ten raises
+  `simulab_no_quantile` rather than failing later.
+
+- `define_conditions()` states a rule as `when(condition, distribution)`.
+  Repeating the variable name gives it one rule per condition, and every
+  distribution in the catalogue is available rather than the fifteen the
+  `formula`/`variance` lane covers:
+
+  ```r
+  define_conditions(
+    outcome = when(group == 1, normal(mean = 5, sd = 1)),
+    outcome = when(group == 0, poisson(lambda = 2))
+  )
+  ```
+
+  `when(TRUE, ...)` applies to every row. `apply_conditions()` detects the
+  rule form and draws it through the registry.
+
+- `define_survivals()` states a process as `hazard(log_rate, shape, scale,
+  from)`, whose log rate is an expression over the covariates rather than a
+  string. Repeating the event name gives a piecewise hazard. The hazard lane
+  is a front end on the columns `define_survival()` writes, so it produces the
+  same specification and the same event times.
+
+## Distribution catalogue
+
+- The catalogue grows from 47 distributions to **79**, still with no added
+  dependency. A registry entry may now carry a `quantile` function as well as
+  or instead of a `sampler`. A quantile function yields a sampler for free and
+  is what a copula margin needs, so a distribution added as an inverse CDF
+  reaches `simulate_study()` and `simulate_copula()` in one definition.
+
+  Added: `arcsine`, `kumaraswamy`, `power`, `burr`, `dagum`, `log_logistic`,
+  `levy`, `generalized_logistic`, `hyperbolic_secant`, `anglit`, `bradford`,
+  `truncated_exponential`, `tukey_lambda`, `moyal`, `maxwell`, `chi`,
+  `nakagami`, `exponentiated_weibull`, `johnson_su`, `johnson_sb`, `benini`,
+  `generalized_gamma`, `generalized_normal`, `logit_normal`, `power_normal`,
+  `inverse_gaussian`, `rice`, `skew_normal`, `semicircular`, `skellam`,
+  `zero_truncated_negative_binomial` and `zero_inflated_negative_binomial`.
+
+- `list_distributions()` gains a `copula` column and a `copula` argument, so
+  the distributions usable as a copula marginal are one call away.
+
+- A parameter that leaves its distribution's support now raises
+  `simulab_invalid_parameter`, naming the variable and the parameters that did
+  it. Base R's samplers return `NA` with a warning in that case, which a
+  specification could carry silently into a result.
+
+- Fixed: `zero_inflated_poisson()` warned "NaNs produced" because `ifelse()`
+  evaluates both arms across the whole vector, so the arm it discarded still
+  called `qpois()` with a negative probability.
+
+### Reproducibility note
+
+Every distribution simulab defines itself is now defined once, as a quantile
+function, with the sampler derived from it, rather than as a separate sampler
+that stated the same distribution a second time. The distributions are
+unchanged, but an inverse-CDF sampler written on `u` and one written on
+`1 - u` do not produce the same numbers from the same seed.
+
+Comparing the 47 distributions of 0.4.0 draw for draw under a fixed seed,
+**eleven** now produce different numbers: `pareto`, `lomax`, `rayleigh`,
+`gompertz`, `inv_gamma`, `half_normal`, `half_cauchy`, `half_logistic`,
+`gpd`, `beta_prime` and `zero_inflated_poisson`. The other thirty-six,
+including every base R sampler and every distribution whose quantile form
+happens to consume `u` the same way, reproduce exactly. A stored result from
+0.4.0 that used one of the eleven will differ; its distribution has not
+changed.
+
+## Calibration
+
+- New `calibrate_moments()` solves a distribution's own parameters from a
+  target mean and variance, across 36 distributions. The result names the
+  parameters a distribution call takes, so a moment target becomes a
+  specification:
+
+  ```r
+  calibrate_moments("lognormal", mean = 10, variance = 25)
+  ```
+
+  A one-parameter family takes the mean alone and reports the variance its
+  mean fixes. Targets recycle. Moments no member of the family attains raise
+  `simulab_unattainable_moments`; a distribution with no implemented inversion
+  raises `simulab_no_moment_solution`. Most solves are closed form; for a scale
+  family whose shape is fixed by the coefficient of variation alone -- Weibull,
+  log-logistic, Frechet, Nakagami -- the shape is found with the package's
+  checked root finder and the scale then follows exactly. Gamma ratios are
+  taken in log space, because `gamma()` overflows long before the shape does.
+
+- `calibrate_distribution()` now returns one row per parameter, with columns
+  `distribution`, `mean`, `dispersion`, `parameter` and `value`, instead of
+  the wide `parameter_1`/`value_1`/`parameter_2`/`value_2` layout. The wide
+  form made the caller reach for a positional column. **This is a breaking
+  change** to the shape of its result; the values are unchanged and still
+  agree with {simstudy} 0.9.2.
+
+- Both calibration verbs now raise `simulab_incompatible_lengths` for
+  targets of non-recyclable lengths, where the message was previously
+  unclassed.
+
+## Other
+
+- `DESCRIPTION` now declares `Imports: stats, utils`. The `NAMESPACE` imported
+  from `stats` without the package being declared.
+- `actions/checkout` bumped from `@v4` to `@v5` in both workflows, clearing the
+  Node.js 20 deprecation annotation on every CI job.
+
+## The two specification lanes
+
+Neither lane is deprecated, and they are not two spellings of one thing. A
+distribution call parameterizes a distribution by its own parameters and
+reaches all 79. A specification column parameterizes it by a mean and a
+dispersion on a link scale, which is what `calibrate_distribution()`,
+`calibrate_icc()` and `calibrate_logistic()` speak, what `read_definitions()`
+reads from a CSV, and what the multilevel and longitudinal simulators build
+programmatically. `link` is meaningful only in the column lane; in a call, a
+link is a function inside the expression. `calibrate_moments()` converts
+between the two.
+
 # simulab 0.4.0
 
 ## First release under the simulab name

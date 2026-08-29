@@ -113,10 +113,19 @@
       limits <- .eval_definitions(.split_definition(formula), data, n, envir)
       floor(limits[, 1L] + uniform * (limits[, 2L] - limits[, 1L] + 1))
     },
-    stop(
-      sprintf("Distribution '%s' is not available for copula generation.", definition$distribution),
-      call. = FALSE
-    )
+    ## The column lane covers twelve marginals, parameterized by a mean and a
+    ## dispersion. The call lane covers every distribution that carries a
+    ## quantile function, so it is the answer here far more often than adding
+    ## a thirteenth branch would be.
+    stop(errorCondition(
+      sprintf(paste0("A `%s` marginal is not available in the formula/variance ",
+                     "specification. State the marginals as distribution calls ",
+                     "instead; list_distributions(copula = TRUE) reports the %d ",
+                     "that a copula accepts."),
+              definition$distribution, sum(vapply(.simulab_registry,
+                function(entry) !is.null(entry$quantile), logical(1)))),
+      class = "simulab_no_quantile", call = NULL
+    ))
   )
 }
 
@@ -147,8 +156,11 @@
 #' Simulate correlated general-distribution variables with a Gaussian copula
 #'
 #' @param n Number of observations.
-#' @param specification Variable definitions with supported marginal
-#'   distributions.
+#' @param specification Variable definitions from [define_variables()]. In the
+#'   distribution-call form every marginal must carry a quantile function;
+#'   `list_distributions(copula = TRUE)` reports which do. In the
+#'   `formula`/`variance` column form the marginal is stated as a mean and a
+#'   dispersion.
 #' @param rho Optional latent Pearson correlation.
 #' @param tau Optional Kendall correlation, overriding `rho`.
 #' @param structure Correlation structure: one of `"independent"`,
@@ -166,7 +178,24 @@
 #'   tidy latent-correlation table.
 #' @export
 #'
+#' @section Conditions:
+#' `simulab_no_quantile` when a distribution call names a marginal with no
+#' quantile function, such as `rice()` or `mixture()`.
+#'
 #' @examples
+#' # Distribution calls. Each marginal keeps its own distribution while the
+#' # variables are correlated through a Gaussian copula.
+#' result <- simulate_copula(
+#'   n = 200,
+#'   specification = define_variables(
+#'     score  = normal(mean = 10, sd = 2),
+#'     visits = poisson(lambda = 4),
+#'     rate   = beta(shape1 = 2, shape2 = 5)
+#'   ),
+#'   rho = 0.5, seed = 1
+#' )
+#' head(result)
+#'
 #' specification <- define_variables(
 #'   define_variable("normal_var", formula = "0", variance = "1", distribution = "normal"),
 #'   define_variable("count_var", formula = "3", variance = "0", distribution = "poisson")
@@ -203,29 +232,35 @@ simulate_copula <- function(n, specification, rho = 0, tau = NULL,
     "`envir` must be an environment" =
       is.environment(envir)
   )
+  ## A call specification carries one row per parameter, so the number of
+  ## margins is the number of distinct variables, not the number of rows.
+  is_calls <- .is_call_specification(specification)
+  variable_names <- unique(specification$variable)
+  n_variables <- length(variable_names)
   structure <- .resolve_correlation_structure(
     structure, rho != 0 || !is.null(tau), correlation, !missing(structure))
   correlation_matrix <- .copula_correlation(
-    nrow(specification), rho, tau, structure, correlation
+    n_variables, rho, tau, structure, correlation
   )
-  variable_names <- specification$variable
   dimnames(correlation_matrix) <- list(variable_names, variable_names)
   base_data <- data.frame(sequence = seq_len(as.integer(n)), row.names = NULL)
   names(base_data) <- id
   latent <- .with_seed(
     seed,
-    .draw_multivariate_normal(as.integer(n), rep(0, nrow(specification)),
-                              rep(1, nrow(specification)), correlation_matrix)
+    .draw_multivariate_normal(as.integer(n), rep(0, n_variables),
+                              rep(1, n_variables), correlation_matrix)
   )
   uniforms <- stats::pnorm(latent)
+  calls <- if (is_calls) .specification_calls(specification) else NULL
   generated <- Map(function(index, variable) {
-    .copula_quantile(
-      uniforms[, index],
-      specification[index, , drop = FALSE],
-      base_data,
-      envir
-    )
-  }, seq_len(nrow(specification)), variable_names)
+    if (is_calls) {
+      .quantile_distribution_call(uniforms[, index], calls[[variable]],
+                                  base_data, variable)
+    } else {
+      .copula_quantile(uniforms[, index],
+                       specification[index, , drop = FALSE], base_data, envir)
+    }
+  }, seq_len(n_variables), variable_names)
   result <- data.frame(base_data, generated, check.names = FALSE, row.names = NULL)
   names(result) <- c(id, variable_names)
   .new_simulab_sim(

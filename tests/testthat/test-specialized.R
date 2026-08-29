@@ -33,7 +33,7 @@ test_that("empirical, formula, spline, and calibration helpers are coherent", {
   expect_equal(nrow(spline), 20L)
 
   beta <- calibrate_distribution("beta", 0.25, 20)
-  expect_equal(beta$value_1, 5)
+  expect_equal(beta$value, c(5, 15))
   expect_equal(calibrate_icc(0.2, "binary")$random_effect_variance,
                (0.2 / 0.8) * pi^2 / 3)
   logistic <- calibrate_logistic(source, c(x = 1), prevalence = 0.3)

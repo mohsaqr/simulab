@@ -17,7 +17,8 @@ simulate_survival(
 \arguments{
 \item{n}{Number of observations.}
 
-\item{specification}{Survival definitions from \code{define_survivals()}.}
+\item{specification}{Survival definitions from \code{\link[=define_survivals]{define_survivals()}}, in
+either the \code{hazard()} call form or the column form.}
 
 \item{covariates}{Optional baseline base \code{data.frame} with \code{n} rows.}
 
@@ -38,4 +39,11 @@ result <- simulate_survival(
   seed = 1
 )
 head(result)
+
+# A hazard call states the same process, with the log rate as an expression.
+head(simulate_survival(
+  n = 100,
+  specification = define_survivals(time = hazard(log_rate = -8, shape = 0.3)),
+  seed = 1
+))
 }

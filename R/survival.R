@@ -45,9 +45,22 @@ define_survival <- function(event, formula = 0, scale = 1, shape = 1,
 
 #' Combine survival definitions into a specification
 #'
-#' @param ... Either the columns of a specification given as named vectors
-#'   (`event`, `formula`, `scale`, `shape`, `transition`), or objects created
-#'   by [define_survival()]. The two forms cannot be mixed in one call.
+#' @param ... One of three forms.
+#'
+#'   **Hazard calls.** `time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3)`
+#'   names the event with the argument name and states its hazard as a call.
+#'   `log_rate` is the log hazard and may be any expression over the covariates;
+#'   `shape` and `scale` default to 1 and `from`, the time at which the segment
+#'   begins, to 0. Arguments may be positional or named, and repeating the
+#'   argument name gives one event several segments, which is a piecewise
+#'   hazard.
+#'
+#'   **Specification columns** given as named vectors (`event`, `formula`,
+#'   `scale`, `shape`, `transition`).
+#'
+#'   **Objects** created by [define_survival()].
+#'
+#'   The forms cannot be mixed in one call.
 #'
 #'   In the column form, `event` and `formula` are required. A column given as
 #'   a single value is recycled across every row. `scale` and `shape` default
@@ -79,7 +92,28 @@ define_survival <- function(event, formula = 0, scale = 1, shape = 1,
 #'   define_survival("time_relapse", formula = -8, shape = 0.3),
 #'   define_survival("time_death", formula = -9, shape = 0.3)
 #' )
+#'
+#' # Hazard calls. The log rate is an expression over the covariates.
+#' define_survivals(
+#'   time_relapse = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3),
+#'   time_death   = hazard(log_rate = -9, shape = 0.3)
+#' )
+#'
+#' # A repeated event name is a piecewise hazard: the rate rises after day 60.
+#' define_survivals(
+#'   time = hazard(log_rate = -8, shape = 0.3),
+#'   time = hazard(log_rate = -5, shape = 0.3, from = 60)
+#' )
 define_survivals <- function(...) {
+  ## The hazard lane is detected before evaluation, because a log-rate is an
+  ## expression over covariates rather than a value the caller can supply.
+  captured <- as.list(substitute(list(...)))[-1L]
+  if (.is_hazard_call_lane(captured)) {
+    result <- .hazard_calls_to_specification(captured, parent.frame())
+    result <- result[order(result$event, result$transition), , drop = FALSE]
+    return(.validate_survival_specification(result))
+  }
+
   definitions <- list(...)
   stopifnot(
     "`...` must contain at least one definition or one specification column" =
@@ -106,6 +140,12 @@ define_survivals <- function(...) {
     result <- result[order(result$event, result$transition), , drop = FALSE]
   }
 
+  .validate_survival_specification(result)
+}
+
+## A piecewise hazard must cover time from zero onwards without a gap or a
+## repeat, whichever lane wrote it.
+.validate_survival_specification <- function(result) {
   event_groups <- split(result$transition, result$event)
   invalid <- vapply(event_groups, function(transitions) {
     transitions[1L] != 0 || is.unsorted(transitions, strictly = TRUE)

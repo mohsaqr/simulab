@@ -10,7 +10,8 @@ augment_study(data, specification, seed = NULL, envir = parent.frame())
 \item{data}{A base \code{data.frame}.}
 
 \item{specification}{A tidy definition table created with
-\code{define_variables()}.}
+\code{\link[=define_variables]{define_variables()}}, in either the distribution-call form or the
+\code{formula}/\code{variance} column form.}
 
 \item{seed}{Optional random seed.}
 
@@ -21,9 +22,27 @@ A \code{simulab_sim} base \code{data.frame} containing the original and new
 variables.
 }
 \description{
-Add declaratively specified variables to existing data
+A parameter or formula may refer to a column \code{data} already has as readily as
+to a variable defined earlier in the same specification. A variable that
+already exists is refused rather than overwritten.
 }
+\section{Conditions}{
+
+\code{simulab_existing_variable} when the specification names a column \code{data}
+already has.
+}
+
 \examples{
+# Distribution calls, generated into data that is already there.
+head(augment_study(
+  data.frame(id = 1:100, treated = rep(0:1, each = 50)),
+  specification = define_variables(
+    outcome = normal(mean = 3 + 2 * treated, sd = 1),
+    visits  = poisson(lambda = 4)
+  ),
+  seed = 3
+))
+
 base <- simulate_study(
   n = 100,
   specification = define_variables(

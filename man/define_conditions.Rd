@@ -7,22 +7,44 @@
 define_conditions(...)
 }
 \arguments{
-\item{...}{Either the columns of a specification given as named vectors
-(\code{variable}, \code{condition}, \code{formula}, \code{variance}, \code{distribution}, \code{link}),
-or objects created by \code{\link[=define_condition]{define_condition()}}. The two forms cannot be mixed
-in one call.
+\item{...}{One of three forms.
+
+\strong{Rules.} \code{outcome = when(group == 1, normal(mean = 5, sd = 1))} names the
+variable with the argument name, states the condition that selects the rows
+the rule writes, and states their distribution as a call. Any distribution
+in \code{\link[=list_distributions]{list_distributions()}} may be used, and its parameters may be
+expressions over the data. Repeating the argument name gives one variable
+several rules, which is how a variable takes a different distribution in
+each group. \code{when(TRUE, ...)} applies to every row.
+
+\strong{Specification columns} given as named vectors (\code{variable}, \code{condition},
+\code{formula}, \code{variance}, \code{distribution}, \code{link}).
+
+\strong{Objects} created by \code{\link[=define_condition]{define_condition()}}.
+
+The forms cannot be mixed in one call.
 
 In the column form, \code{variable}, \code{condition} and \code{formula} are required. A
 column given as a single value is recycled across every rule. \code{variance}
 defaults to 0, \code{distribution} to \code{"normal"}, and \code{link} to \code{"identity"}.}
 }
 \value{
-A \code{simulab_condition_spec} base \code{data.frame} with one row per rule.
+A \code{simulab_condition_spec} base \code{data.frame}. Rules written with
+\code{when()} give one row per parameter, with columns \code{rule}, \code{variable},
+\code{condition}, \code{distribution}, \code{parameter} and \code{value}; the other two forms
+give one row per rule with the \code{formula}/\code{variance} columns.
 }
 \description{
 Combine conditional data-generation rules into a specification
 }
 \examples{
+# Rules. One line per rule; a repeated name gives a variable several rules.
+define_conditions(
+  outcome = when(group == 1, normal(mean = 5, sd = 1)),
+  outcome = when(group == 0, poisson(lambda = 2)),
+  bonus   = when(group == 1, gamma(shape = 2, rate = 0.5))
+)
+
 # One call, named arguments, one row per rule.
 define_conditions(
   variable  = c("outcome", "outcome"),

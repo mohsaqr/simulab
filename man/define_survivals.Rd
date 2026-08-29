@@ -7,9 +7,22 @@
 define_survivals(...)
 }
 \arguments{
-\item{...}{Either the columns of a specification given as named vectors
-(\code{event}, \code{formula}, \code{scale}, \code{shape}, \code{transition}), or objects created
-by \code{\link[=define_survival]{define_survival()}}. The two forms cannot be mixed in one call.
+\item{...}{One of three forms.
+
+\strong{Hazard calls.} \code{time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3)}
+names the event with the argument name and states its hazard as a call.
+\code{log_rate} is the log hazard and may be any expression over the covariates;
+\code{shape} and \code{scale} default to 1 and \code{from}, the time at which the segment
+begins, to 0. Arguments may be positional or named, and repeating the
+argument name gives one event several segments, which is a piecewise
+hazard.
+
+\strong{Specification columns} given as named vectors (\code{event}, \code{formula},
+\code{scale}, \code{shape}, \code{transition}).
+
+\strong{Objects} created by \code{\link[=define_survival]{define_survival()}}.
+
+The forms cannot be mixed in one call.
 
 In the column form, \code{event} and \code{formula} are required. A column given as
 a single value is recycled across every row. \code{scale} and \code{shape} default
@@ -43,5 +56,17 @@ define_survivals(
 define_survivals(
   define_survival("time_relapse", formula = -8, shape = 0.3),
   define_survival("time_death", formula = -9, shape = 0.3)
+)
+
+# Hazard calls. The log rate is an expression over the covariates.
+define_survivals(
+  time_relapse = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3),
+  time_death   = hazard(log_rate = -9, shape = 0.3)
+)
+
+# A repeated event name is a piecewise hazard: the rate rises after day 60.
+define_survivals(
+  time = hazard(log_rate = -8, shape = 0.3),
+  time = hazard(log_rate = -5, shape = 0.3, from = 60)
 )
 }
