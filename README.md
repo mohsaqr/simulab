@@ -1,5 +1,9 @@
 # simulab
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/mohsaqr/simulab/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mohsaqr/simulab/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 simulab simulates tidy data with known ground truth. Each simulator takes the
 parameters of a data-generating process and returns the observations it
 produces, together with the parameters themselves as tidy tables. The package
@@ -558,12 +562,11 @@ unchanged, because the seeded output of its `simulate_data()` is a fixture
 contract for other projects. `SAQRLAB_COVERAGE.md` maps each of Saqrlab's 87
 exported names to its resolution in simulab.
 
-simstudy is an equivalence oracle rather than a dependency. Two tests assert
-that simulab reproduces simstudy 0.9.2 values exactly under the same seed, for
-normal, binary and gamma declarative generation and for the beta, gamma and
-negative binomial parameter conversions. Both tests skip when simstudy is not
-installed, which is the case in the environment where the figures reported
-below were measured.
+simstudy is an equivalence oracle rather than a dependency. Under the same
+seed, simulab reproduces simstudy 0.9.2 values exactly for normal, binary and
+gamma declarative generation, and its beta, gamma and negative binomial
+parameter conversions match exactly. Nine assertions check this, and they run
+whenever simstudy is installed.
 `FEATURE_COVERAGE.md` maps each simstudy capability to its simulab verb.
 
 The `tna` package supplies the transition-network estimators. simulab keeps
@@ -576,16 +579,18 @@ Version 0.4.0 is the first release under the simulab name. The version
 continues the line of Saqrlab (0.4.1), which has never been on CRAN. The
 package is a CRAN release candidate and a new submission.
 
-The test suite contains 341 assertions across 21 files and covers 90.79% of
-package lines, measured with `covr`. Two assertions skip when simstudy is
-absent. Tests include statistical calibration checks, seeded regression checks,
-recovery checks for transition networks and grouped models, error-path checks
-by condition class, and equivalence tests against simstudy.
+The test suite contains 389 assertions across 23 files and covers 90.7% of
+package lines, measured with `covr`. With every suggested package installed
+there are no skips. Tests include statistical calibration checks, seeded
+regression checks, recovery checks for transition networks and grouped models,
+error-path checks by condition class, equivalence tests against simstudy, and
+identity checks between the matrix and long-form call styles.
 
 All 121 exported functions carry runnable examples, which `R CMD check`
 executes. `R CMD check --as-cran` reports one note, the standard note for a
-first submission, on R 4.5.2 under macOS on arm64. Windows and Linux checks are
-still outstanding.
+first submission, on R 4.5.2 under macOS on arm64. GitHub Actions runs the
+same check on macOS, Windows and Ubuntu across R release, devel and
+oldrel-1.
 
 ## Function reference
 

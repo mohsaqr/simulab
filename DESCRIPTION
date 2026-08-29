@@ -13,6 +13,8 @@ Description: Provides a consistent interface for simulating tidy data with
     outputs inherit from data.frame and expose parameters and design details
     through standardized tidy component tables. Seeded functions restore the
     caller's random-number state.
+URL: https://github.com/mohsaqr/simulab
+BugReports: https://github.com/mohsaqr/simulab/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en-US

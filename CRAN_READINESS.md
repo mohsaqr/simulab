@@ -7,8 +7,8 @@
 - `NEWS.md`, `cran-comments.md`, `Language: en-US`, and `inst/WORDLIST` added.
 - Documentation regenerated; 121 exports have matching Rd documentation and
   124 of 125 Rd files carry a runnable example.
-- All test suites pass with zero failures or warnings (2 skips when
-  {simstudy} is absent). Coverage is 90.79% (covr).
+- All test suites pass: 389 assertions, zero failures, zero skips with every
+  suggested package installed. Coverage is 90.7% (covr).
 - Package spelling check reports no errors.
 - Package URL check reports all URLs valid.
 - Source package installs and loads from a clean temporary library.
@@ -37,7 +37,11 @@ examples on every export).
 
 - Run Windows R-devel through Win-builder.
 - Run at least one Linux R-devel/release environment through R-hub.
-- If a public source repository is created, add its canonical `URL` and
-  `BugReports` fields to `DESCRIPTION`, rebuild, and repeat the checks.
+  GitHub Actions now covers macOS, Windows and Ubuntu on release, devel and
+  oldrel-1, so these are a cross-check rather than the only evidence.
+- `URL` and `BugReports` now point at https://github.com/mohsaqr/simulab.
+- GitHub Actions runs `R-CMD-check` on macOS, Windows and Ubuntu across
+  R release, devel and oldrel-1, which covers the Windows and Linux checks
+  listed above. Confirm the first run is green before submitting.
 
 No package has been uploaded or submitted to CRAN.
