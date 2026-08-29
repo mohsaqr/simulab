@@ -1,0 +1,110 @@
+# Saqrlab API coverage
+
+This audit maps every exported Saqrlab 0.4.0 name to the canonical `simulab`
+API. “Consolidated” means the capability is present under a smaller, regular
+verb set; it does not mean that the old alias is exported. Plot-only wrappers
+are intentionally replaced by tidy result tables and native `tna`/`igraph`
+objects rather than copied into the simulation package.
+
+| Saqrlab export | Canonical simulab API | Resolution |
+|---|---|---|
+| `GLOBAL_NAMES` | `global_names()` | Data object replaced by a filterable tidy catalogue. |
+| `GROUP_REGULATION_ACTIONS` | `learning_states("group_regulation")` | Consolidated into the learning-state catalogue. |
+| `LEARNING_STATES` | `learning_states()` | Data object replaced by a filterable tidy catalogue. |
+| `analyze_grid_results` | `summarize_simulations()` | Consolidated grid summaries use ordinary grouped tidy data. |
+| `batch_apply` | `apply_batch()` | Canonical batch verb. |
+| `batch_fit_models` | `fit_tna_batch()` | Canonical batch TNA fitting. |
+| `calculate_edge_recovery` | `evaluate_edge_recovery()` | Duplicate alias removed. |
+| `compare_centralities` | `compare_centralities()` | Direct coverage. |
+| `compare_edge_recovery` | `evaluate_edge_recovery()` | Canonical recovery verb. |
+| `compare_estimation` | `evaluate_tna_estimation()` | Repeated truth-versus-estimate experiment. |
+| `compare_network_estimation` | `evaluate_tna_estimation()` | Duplicate estimation workflow consolidated. |
+| `compare_networks` | `compare_networks()` | Direct coverage with Pearson, cosine, error, and overlap metrics. |
+| `compare_reliability` | `assess_tna_reliability()` | Split-half reliability; condition grids compose with `parameter_grid()`. |
+| `compare_tna_models` | `compare_tna_models()` | Direct coverage for TNA, FTNA, CTNA, and ATNA. |
+| `create_param_grid` | `parameter_grid()` | Duplicate alias removed. |
+| `cross_validate_tna` | `cross_validate_tna()` | Direct coverage. |
+| `evaluate_bootstrap` | `bootstrap_tna()` | Single canonical bootstrap workflow. |
+| `export_simulation` | `write_simulation()` | Standard CSV/RDS export. |
+| `fit_network_model` | `fit_tna()` + `as_tna_model()` | Tidy fit with an explicit native-model bridge. |
+| `generate_group_tna_networks` | `simulate_tna_network()` | Group/type transition-network generator. |
+| `generate_param_grid` | `parameter_grid()` | Grid, random, and Latin-hypercube designs. |
+| `generate_probabilities` | `generate_transition_system()` | Tidy transitions plus initial probabilities. |
+| `generate_sequence_data` | `simulate_sequence_batches()` | Repeated sequence-dataset generation. |
+| `generate_tna_datasets` | `simulate_sequence_batches()` | Duplicate generator alias removed. |
+| `generate_tna_matrix` | `simulate_tna_network()` | Transition table and adjacency component. |
+| `generate_tna_networks` | `simulate_tna_batches()` | Repeated simulated and fitted TNA networks. |
+| `get_global_names` | `global_names()` / `sample_global_names()` | Listing and seeded sampling separated. |
+| `get_learning_states` | `learning_states()` / `sample_learning_states()` | Listing and seeded sampling separated. |
+| `get_scenario` | `simulation_scenarios()` | Scenario catalogue is a tidy table. |
+| `inject_missingness` | `inject_missingness()` | Direct coverage plus simstudy-style missingness definitions. |
+| `list_learning_categories` | `learning_state_categories()` | Direct catalogue helper. |
+| `list_name_regions` | `global_name_regions()` | Direct catalogue helper. |
+| `list_scenarios` | `simulation_scenarios()` | Direct catalogue helper. |
+| `list_simulators` | `list_simulators()` | Direct coverage with family filtering. |
+| `plot_network_estimation` | `evaluate_tna_estimation()` output | Tidy metrics replace a fixed plotting wrapper. |
+| `plot_sampling_distribution` | `cross_validate_tna()` / `bootstrap_tna()` output | Tidy distributions are ready for any plotting system. |
+| `plot_tna_comparison` | `as_tna_model()` + native `plot()` | Native `tna` plotting retained without proxy objects. |
+| `run_bootstrap_iteration` | `bootstrap_tna()` | Iterations are internal rows of one reproducible workflow. |
+| `run_bootstrap_simulation` | `bootstrap_tna()` | Duplicate bootstrap driver removed. |
+| `run_grid_simulation` | `parameter_grid()` + `simulate_scenarios()` | Grid construction and execution are separate composable verbs. |
+| `run_network_simulation` | `evaluate_tna_estimation()` | Canonical repeated network-recovery experiment. |
+| `run_sampling_analysis` | `sample_tna()` / `cross_validate_tna()` | Sampling and evaluation are explicit. |
+| `run_scenario` | `run_simulation_scenario()` | Canonical scenario runner. |
+| `sample_tna` | `sample_tna()` | Direct coverage. |
+| `saqr_sim` | `simulab_sim` results | Constructors are internal; every simulator returns the common class. |
+| `select_states` | `sample_learning_states()` | Seeded state selection. |
+| `simulate` | `simulate_data()` | One discoverable dispatcher; direct verbs remain preferred. |
+| `simulate_anova` | `simulate_anova()` | Direct coverage. |
+| `simulate_clusters` | `simulate_clusters()` | Direct coverage. |
+| `simulate_correlation` | `simulate_correlation()` | Direct coverage. |
+| `simulate_data` | `simulate_data()` | Direct unified dispatcher. |
+| `simulate_edge_list` | `simulate_edge_list()` | Direct canonical tidy edge-list generator. |
+| `simulate_fa` | `simulate_factors()` | Canonical factor-model verb. |
+| `simulate_group_tna_networks` | `simulate_tna_network()` | Group/type network generation with tidy node metadata. |
+| `simulate_growth` | `simulate_growth()` | Direct coverage. |
+| `simulate_hmm` | `simulate_hmm()` | Direct coverage. |
+| `simulate_htna` | `simulate_tna_network()` | Hierarchical node types are ordinary network groups. |
+| `simulate_igraph` | `simulate_network()` + `as_igraph()` | Generation and representation conversion separated. |
+| `simulate_irt` | `simulate_irt()` | Rasch, 2PL, 3PL, graded, and multidimensional support. |
+| `simulate_lca` | `simulate_lca()` | Direct coverage. |
+| `simulate_long_data` | `simulate_event_log()` | Grouped actor/course/achievement event logs. |
+| `simulate_longitudinal` | `simulate_longitudinal()` | VAR, between-person covariance, and day/beep structure. |
+| `simulate_lpa` | `simulate_lpa()` | Direct coverage. |
+| `simulate_matrix` | `simulate_network_matrix()` | Adjacency, transition, frequency, and co-occurrence matrices. |
+| `simulate_mlm` | `simulate_multilevel()` | Fixed effects, random intercepts, correlated random slopes. |
+| `simulate_mlna` | `simulate_tna_network()` | Multilevel node types are ordinary network groups. |
+| `simulate_mtna` | `simulate_tna_network()` | Multi-type node metadata is first-class. |
+| `simulate_network` | `simulate_network()` | Seven graph models, typed nodes, weighted/classed edges. |
+| `simulate_onehot_data` | `simulate_event_log()` + `encode_sequences()` | Event generation and encoding separated. |
+| `simulate_prediction` | `simulate_prediction()` | Continuous and categorical predictors with truth tables. |
+| `simulate_regression` | `simulate_regression()` | Direct coverage. |
+| `simulate_seq_clusters` | `simulate_sequence_clusters()` | Canonical unabbreviated verb. |
+| `simulate_sequences` | `simulate_sequences()` | Direct coverage. |
+| `simulate_sequences_advanced` | `simulate_sequences()` | Stable transitions, perturbation, unlikely jumps, and missing tails unified. |
+| `simulate_survival` | `simulate_proportional_survival()` / `simulate_survival()` | Standalone PH generator plus specification-driven survival engine. |
+| `simulate_tna_datasets` | `simulate_sequence_batches()` | Repeated sequence generation. |
+| `simulate_tna_matrix` | `simulate_tna_network()` | Tidy transition network plus adjacency component. |
+| `simulate_tna_network` | `simulate_sequences()` + `fit_tna()` | Simulation and fitting compose explicitly. |
+| `simulate_tna_networks` | `simulate_tna_batches()` | Direct repeated fitted-network workflow. |
+| `simulate_ttest` | `simulate_ttest()` | Direct coverage. |
+| `smart_select_states` | `sample_learning_states()` | Duplicate selection alias removed. |
+| `summarize_grid_results` | `summarize_simulations()` | General grouped simulation summaries. |
+| `summarize_networks` | `summarize_networks()` | Direct coverage. |
+| `summarize_simulation` | `summary()` / `summarize_simulations()` | One-result and grouped-result summaries. |
+| `tidy_simulation_results` | `as.data.frame()` / `components()` | All results are tidy at creation; components have one extraction API. |
+| `validate_recovery` | `validate_recovery()` | Direct parameter-recovery coverage. |
+| `validate_sim_params` | Direct simulator validation | Validation is colocated with each explicit public signature. |
+
+## Coverage interpretation
+
+- 87 of 87 Saqrlab exports have an explicit resolution above.
+- Compatibility aliases are deliberately not reproduced when two old names
+  performed the same operation.
+- Plot wrappers are the only presentation functions not recreated. Their data
+  are now ordinary data frames, and fitted TNA objects remain available through
+  `as_tna_model()` for the native `tna` plot methods.
+- Capability claims are backed by package tests, including sequence groups,
+  TNA/FTNA/CTNA/ATNA, repeated TNA networks, split-half reliability,
+  cross-validation, bootstrap, recovery, educational event logs, network
+  models, random-slope MLM, 3PL IRT, prediction, and survival calibration.

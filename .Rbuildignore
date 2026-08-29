@@ -1,0 +1,16 @@
+^\.github$
+^\.git$
+^\.Rproj\.user$
+^.*\.Rproj$
+^cran-comments\.md$
+^CRAN_READINESS\.md$
+^CRAN-SUBMISSION$
+^simulab\.Rcheck$
+^simulab_[0-9.]+\.tar\.gz$
+^CHANGES\.md$
+^HANDOFF\.md$
+^LEARNINGS\.md$
+^FEATURE_COVERAGE\.md$
+^SAQRLAB_COVERAGE\.md$
+^local_testing_and_equivalence$
+^tmp$

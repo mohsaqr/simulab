@@ -1,0 +1,31 @@
+Package: simulab
+Title: Unified Simulation of Statistical and Study Data
+Version: 0.4.0
+Authors@R: person("Mohammed", "Saqr", email = "saqr@saqr.me", role = c("aut", "cre"))
+Author: Mohammed Saqr [aut, cre]
+Maintainer: Mohammed Saqr <saqr@saqr.me>
+Description: Provides a consistent interface for simulating tidy data with
+    known ground truth. Supported designs include declarative variable
+    definitions, correlated and clustered data, treatment assignment,
+    missingness, survival and competing risks, latent-variable and
+    item-response models, longitudinal processes, event sequences, and static,
+    bipartite, multiplex, temporal, and transition networks. Simulation
+    outputs inherit from data.frame and expose parameters and design details
+    through standardized tidy component tables. Seeded functions restore the
+    caller's random-number state.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Language: en-US
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.1.0)
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    igraph (>= 2.0.0),
+    rmarkdown,
+    simstudy,
+    tna (>= 1.2.3)
+Config/testthat/edition: 3
+VignetteBuilder: knitr

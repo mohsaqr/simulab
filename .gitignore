@@ -1,0 +1,22 @@
+# R session and build artefacts
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+Rplots.pdf
+inst/doc
+*.Rcheck/
+*.tar.gz
+CRAN-SUBMISSION
+
+# Local scratch
+tmp/
+.claude/
+.DS_Store
+
+# Session artefacts: local working notes, never part of the published package
+CHANGES.md
+HANDOFF.md
+LEARNINGS.md
+cran-comments.md
