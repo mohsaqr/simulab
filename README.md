@@ -151,6 +151,50 @@ directly on 33 simulators spanning every family.
 
 ## Declarative studies
 
+`define_variables()` states a data-generating process as distribution calls.
+The variable name is the argument name, and the distribution is a call whose
+arguments are its parameters.
+
+```r
+specification <- define_variables(
+  age     = normal(mean = 50, sd = 10),
+  treated = binary(prob = 0.5),
+  outcome = normal(mean = 10 + 0.2 * age + 2 * treated, sd = 2)
+)
+
+simulate_study(500, specification, seed = 42)
+```
+
+A parameter may be any expression over variables defined earlier in the same
+call, which is how a regression is written. Parameters may be positional, in
+the order `list_distributions()` reports, so `normal(5, 1)` is
+`normal(mean = 5, sd = 1)`.
+
+Distribution names are never evaluated, so `gamma()`, `beta()`, `t()` and
+`f()` name distributions without reaching the base functions of those names.
+A parameter that refers to an undefined variable is reported by name rather
+than silently resolving to a base function.
+
+`list_distributions()` reports the catalogue: 47 distributions, all built on
+base R with no added dependency. Every one is checked against its theoretical
+mean in `tests/testthat/test-distributions.R` and in
+`inst/distribution-check.R`.
+
+Mixtures nest distribution calls, and a link is a function in the expression
+rather than a separate column:
+
+```r
+define_variables(
+  score = mixture(normal(0, 1), normal(5, 1), weights = c(0.3, 0.7)),
+  group = categorical(probs = c(0.2, 0.5, 0.3)),
+  sick  = binary(prob = plogis(-4 + 0.06 * age))
+)
+```
+
+## Specification columns
+
+
+
 `define_variables()` records a data-generating process as a table. It takes
 the columns of that table as named vectors and returns one row per variable.
 `variable` and `formula` are required. A column given as a single value is

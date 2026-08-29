@@ -36,6 +36,49 @@ This is a new CRAN submission.
   `simulab_unknown_column`, `simulab_unnamed_specification`,
   `simulab_column_length` and `simulab_column_type`.
 
+### Distribution calls
+
+- `define_variables()` accepts a data-generating process written as
+  distribution calls. The variable name is the argument name and the
+  distribution is a call whose arguments are its parameters:
+
+  ```r
+  define_variables(
+    age     = normal(mean = 50, sd = 10),
+    treated = binary(prob = 0.5),
+    outcome = normal(mean = 10 + 0.2 * age + 2 * treated, sd = 2)
+  )
+  ```
+
+  Parameters may be positional or named, matched with R's own rules, so
+  `normal(5, 1)` and `normal(mean = 5, sd = 1)` produce identical data.
+  Partial matching is rejected: a specification is saved and re-run, and an
+  abbreviation that is unique today becomes ambiguous when a parameter is
+  added later.
+
+  A parameter may be any expression over variables defined earlier, so a
+  regression is written directly. A link is a function in that expression
+  rather than a separate `link` column, and a mixture nests real distribution
+  calls rather than referring to variables defined elsewhere.
+
+  Distribution calls are captured unevaluated, so `gamma()`, `beta()`, `t()`
+  and `f()` name distributions without reaching the base functions of those
+  names. A parameter referring to an undefined variable raises
+  `simulab_undefined_variable` naming the variable, where it previously
+  resolved to a base function and failed with "non-numeric argument to binary
+  operator".
+
+- Added `list_distributions()`, which reports the catalogue with the
+  parameters each distribution takes in positional order.
+
+- The catalogue is 47 distributions, up from 17, all built on base R with no
+  added dependency: 12 base-R continuous, 18 derived continuous, 11 discrete,
+  3 non-central, and mixture, categorical, deterministic and treatment. Each
+  is checked against its theoretical mean.
+
+- The specification-column and constructor forms are unchanged and continue to
+  work.
+
 ### Long-form input package-wide
 
 - Every argument that is a matrix, an array or a list of matrices now also

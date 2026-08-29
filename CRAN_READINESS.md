@@ -7,8 +7,8 @@
 - `NEWS.md`, `cran-comments.md`, `Language: en-US`, and `inst/WORDLIST` added.
 - Documentation regenerated; 121 exports have matching Rd documentation and
   124 of 125 Rd files carry a runnable example.
-- All test suites pass: 389 assertions, zero failures, zero skips with every
-  suggested package installed. Coverage is 90.7% (covr).
+- All test suites pass: 461 assertions, zero failures, zero skips with every
+  suggested package installed.
 - Package spelling check reports no errors.
 - Package URL check reports all URLs valid.
 - Source package installs and loads from a clean temporary library.
@@ -27,8 +27,8 @@ solver convergence checks, the `read_definitions()` round-trip fix, and
 examples on every export).
 
 - File: `simulab_0.4.0.tar.gz`
-- Size: 139,867 bytes
-- SHA-256: `6cc486b458b8abca750894357857a7624c880211b4623cbbef0aa4f5225e26e0`
+- Size: 170,384 bytes
+- SHA-256: `6fcf9e125a767d21dc17cd2fbcfd4d8ecf9d5278b9f46c8aff9d34c00d2df450`
 - `R CMD check --as-cran --no-manual` on this artifact (R 4.5.2,
   aarch64-apple-darwin20, `_R_CHECK_FORCE_SUGGESTS_=false` because {simstudy}
   is not installed locally): **Status: 1 NOTE** (new submission only).

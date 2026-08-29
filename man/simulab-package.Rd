@@ -17,6 +17,14 @@ be passed directly to base-R and modeling functions. Use \code{components()} to
 discover ground-truth and design tables, then \code{as.data.frame(x, what = ...)}
 to retrieve them.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mohsaqr/simulab}
+  \item Report bugs at \url{https://github.com/mohsaqr/simulab/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Mohammed Saqr \email{saqr@saqr.me}
 

@@ -70,12 +70,44 @@ define_variable <- function(name, formula, variance = 0,
   result
 }
 
+
+## Lane detection runs before evaluation, so an unregistered distribution is
+## reported by name rather than evaluated and reported as a missing function.
+## The three lanes are told apart by shape: reserved column names select the
+## column lane, the package's own constructors select the constructor lane,
+## and anything else that is a call with a symbol head is a distribution call.
+.specification_columns <- c("variable", "formula", "variance", "distribution", "link")
+.specification_constructors <- c("define_variable", "repeat_variables", "define_variables")
+
+.is_distribution_call_lane <- function(captured) {
+  if (!length(captured)) return(FALSE)
+  labels <- names(captured)
+  if (!is.null(labels) && any(labels %in% .specification_columns)) return(FALSE)
+  all(vapply(captured, function(x) {
+    is.call(x) && is.name(x[[1L]]) &&
+      !as.character(x[[1L]]) %in% .specification_constructors
+  }, logical(1)))
+}
+
 #' Combine variable definitions into a specification
 #'
-#' @param ... Either the columns of a specification given as named vectors
-#'   (`variable`, `formula`, `variance`, `distribution`, `link`), or objects
-#'   created by [define_variable()] or [repeat_variables()]. The two forms
-#'   cannot be mixed in one call.
+#' @param ... One of three forms.
+#'
+#'   **Distribution calls.** `age = normal(mean = 50, sd = 10)` names the
+#'   variable with the argument name and states its distribution as a call.
+#'   Parameters may be given positionally or by name, in the order
+#'   [list_distributions()] reports. A parameter may be any expression over
+#'   variables defined earlier in the same call, so
+#'   `outcome = normal(mean = 10 + 0.2 * age, sd = 2)` is a regression.
+#'   Distribution names are never evaluated, so `gamma()`, `beta()` and `t()`
+#'   do not reach the base functions of those names.
+#'
+#'   **Specification columns** given as named vectors (`variable`, `formula`,
+#'   `variance`, `distribution`, `link`).
+#'
+#'   **Objects** created by [define_variable()] or [repeat_variables()].
+#'
+#'   The forms cannot be mixed in one call.
 #'
 #'   In the column form, `variable` and `formula` are required. A column given
 #'   as a single value is recycled across every variable. `variance` defaults
@@ -86,9 +118,19 @@ define_variable <- function(name, formula, variance = 0,
 #' @export
 #'
 #' @examples
-#' # One call, named arguments, one row per variable. `formula` is the mean or
-#' # linear predictor and may refer to variables defined earlier. `variance` is
-#' # a variance, not a standard deviation.
+#' # Distribution calls. The variable name is the argument name.
+#' define_variables(
+#'   age     = normal(mean = 50, sd = 10),
+#'   treated = binary(prob = 0.5),
+#'   outcome = normal(mean = 10 + 0.2 * age + 2 * treated, sd = 2)
+#' )
+#'
+#' # Parameters may be positional, in the order list_distributions() reports.
+#' define_variables(y = normal(5, 1), count = poisson(3))
+#'
+#' # Specification columns. `formula` is the mean or linear predictor and may
+#' # refer to variables defined earlier. `variance` is a variance, not a
+#' # standard deviation.
 #' define_variables(
 #'   variable     = c("baseline", "treatment", "outcome"),
 #'   formula      = c("0", "0.5", "0.4 * baseline + 0.8 * treatment"),
@@ -110,6 +152,16 @@ define_variable <- function(name, formula, variance = 0,
 #'   define_variable("treated", formula = 0.5, distribution = "binary")
 #' )
 define_variables <- function(...) {
+  ## The distribution-call lane is detected before evaluation, because its
+  ## arguments must not be evaluated: `gamma(shape = 2)` is a specification,
+  ## not a call to base::gamma.
+  captured <- as.list(substitute(list(...)))[-1L]
+  if (.is_distribution_call_lane(captured)) {
+    result <- .calls_to_specification(captured)
+    class(result) <- c("simulab_spec", "data.frame")
+    return(result)
+  }
+
   definitions <- list(...)
   stopifnot(
     "`...` must contain at least one definition or one specification column" =

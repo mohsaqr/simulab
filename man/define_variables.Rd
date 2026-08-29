@@ -7,10 +7,23 @@
 define_variables(...)
 }
 \arguments{
-\item{...}{Either the columns of a specification given as named vectors
-(\code{variable}, \code{formula}, \code{variance}, \code{distribution}, \code{link}), or objects
-created by \code{\link[=define_variable]{define_variable()}} or \code{\link[=repeat_variables]{repeat_variables()}}. The two forms
-cannot be mixed in one call.
+\item{...}{One of three forms.
+
+\strong{Distribution calls.} \code{age = normal(mean = 50, sd = 10)} names the
+variable with the argument name and states its distribution as a call.
+Parameters may be given positionally or by name, in the order
+\code{\link[=list_distributions]{list_distributions()}} reports. A parameter may be any expression over
+variables defined earlier in the same call, so
+\code{outcome = normal(mean = 10 + 0.2 * age, sd = 2)} is a regression.
+Distribution names are never evaluated, so \code{gamma()}, \code{beta()} and \code{t()}
+do not reach the base functions of those names.
+
+\strong{Specification columns} given as named vectors (\code{variable}, \code{formula},
+\code{variance}, \code{distribution}, \code{link}).
+
+\strong{Objects} created by \code{\link[=define_variable]{define_variable()}} or \code{\link[=repeat_variables]{repeat_variables()}}.
+
+The forms cannot be mixed in one call.
 
 In the column form, \code{variable} and \code{formula} are required. A column given
 as a single value is recycled across every variable. \code{variance} defaults
@@ -24,9 +37,19 @@ columns \code{variable}, \code{distribution}, \code{formula}, \code{variance} an
 Combine variable definitions into a specification
 }
 \examples{
-# One call, named arguments, one row per variable. `formula` is the mean or
-# linear predictor and may refer to variables defined earlier. `variance` is
-# a variance, not a standard deviation.
+# Distribution calls. The variable name is the argument name.
+define_variables(
+  age     = normal(mean = 50, sd = 10),
+  treated = binary(prob = 0.5),
+  outcome = normal(mean = 10 + 0.2 * age + 2 * treated, sd = 2)
+)
+
+# Parameters may be positional, in the order list_distributions() reports.
+define_variables(y = normal(5, 1), count = poisson(3))
+
+# Specification columns. `formula` is the mean or linear predictor and may
+# refer to variables defined earlier. `variance` is a variance, not a
+# standard deviation.
 define_variables(
   variable     = c("baseline", "treatment", "outcome"),
   formula      = c("0", "0.5", "0.4 * baseline + 0.8 * treatment"),
