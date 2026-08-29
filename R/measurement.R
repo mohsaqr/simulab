@@ -4,9 +4,11 @@
 #' @param discrimination Positive item discriminations.
 #' @param difficulty Item difficulties. A vector gives dichotomous items; a
 #'   matrix gives ordered thresholds by item.
-#' @param dimensions Item-by-dimension loading weights. `NULL` uses one
+#' @param dimensions Item-by-dimension loading weights, or a tidy data frame
+#'   with columns `item`, `dimension` and `loading`. `NULL` uses one
 #'   dimension.
-#' @param ability_correlation Latent ability correlation matrix.
+#' @param ability_correlation Latent ability correlation matrix, or a tidy
+#'   data frame with columns `row`, `column` and `correlation`.
 #' @param model Logistic model: Rasch, 2PL, 3PL, or graded response.
 #' @param guessing Lower-asymptote guessing parameters for 3PL items.
 #' @param seed Optional random seed.
@@ -37,6 +39,16 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
                          dimensions = NULL, ability_correlation = NULL,
                          model = c("2pl", "rasch", "3pl", "graded"),
                          guessing = 0.2, seed = NULL) {
+  if (is.data.frame(difficulty)) {
+    difficulty <- .tidy_to_matrix(difficulty, "difficulty", "item", "dimension",
+                                  "difficulty")
+  }
+  dimensions <- .tidy_to_matrix(dimensions, "dimensions", "item", "dimension",
+                                "loading")
+  ability_correlation <- .tidy_to_symmetric(
+    ability_correlation, "ability_correlation", "row", "column", "correlation",
+    diagonal = 1
+  )
   model <- match.arg(model)
   stopifnot(
     "`n` must be a single whole number of at least 2" =
@@ -140,9 +152,11 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
 #' Simulate a hidden Markov model
 #'
 #' @param n Number of sequences.
-#' @param transition Hidden-state transition matrix.
+#' @param transition Hidden-state transition matrix, or a tidy data frame with
+#'   columns `from`, `to` and `probability`.
 #' @param chain_length Sequence length.
-#' @param emission Hidden-state-by-observed-category probability matrix.
+#' @param emission Hidden-state-by-observed-category probability matrix, or a
+#'   tidy data frame with columns `state`, `observation` and `probability`.
 #' @param initial Initial hidden-state probabilities.
 #' @param state_labels,observation_labels Optional labels.
 #' @param seed Optional random seed.
@@ -164,6 +178,10 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
 simulate_hmm <- function(n, transition, chain_length, emission, initial = NULL,
                          state_labels = NULL, observation_labels = NULL,
                          seed = NULL) {
+  transition <- .tidy_to_matrix(transition, "transition", "from", "to",
+                                "probability")
+  emission <- .tidy_to_matrix(emission, "emission", "state", "observation",
+                              "probability")
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&

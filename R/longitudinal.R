@@ -139,7 +139,8 @@ simulate_multilevel <- function(clusters, cluster_size, intercept = 0,
 #' @param intercept,slope,quadratic Fixed growth coefficients.
 #' @param random_sd Standard deviations for random intercept, slope, and
 #'   optional quadratic term.
-#' @param random_correlation Correlation matrix for random effects.
+#' @param random_correlation Correlation matrix for random effects, or a tidy
+#'   data frame with columns `row`, `column` and `correlation`.
 #' @param residual_sd Residual standard deviation.
 #' @param seed Optional random seed.
 #'
@@ -155,6 +156,10 @@ simulate_multilevel <- function(clusters, cluster_size, intercept = 0,
 simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
                             random_sd = c(1, 0.25), random_correlation = NULL,
                             residual_sd = 1, seed = NULL) {
+  random_correlation <- .tidy_to_symmetric(
+    random_correlation, "random_correlation", "row", "column", "correlation",
+    diagonal = 1
+  )
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&
@@ -217,11 +222,15 @@ simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
 #'
 #' @param n Number of units.
 #' @param occasions Number of occasions.
-#' @param transition Lag-one coefficient matrix.
+#' @param transition Lag-one coefficients as a square matrix, or as a tidy
+#'   data frame with columns `from`, `to` and `coefficient`.
 #' @param intercept Variable intercepts.
-#' @param innovation_covariance Innovation covariance matrix.
-#' @param initial_covariance Initial-state covariance matrix.
-#' @param between_covariance Between-unit covariance of person means.
+#' @param innovation_covariance Innovation covariance matrix, or a tidy data
+#'   frame with columns `row`, `column` and `covariance`.
+#' @param initial_covariance Initial-state covariance matrix, or a tidy data
+#'   frame with columns `row`, `column` and `covariance`.
+#' @param between_covariance Between-unit covariance of person means, or a
+#'   tidy data frame with columns `row`, `column` and `covariance`.
 #' @param grand_means Population means.
 #' @param beeps_per_day Optional number of occasions per day. Temporal carryover
 #'   resets at each day boundary.
@@ -248,6 +257,17 @@ simulate_longitudinal <- function(n, occasions, transition, intercept = 0,
                                   between_covariance = NULL, grand_means = 0,
                                   beeps_per_day = NULL, burn_in = 50L,
                                   seed = NULL) {
+  transition <- .tidy_to_matrix(transition, "transition", "from", "to",
+                                "coefficient")
+  innovation_covariance <- .tidy_to_symmetric(
+    innovation_covariance, "innovation_covariance", "row", "column", "covariance"
+  )
+  initial_covariance <- .tidy_to_symmetric(
+    initial_covariance, "initial_covariance", "row", "column", "covariance"
+  )
+  between_covariance <- .tidy_to_symmetric(
+    between_covariance, "between_covariance", "row", "column", "covariance"
+  )
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&

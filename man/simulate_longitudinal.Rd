@@ -23,15 +23,19 @@ simulate_longitudinal(
 
 \item{occasions}{Number of occasions.}
 
-\item{transition}{Lag-one coefficient matrix.}
+\item{transition}{Lag-one coefficients as a square matrix, or as a tidy
+data frame with columns \code{from}, \code{to} and \code{coefficient}.}
 
 \item{intercept}{Variable intercepts.}
 
-\item{innovation_covariance}{Innovation covariance matrix.}
+\item{innovation_covariance}{Innovation covariance matrix, or a tidy data
+frame with columns \code{row}, \code{column} and \code{covariance}.}
 
-\item{initial_covariance}{Initial-state covariance matrix.}
+\item{initial_covariance}{Initial-state covariance matrix, or a tidy data
+frame with columns \code{row}, \code{column} and \code{covariance}.}
 
-\item{between_covariance}{Between-unit covariance of person means.}
+\item{between_covariance}{Between-unit covariance of person means, or a
+tidy data frame with columns \code{row}, \code{column} and \code{covariance}.}
 
 \item{grand_means}{Population means.}
 

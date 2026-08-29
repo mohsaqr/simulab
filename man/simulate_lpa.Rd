@@ -17,13 +17,17 @@ simulate_lpa(
 \arguments{
 \item{n}{Number of observations.}
 
-\item{means}{Profile-by-variable mean matrix.}
+\item{means}{Profile-by-variable mean matrix, or a tidy data frame with
+columns \code{profile}, \code{variable} and \code{mean}.}
 
-\item{sds}{Scalar, per-variable vector, or profile-by-variable matrix.}
+\item{sds}{Scalar, per-variable vector, profile-by-variable matrix, or a
+tidy data frame with columns \code{profile}, \code{variable} and \code{sd}.}
 
 \item{proportions}{Profile proportions.}
 
-\item{correlations}{Optional list of within-profile correlation matrices.}
+\item{correlations}{Optional list of within-profile correlation matrices,
+or a tidy data frame with columns \code{profile}, \code{row}, \code{column} and
+\code{correlation}.}
 
 \item{labels}{Optional profile labels.}
 

@@ -43,15 +43,36 @@ define_missingness <- function(variable, formula,
   result
 }
 
-#' Combine missingness definitions
+#' Combine missingness definitions into a specification
 #'
-#' @param ... Objects created by `define_missingness()`.
+#' @param ... Either the columns of a specification given as named vectors
+#'   (`variable`, `formula`, `link`, `baseline`, `monotone`), or objects
+#'   created by [define_missingness()]. The two forms cannot be mixed in one
+#'   call.
+#'
+#'   In the column form, `variable` and `formula` are required. A column given
+#'   as a single value is recycled across every variable. `link` defaults to
+#'   `"identity"`, and `baseline` and `monotone` to `FALSE`.
 #'
 #' @return A `simulab_missing_spec` base `data.frame` with one row per target
 #'   variable.
 #' @export
 #'
 #' @examples
+#' # One call, named arguments, one row per target variable.
+#' define_missingnesses(
+#'   variable = c("outcome", "baseline"),
+#'   formula  = c("0.2", "0.1")
+#' )
+#'
+#' # `monotone` keeps a unit missing at every later period once it drops out.
+#' define_missingnesses(
+#'   variable = c("outcome", "baseline"),
+#'   formula  = c("0.2", "0.1"),
+#'   monotone = TRUE
+#' )
+#'
+#' # Definitions built one at a time are still accepted.
 #' define_missingnesses(
 #'   define_missingness("outcome", formula = "0.2"),
 #'   define_missingness("baseline", formula = "0.1")
@@ -59,13 +80,35 @@ define_missingness <- function(variable, formula,
 define_missingnesses <- function(...) {
   definitions <- list(...)
   stopifnot(
-    "`definitions` must be a list of `simulab_missing_spec` objects, with at least one element" =
-      length(definitions) >= 1L &&
-        all(vapply(definitions, inherits, logical(1), what = "simulab_missing_spec"))
+    "`...` must contain at least one definition or one specification column" =
+      length(definitions) >= 1L
   )
-  result <- do.call(rbind, lapply(definitions, as.data.frame))
+
+  from_constructor <- vapply(definitions, inherits, logical(1),
+                             what = "simulab_missing_spec")
+  if (all(from_constructor)) {
+    result <- do.call(rbind, lapply(definitions, as.data.frame))
+  } else if (any(from_constructor)) {
+    stop(errorCondition(
+      paste0("Give either specification columns or objects from ",
+             "define_missingness(), not both in one call."),
+      class = "simulab_mixed_specification", call = NULL
+    ))
+  } else {
+    result <- .spec_from_columns(
+      definitions,
+      required = c("variable", "formula"),
+      defaults = list(link = "identity", baseline = FALSE, monotone = FALSE),
+      coerce = list(baseline = .as_flag, monotone = .as_flag),
+      choices = list(link = c("identity", "logit"))
+    )
+  }
+
   if (anyDuplicated(result$variable)) {
-    stop("Missingness target variables must be unique.", call. = FALSE)
+    stop(errorCondition(
+      "Missingness target variables must be unique.",
+      class = "simulab_duplicate_variable", call = NULL
+    ))
   }
   class(result) <- c("simulab_missing_spec", "data.frame")
   rownames(result) <- NULL

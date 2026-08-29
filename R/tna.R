@@ -217,9 +217,12 @@ compare_tna_models <- function(data, models = c("tna", "ftna", "ctna", "atna"),
 #' @param groups Number of groups.
 #' @param actors Actors per group, scalar or one value per group.
 #' @param transitions A common transition matrix, one matrix per group, or
-#'   `NULL` for automatic generation.
+#'   `NULL` for randomly generated matrices. A tidy data frame with columns
+#'   `group`, `from`, `to` and `probability` gives one matrix per group.
 #' @param chain_length Sequence length.
-#' @param initial Common initial probabilities, one vector per group, or `NULL`.
+#' @param initial Common initial probabilities, one vector per group, or
+#'   `NULL`. A tidy data frame with columns `group`, `state` and `probability`
+#'   gives one vector per group.
 #' @param group_names Optional group labels.
 #' @param states,n_states,state_categories State-space arguments passed to
 #'   `simulate_sequences()`.
@@ -242,6 +245,11 @@ simulate_group_sequences <- function(groups, actors, transitions = NULL,
                                      group_names = NULL, states = NULL,
                                      n_states = 5L, state_categories = NULL,
                                      seed = NULL, ...) {
+  initial <- .tidy_to_vector_list(initial, "initial", "group", "probability",
+                                  name = "state")
+  transitions <- .tidy_to_matrix_list(
+    transitions, "transitions", "group", "from", "to", "probability"
+  )
   stopifnot(
     "`groups` must be a single whole number of at least 2" =
       is.numeric(groups) &&
@@ -330,6 +338,11 @@ simulate_group_tna <- function(groups, actors, transitions = NULL,
                                n_states = 5L, state_categories = NULL,
                                model = c("tna", "ftna", "ctna", "atna"),
                                seed = NULL, ...) {
+  initial <- .tidy_to_vector_list(initial, "initial", "group", "probability",
+                                  name = "state")
+  transitions <- .tidy_to_matrix_list(
+    transitions, "transitions", "group", "from", "to", "probability"
+  )
   model <- match.arg(model)
   sequences <- simulate_group_sequences(
     groups = groups, actors = actors, transitions = transitions,

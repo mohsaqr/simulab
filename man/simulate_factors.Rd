@@ -17,11 +17,13 @@ simulate_factors(
 \arguments{
 \item{n}{Number of observations.}
 
-\item{loadings}{Variable-by-factor loading matrix.}
+\item{loadings}{Variable-by-factor loading matrix, or a tidy data frame
+with columns \code{item}, \code{factor} and \code{loading}.}
 
 \item{uniquenesses}{Residual variances.}
 
-\item{factor_correlation}{Optional factor correlation matrix.}
+\item{factor_correlation}{Optional factor correlation matrix, or a tidy
+data frame with columns \code{row}, \code{column} and \code{correlation}.}
 
 \item{intercepts}{Variable intercepts.}
 

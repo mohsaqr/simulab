@@ -18,11 +18,13 @@ simulate_hmm(
 \arguments{
 \item{n}{Number of sequences.}
 
-\item{transition}{Hidden-state transition matrix.}
+\item{transition}{Hidden-state transition matrix, or a tidy data frame with
+columns \code{from}, \code{to} and \code{probability}.}
 
 \item{chain_length}{Sequence length.}
 
-\item{emission}{Hidden-state-by-observed-category probability matrix.}
+\item{emission}{Hidden-state-by-observed-category probability matrix, or a
+tidy data frame with columns \code{state}, \code{observation} and \code{probability}.}
 
 \item{initial}{Initial hidden-state probabilities.}
 

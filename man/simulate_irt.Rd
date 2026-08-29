@@ -23,10 +23,12 @@ simulate_irt(
 \item{difficulty}{Item difficulties. A vector gives dichotomous items; a
 matrix gives ordered thresholds by item.}
 
-\item{dimensions}{Item-by-dimension loading weights. \code{NULL} uses one
+\item{dimensions}{Item-by-dimension loading weights, or a tidy data frame
+with columns \code{item}, \code{dimension} and \code{loading}. \code{NULL} uses one
 dimension.}
 
-\item{ability_correlation}{Latent ability correlation matrix.}
+\item{ability_correlation}{Latent ability correlation matrix, or a tidy
+data frame with columns \code{row}, \code{column} and \code{correlation}.}
 
 \item{model}{Logistic model: Rasch, 2PL, 3PL, or graded response.}
 

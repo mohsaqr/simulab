@@ -16,7 +16,9 @@ simulate_lca(
 \arguments{
 \item{n}{Number of observations.}
 
-\item{probabilities}{Array with dimensions class, indicator, category.}
+\item{probabilities}{Item probabilities as an array with dimensions class,
+indicator and category, or as a tidy data frame with columns \code{class},
+\code{indicator}, \code{category} and \code{probability}.}
 
 \item{proportions}{Latent-class proportions.}
 

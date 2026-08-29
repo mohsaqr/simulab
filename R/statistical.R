@@ -297,8 +297,10 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
 #' Simulate Gaussian clusters
 #'
 #' @param n Sample size.
-#' @param centers Matrix with one row per cluster and one column per variable.
-#' @param sds Scalar, per-variable vector, or cluster-by-variable matrix.
+#' @param centers Matrix with one row per cluster and one column per variable,
+#'   or a tidy data frame with columns `cluster`, `variable` and `center`.
+#' @param sds Scalar, per-variable vector, cluster-by-variable matrix, or a
+#'   tidy data frame with columns `cluster`, `variable` and `sd`.
 #' @param proportions Optional cluster proportions.
 #' @param labels Optional cluster labels.
 #' @param seed Optional random seed.
@@ -319,6 +321,10 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
 #' as.data.frame(result, what = "parameters")
 simulate_clusters <- function(n, centers, sds = 1, proportions = NULL,
                               labels = NULL, seed = NULL) {
+  centers <- .tidy_to_matrix(centers, "centers", "cluster", "variable", "center")
+  if (is.data.frame(sds)) {
+    sds <- .tidy_to_matrix(sds, "sds", "cluster", "variable", "sd")
+  }
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&

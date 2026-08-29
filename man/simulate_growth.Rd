@@ -26,7 +26,8 @@ simulate_growth(
 \item{random_sd}{Standard deviations for random intercept, slope, and
 optional quadratic term.}
 
-\item{random_correlation}{Correlation matrix for random effects.}
+\item{random_correlation}{Correlation matrix for random effects, or a tidy
+data frame with columns \code{row}, \code{column} and \code{correlation}.}
 
 \item{residual_sd}{Residual standard deviation.}
 

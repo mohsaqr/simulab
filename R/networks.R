@@ -217,7 +217,8 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
 #' Simulate sequences from a mixture of transition systems
 #'
 #' @param n Number of sequences.
-#' @param transitions List of transition matrices.
+#' @param transitions List of transition matrices, or a tidy data frame with
+#'   columns `cluster`, `from`, `to` and `probability`.
 #' @param chain_length Sequence length.
 #' @param proportions Cluster proportions.
 #' @param initial Optional common initial probabilities.
@@ -246,6 +247,9 @@ simulate_sequence_clusters <- function(n, transitions, chain_length,
                                        proportions = NULL, initial = NULL,
                                        labels = NULL, states = NULL,
                                        seed = NULL) {
+  transitions <- .tidy_to_matrix_list(
+    transitions, "transitions", "cluster", "from", "to", "probability"
+  )
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&
@@ -353,6 +357,8 @@ summarize_transitions <- function(data, id = "id", period = "period",
 #' @param nodes Number of nodes or node labels.
 #' @param model Graph model.
 #' @param probability Bernoulli edge probability, node matrix, or type matrix.
+#'   A matrix may instead be given as a tidy data frame with columns `from`,
+#'   `to` and `probability`.
 #' @param edges Exact edge count for the fixed-edge Bernoulli model.
 #' @param directed Generate directed edges.
 #' @param loops Permit self-loops.
@@ -398,6 +404,8 @@ simulate_network <- function(nodes,
                              between_probability = 0.05, degree = 4L,
                              radius = 0.25, forward_probability = 0.35,
                              backward_probability = 0.32, seed = NULL) {
+  probability <- .tidy_to_matrix(probability, "probability", "from", "to",
+                                 "probability")
   model <- match.arg(model)
   weight <- match.arg(weight)
   stopifnot(

@@ -16,9 +16,11 @@ simulate_clusters(
 \arguments{
 \item{n}{Sample size.}
 
-\item{centers}{Matrix with one row per cluster and one column per variable.}
+\item{centers}{Matrix with one row per cluster and one column per variable,
+or a tidy data frame with columns \code{cluster}, \code{variable} and \code{center}.}
 
-\item{sds}{Scalar, per-variable vector, or cluster-by-variable matrix.}
+\item{sds}{Scalar, per-variable vector, cluster-by-variable matrix, or a
+tidy data frame with columns \code{cluster}, \code{variable} and \code{sd}.}
 
 \item{proportions}{Optional cluster proportions.}
 

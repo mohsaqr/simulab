@@ -16,10 +16,14 @@
 #' Simulate a latent profile model
 #'
 #' @param n Number of observations.
-#' @param means Profile-by-variable mean matrix.
-#' @param sds Scalar, per-variable vector, or profile-by-variable matrix.
+#' @param means Profile-by-variable mean matrix, or a tidy data frame with
+#'   columns `profile`, `variable` and `mean`.
+#' @param sds Scalar, per-variable vector, profile-by-variable matrix, or a
+#'   tidy data frame with columns `profile`, `variable` and `sd`.
 #' @param proportions Profile proportions.
-#' @param correlations Optional list of within-profile correlation matrices.
+#' @param correlations Optional list of within-profile correlation matrices,
+#'   or a tidy data frame with columns `profile`, `row`, `column` and
+#'   `correlation`.
 #' @param labels Optional profile labels.
 #' @param seed Optional random seed.
 #'
@@ -38,6 +42,14 @@
 #' as.data.frame(result, what = "parameters")
 simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
                          correlations = NULL, labels = NULL, seed = NULL) {
+  means <- .tidy_to_matrix(means, "means", "profile", "variable", "mean")
+  if (is.data.frame(sds)) {
+    sds <- .tidy_to_matrix(sds, "sds", "profile", "variable", "sd")
+  }
+  correlations <- .tidy_to_matrix_list(
+    correlations, "correlations", "profile", "row", "column", "correlation",
+    symmetric = TRUE, diagonal = 1
+  )
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&
@@ -114,7 +126,9 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
 #' Simulate a latent class model
 #'
 #' @param n Number of observations.
-#' @param probabilities Array with dimensions class, indicator, category.
+#' @param probabilities Item probabilities as an array with dimensions class,
+#'   indicator and category, or as a tidy data frame with columns `class`,
+#'   `indicator`, `category` and `probability`.
 #' @param proportions Latent-class proportions.
 #' @param class_labels,category_labels Optional labels.
 #' @param seed Optional random seed.
@@ -145,6 +159,9 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
 simulate_lca <- function(n, probabilities, proportions = NULL,
                          class_labels = NULL, category_labels = NULL,
                          seed = NULL) {
+  probabilities <- .tidy_to_array(
+    probabilities, "probabilities", "class", "indicator", "category", "probability"
+  )
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&
@@ -204,9 +221,11 @@ simulate_lca <- function(n, probabilities, proportions = NULL,
 #' Simulate a common-factor model
 #'
 #' @param n Number of observations.
-#' @param loadings Variable-by-factor loading matrix.
+#' @param loadings Variable-by-factor loading matrix, or a tidy data frame
+#'   with columns `item`, `factor` and `loading`.
 #' @param uniquenesses Residual variances.
-#' @param factor_correlation Optional factor correlation matrix.
+#' @param factor_correlation Optional factor correlation matrix, or a tidy
+#'   data frame with columns `row`, `column` and `correlation`.
 #' @param intercepts Variable intercepts.
 #' @param include_scores Include true factor scores in primary data.
 #' @param seed Optional random seed.
@@ -228,6 +247,11 @@ simulate_lca <- function(n, probabilities, proportions = NULL,
 simulate_factors <- function(n, loadings, uniquenesses = NULL,
                              factor_correlation = NULL, intercepts = 0,
                              include_scores = FALSE, seed = NULL) {
+  loadings <- .tidy_to_matrix(loadings, "loadings", "item", "factor", "loading")
+  factor_correlation <- .tidy_to_symmetric(
+    factor_correlation, "factor_correlation", "row", "column", "correlation",
+    diagonal = 1
+  )
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&

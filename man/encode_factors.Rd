@@ -20,7 +20,9 @@ encode_factors(
 
 \item{coding}{Factor, dummy, or effect coding.}
 
-\item{labels}{Optional labels for factor coding.}
+\item{labels}{Optional labels for factor coding, as a named list per
+variable or a tidy data frame with columns \code{variable}, \code{level} and
+\code{label}.}
 
 \item{prefix}{Prefix for generated variables.}
 

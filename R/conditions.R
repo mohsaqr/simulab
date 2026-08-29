@@ -44,14 +44,30 @@ define_condition <- function(variable, condition, formula, variance = 0,
   result
 }
 
-#' Combine conditional data-generation rules
+#' Combine conditional data-generation rules into a specification
 #'
-#' @param ... Objects created by `define_condition()`.
+#' @param ... Either the columns of a specification given as named vectors
+#'   (`variable`, `condition`, `formula`, `variance`, `distribution`, `link`),
+#'   or objects created by [define_condition()]. The two forms cannot be mixed
+#'   in one call.
 #'
-#' @return A `simulab_condition_spec` base `data.frame`.
+#'   In the column form, `variable`, `condition` and `formula` are required. A
+#'   column given as a single value is recycled across every rule. `variance`
+#'   defaults to 0, `distribution` to `"normal"`, and `link` to `"identity"`.
+#'
+#' @return A `simulab_condition_spec` base `data.frame` with one row per rule.
 #' @export
 #'
 #' @examples
+#' # One call, named arguments, one row per rule.
+#' define_conditions(
+#'   variable  = c("outcome", "outcome"),
+#'   condition = c("group == 1", "group == 0"),
+#'   formula   = c("2", "0"),
+#'   variance  = "1"
+#' )
+#'
+#' # Definitions built one at a time are still accepted.
 #' define_conditions(
 #'   define_condition("outcome", condition = "group == 1",
 #'                    formula = "2", variance = "1", distribution = "normal"),
@@ -61,11 +77,32 @@ define_condition <- function(variable, condition, formula, variance = 0,
 define_conditions <- function(...) {
   definitions <- list(...)
   stopifnot(
-    "`definitions` must be a list of `simulab_condition_spec` objects, with at least one element" =
-      length(definitions) >= 1L &&
-        all(vapply(definitions, inherits, logical(1), what = "simulab_condition_spec"))
+    "`...` must contain at least one definition or one specification column" =
+      length(definitions) >= 1L
   )
-  result <- do.call(rbind, lapply(definitions, as.data.frame))
+
+  from_constructor <- vapply(definitions, inherits, logical(1),
+                             what = "simulab_condition_spec")
+  if (all(from_constructor)) {
+    result <- do.call(rbind, lapply(definitions, as.data.frame))
+  } else if (any(from_constructor)) {
+    stop(errorCondition(
+      paste0("Give either specification columns or objects from ",
+             "define_condition(), not both in one call."),
+      class = "simulab_mixed_specification", call = NULL
+    ))
+  } else {
+    result <- .spec_from_columns(
+      definitions,
+      required = c("variable", "condition", "formula"),
+      defaults = list(variance = "0", distribution = "normal", link = "identity"),
+      choices = list(distribution = .simulab_distributions,
+                     link = c("identity", "log", "logit"))
+    )
+    result <- result[, c("variable", "condition", "distribution",
+                         "formula", "variance", "link"), drop = FALSE]
+  }
+
   class(result) <- c("simulab_condition_spec", "data.frame")
   rownames(result) <- NULL
   result

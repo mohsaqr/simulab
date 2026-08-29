@@ -3,7 +3,11 @@
 #' @param n Sample size.
 #' @param coefficients Named continuous-predictor coefficients with optional
 #'   `(Intercept)`.
-#' @param categorical_levels Named list of levels for categorical predictors.
+#' @param categorical_levels Named list of levels for categorical predictors,
+#'   or a tidy data frame with columns `variable` and `level`. Optional
+#'   `effect` and `probability` columns in that table supply
+#'   `categorical_effects` and `category_probabilities`, so one table replaces
+#'   all three arguments.
 #' @param categorical_effects Named list of level effects matching
 #'   `categorical_levels`.
 #' @param category_probabilities Optional named list of sampling probabilities.
@@ -31,6 +35,23 @@ simulate_prediction <- function(n, coefficients,
                                 predictor_means = 0, predictor_sds = 1,
                                 error_sd = 1, outcome = "outcome",
                                 seed = NULL) {
+  if (.is_tidy_input(categorical_levels)) {
+    ## One tidy table carries the levels, and optionally their effects and
+    ## sampling probabilities, so three parallel lists collapse into one input.
+    .require_columns(categorical_levels, c("variable", "level"), "categorical_levels")
+    categories <- categorical_levels
+    if (is.null(categorical_effects) && "effect" %in% names(categories)) {
+      categorical_effects <- .tidy_to_vector_list(
+        categories, "categorical_effects", "variable", "effect", name = "level")
+    }
+    if (is.null(category_probabilities) && "probability" %in% names(categories)) {
+      category_probabilities <- .tidy_to_vector_list(
+        categories, "category_probabilities", "variable", "probability",
+        name = "level")
+    }
+    categorical_levels <- .tidy_to_vector_list(
+      categories, "categorical_levels", "variable", "level")
+  }
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&

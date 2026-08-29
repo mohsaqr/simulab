@@ -38,7 +38,9 @@ simulate_network(
 
 \item{model}{Graph model.}
 
-\item{probability}{Bernoulli edge probability, node matrix, or type matrix.}
+\item{probability}{Bernoulli edge probability, node matrix, or type matrix.
+A matrix may instead be given as a tidy data frame with columns \code{from},
+\code{to} and \code{probability}.}
 
 \item{edges}{Exact edge count for the fixed-edge Bernoulli model.}
 

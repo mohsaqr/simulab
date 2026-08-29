@@ -304,7 +304,9 @@ factorial_design <- function(factors, replications = 1L,
 #' @param data Base `data.frame`.
 #' @param variables Categorical variables to encode.
 #' @param coding Factor, dummy, or effect coding.
-#' @param labels Optional labels for factor coding.
+#' @param labels Optional labels for factor coding, as a named list per
+#'   variable or a tidy data frame with columns `variable`, `level` and
+#'   `label`.
 #' @param prefix Prefix for generated variables.
 #' @param replace Remove source variables after encoding.
 #'
@@ -317,6 +319,8 @@ factorial_design <- function(factors, replications = 1L,
 encode_factors <- function(data, variables,
                            coding = c("factor", "dummy", "effect"),
                            labels = NULL, prefix = "f_", replace = FALSE) {
+  labels <- .tidy_to_vector_list(labels, "labels", "variable", "label",
+                                 name = "level")
   stopifnot(
     "`data` must be a data frame" =
       is.data.frame(data),

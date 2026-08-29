@@ -2,20 +2,36 @@
 % Please edit documentation in R/conditions.R
 \name{define_conditions}
 \alias{define_conditions}
-\title{Combine conditional data-generation rules}
+\title{Combine conditional data-generation rules into a specification}
 \usage{
 define_conditions(...)
 }
 \arguments{
-\item{...}{Objects created by \code{define_condition()}.}
+\item{...}{Either the columns of a specification given as named vectors
+(\code{variable}, \code{condition}, \code{formula}, \code{variance}, \code{distribution}, \code{link}),
+or objects created by \code{\link[=define_condition]{define_condition()}}. The two forms cannot be mixed
+in one call.
+
+In the column form, \code{variable}, \code{condition} and \code{formula} are required. A
+column given as a single value is recycled across every rule. \code{variance}
+defaults to 0, \code{distribution} to \code{"normal"}, and \code{link} to \code{"identity"}.}
 }
 \value{
-A \code{simulab_condition_spec} base \code{data.frame}.
+A \code{simulab_condition_spec} base \code{data.frame} with one row per rule.
 }
 \description{
-Combine conditional data-generation rules
+Combine conditional data-generation rules into a specification
 }
 \examples{
+# One call, named arguments, one row per rule.
+define_conditions(
+  variable  = c("outcome", "outcome"),
+  condition = c("group == 1", "group == 0"),
+  formula   = c("2", "0"),
+  variance  = "1"
+)
+
+# Definitions built one at a time are still accepted.
 define_conditions(
   define_condition("outcome", condition = "group == 1",
                    formula = "2", variance = "1", distribution = "normal"),

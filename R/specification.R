@@ -70,33 +70,175 @@ define_variable <- function(name, formula, variance = 0,
   result
 }
 
-#' Combine variable definitions
+#' Combine variable definitions into a specification
 #'
-#' @param ... Objects created by `define_variable()` or `repeat_variables()`.
+#' @param ... Either the columns of a specification given as named vectors
+#'   (`variable`, `formula`, `variance`, `distribution`, `link`), or objects
+#'   created by [define_variable()] or [repeat_variables()]. The two forms
+#'   cannot be mixed in one call.
 #'
-#' @return A `simulab_spec` base `data.frame` with one row per variable.
+#'   In the column form, `variable` and `formula` are required. A column given
+#'   as a single value is recycled across every variable. `variance` defaults
+#'   to 0, `distribution` to `"normal"`, and `link` to `"identity"`.
+#'
+#' @return A `simulab_spec` base `data.frame` with one row per variable and
+#'   columns `variable`, `distribution`, `formula`, `variance` and `link`.
 #' @export
 #'
 #' @examples
+#' # One call, named arguments, one row per variable. `formula` is the mean or
+#' # linear predictor and may refer to variables defined earlier. `variance` is
+#' # a variance, not a standard deviation.
 #' define_variables(
-#'   define_variable("age", 40, 100, "normal"),
-#'   define_variable("treated", 0.5, distribution = "binary")
+#'   variable     = c("baseline", "treatment", "outcome"),
+#'   formula      = c("0", "0.5", "0.4 * baseline + 0.8 * treatment"),
+#'   variance     = c("1", "0", "1"),
+#'   distribution = c("normal", "binary", "normal")
+#' )
+#'
+#' # A column given once is recycled, so a specification that shares one
+#' # distribution stays short.
+#' define_variables(
+#'   variable = c("x1", "x2", "x3"),
+#'   formula  = "0",
+#'   variance = "1"
+#' )
+#'
+#' # Definitions built one at a time are still accepted.
+#' define_variables(
+#'   define_variable("age", formula = 40, variance = 100, distribution = "normal"),
+#'   define_variable("treated", formula = 0.5, distribution = "binary")
 #' )
 define_variables <- function(...) {
   definitions <- list(...)
   stopifnot(
-    "`definitions` must be a list of `simulab_spec` objects, with at least one element" =
-      length(definitions) >= 1L &&
-        all(vapply(definitions, inherits, logical(1), what = "simulab_spec"))
+    "`...` must contain at least one definition or one specification column" =
+      length(definitions) >= 1L
   )
 
-  result <- do.call(rbind, lapply(definitions, as.data.frame))
+  from_constructor <- vapply(definitions, inherits, logical(1), what = "simulab_spec")
+  if (all(from_constructor)) {
+    result <- do.call(rbind, lapply(definitions, as.data.frame))
+  } else if (any(from_constructor)) {
+    stop(errorCondition(
+      paste0("Give either specification columns or objects from ",
+             "define_variable(), not both in one call."),
+      class = "simulab_mixed_specification", call = NULL
+    ))
+  } else {
+    result <- .specification_from_columns(definitions)
+  }
+
   if (anyDuplicated(result$variable)) {
-    stop("Variable names must be unique.", call. = FALSE)
+    stop(errorCondition(
+      "Variable names must be unique.",
+      class = "simulab_duplicate_variable", call = NULL
+    ))
   }
   class(result) <- c("simulab_spec", "data.frame")
   rownames(result) <- NULL
   result
+}
+
+## Build a specification table from named column vectors.
+##
+## `schema` names the required columns, the default value for each optional
+## column, and the coercion applied to every column. A column supplied once is
+## recycled across every row, so a specification sharing one distribution
+## remains a single short call. All four `define_*s()` collectors share this,
+## so their column form behaves identically.
+.as_text <- function(x) vapply(x, .definition_text, character(1), USE.NAMES = FALSE)
+.as_flag <- function(x) {
+  if (!is.logical(x)) {
+    stop(errorCondition("Logical specification columns must be TRUE or FALSE.",
+                        class = "simulab_column_type", call = NULL))
+  }
+  x
+}
+.as_number <- function(x) {
+  if (!is.numeric(x)) {
+    stop(errorCondition("Numeric specification columns must be numeric.",
+                        class = "simulab_column_type", call = NULL))
+  }
+  x
+}
+
+.spec_from_columns <- function(columns, required, defaults,
+                               coerce = list(), choices = list()) {
+  known <- c(required, names(defaults))
+  given <- names(columns)
+  if (is.null(given) || any(!nzchar(given))) {
+    stop(errorCondition(
+      sprintf("Specification columns must be named. Supply %s, and optionally %s.",
+              paste(sprintf("`%s`", required), collapse = " and "),
+              paste(sprintf("`%s`", names(defaults)), collapse = ", ")),
+      class = "simulab_unnamed_specification", call = NULL
+    ))
+  }
+  unknown <- setdiff(given, known)
+  if (length(unknown)) {
+    stop(errorCondition(
+      sprintf("Unknown specification columns: %s. Use %s.",
+              paste(unknown, collapse = ", "), paste(known, collapse = ", ")),
+      class = "simulab_unknown_column", call = NULL
+    ))
+  }
+  absent <- setdiff(required, given)
+  if (length(absent)) {
+    stop(errorCondition(
+      sprintf("A specification requires %s.", paste(absent, collapse = " and ")),
+      class = "simulab_incomplete_specification", call = NULL
+    ))
+  }
+
+  key <- required[1L]
+  n <- length(columns[[key]])
+  stopifnot(
+    "the first required column must be a character vector with at least one element" =
+      is.character(columns[[key]]) && n >= 1L &&
+        all(nzchar(columns[[key]])) && !anyNA(columns[[key]])
+  )
+
+  build <- function(name) {
+    value <- if (name %in% given) columns[[name]] else defaults[[name]]
+    convert <- coerce[[name]]
+    value <- if (is.null(convert)) .as_text(value) else convert(value)
+    if (length(value) == 1L) value <- rep(value, n)
+    if (length(value) != n) {
+      stop(errorCondition(
+        sprintf("`%s` has %d values; expected 1 or %d.", name, length(value), n),
+        class = "simulab_column_length", call = NULL
+      ))
+    }
+    allowed <- choices[[name]]
+    if (!is.null(allowed)) {
+      invalid <- setdiff(value, allowed)
+      if (length(invalid)) {
+        stop(errorCondition(
+          sprintf("Unknown %s: %s. Use %s.", name,
+                  paste(unique(invalid), collapse = ", "),
+                  paste(allowed, collapse = ", ")),
+          class = paste0("simulab_unknown_", name), call = NULL
+        ))
+      }
+    }
+    value
+  }
+
+  result <- lapply(known, build)
+  names(result) <- known
+  as.data.frame(result, stringsAsFactors = FALSE)
+}
+
+.specification_from_columns <- function(columns) {
+  result <- .spec_from_columns(
+    columns,
+    required = c("variable", "formula"),
+    defaults = list(variance = "0", distribution = "normal", link = "identity"),
+    choices = list(distribution = .simulab_distributions,
+                   link = c("identity", "log", "logit"))
+  )
+  result[, c("variable", "distribution", "formula", "variance", "link"), drop = FALSE]
 }
 
 #' Define repeated variables

@@ -2,22 +2,49 @@
 % Please edit documentation in R/specification.R
 \name{define_variables}
 \alias{define_variables}
-\title{Combine variable definitions}
+\title{Combine variable definitions into a specification}
 \usage{
 define_variables(...)
 }
 \arguments{
-\item{...}{Objects created by \code{define_variable()} or \code{repeat_variables()}.}
+\item{...}{Either the columns of a specification given as named vectors
+(\code{variable}, \code{formula}, \code{variance}, \code{distribution}, \code{link}), or objects
+created by \code{\link[=define_variable]{define_variable()}} or \code{\link[=repeat_variables]{repeat_variables()}}. The two forms
+cannot be mixed in one call.
+
+In the column form, \code{variable} and \code{formula} are required. A column given
+as a single value is recycled across every variable. \code{variance} defaults
+to 0, \code{distribution} to \code{"normal"}, and \code{link} to \code{"identity"}.}
 }
 \value{
-A \code{simulab_spec} base \code{data.frame} with one row per variable.
+A \code{simulab_spec} base \code{data.frame} with one row per variable and
+columns \code{variable}, \code{distribution}, \code{formula}, \code{variance} and \code{link}.
 }
 \description{
-Combine variable definitions
+Combine variable definitions into a specification
 }
 \examples{
+# One call, named arguments, one row per variable. `formula` is the mean or
+# linear predictor and may refer to variables defined earlier. `variance` is
+# a variance, not a standard deviation.
 define_variables(
-  define_variable("age", 40, 100, "normal"),
-  define_variable("treated", 0.5, distribution = "binary")
+  variable     = c("baseline", "treatment", "outcome"),
+  formula      = c("0", "0.5", "0.4 * baseline + 0.8 * treatment"),
+  variance     = c("1", "0", "1"),
+  distribution = c("normal", "binary", "normal")
+)
+
+# A column given once is recycled, so a specification that shares one
+# distribution stays short.
+define_variables(
+  variable = c("x1", "x2", "x3"),
+  formula  = "0",
+  variance = "1"
+)
+
+# Definitions built one at a time are still accepted.
+define_variables(
+  define_variable("age", formula = 40, variance = 100, distribution = "normal"),
+  define_variable("treated", formula = 0.5, distribution = "binary")
 )
 }

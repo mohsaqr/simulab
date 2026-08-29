@@ -10,6 +10,71 @@ projects, so simulab is a clean successor rather than an in-place migration.
 
 This is a new CRAN submission.
 
+### Specification API
+
+- `define_variables()`, `define_survivals()`, `define_missingnesses()` and
+  `define_conditions()` now accept the columns of a specification directly as
+  named vectors, so a data-generating process is one call rather than a
+  constructor invoked once per row:
+
+  ```r
+  define_variables(
+    variable     = c("baseline", "treatment", "outcome"),
+    formula      = c("0", "0.5", "0.4 * baseline + 0.8 * treatment"),
+    variance     = c("1", "0", "1"),
+    distribution = c("normal", "binary", "normal")
+  )
+  ```
+
+  A column given as a single value is recycled across every row, so shared
+  settings are written once. The previous form, passing objects from
+  `define_variable()` and friends, still works and produces an identical
+  specification. The two forms cannot be mixed in one call, which raises
+  `simulab_mixed_specification`.
+
+  Column-form errors are classed: `simulab_incomplete_specification`,
+  `simulab_unknown_column`, `simulab_unnamed_specification`,
+  `simulab_column_length` and `simulab_column_type`.
+
+### Long-form input package-wide
+
+- Every argument that is a matrix, an array or a list of matrices now also
+  accepts the equivalent long-form data frame. 30 of the package's 35 such
+  arguments take tidy input, up from 6. The affected simulators are
+  `simulate_hmm()`, `simulate_longitudinal()`, `simulate_clusters()`,
+  `simulate_factors()`, `simulate_lpa()`, `simulate_lca()`, `simulate_irt()`,
+  `simulate_growth()`, `simulate_network()`, `simulate_sequence_clusters()`,
+  `simulate_group_sequences()`, `simulate_group_tna()`,
+  `simulate_prediction()` and `encode_factors()`.
+
+  ```r
+  simulate_hmm(
+    n = 40, chain_length = 10,
+    transition = data.frame(from = c("A", "A", "B", "B"),
+                            to = c("A", "B", "A", "B"),
+                            probability = c(0.7, 0.3, 0.4, 0.6)),
+    emission = data.frame(state = c("A", "A", "B", "B"),
+                          observation = c("x", "y", "x", "y"),
+                          probability = c(0.9, 0.1, 0.2, 0.8))
+  )
+  ```
+
+  A symmetric argument may be given as one triangle, with the mirror cell
+  filled and the diagonal defaulted. A list of matrices is expressible as one
+  table with a grouping column. `simulate_prediction()` takes its levels,
+  effects and sampling probabilities as a single table rather than three
+  parallel lists.
+
+  Matrices and lists continue to work. Tests assert that the two call styles
+  return byte-identical results under the same seed for every wired argument.
+  Malformed long-form input raises `simulab_bad_tidy_input`, and a table that
+  omits cells raises `simulab_incomplete_tidy_input`.
+
+  The five arguments that remain list-only are named lists of data frames
+  (`apply_batch(inputs)`, `fit_tna_batch(inputs)`,
+  `summarize_networks(networks)`), where a list is the correct shape, and the
+  two `simulate_prediction()` arguments superseded by its tidy table.
+
 ### Validation and error reporting
 
 - Every `stopifnot()` in the package now carries a named message stating the

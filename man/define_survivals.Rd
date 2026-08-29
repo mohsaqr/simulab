@@ -2,21 +2,44 @@
 % Please edit documentation in R/survival.R
 \name{define_survivals}
 \alias{define_survivals}
-\title{Combine survival definitions}
+\title{Combine survival definitions into a specification}
 \usage{
 define_survivals(...)
 }
 \arguments{
-\item{...}{Objects created by \code{define_survival()}.}
+\item{...}{Either the columns of a specification given as named vectors
+(\code{event}, \code{formula}, \code{scale}, \code{shape}, \code{transition}), or objects created
+by \code{\link[=define_survival]{define_survival()}}. The two forms cannot be mixed in one call.
+
+In the column form, \code{event} and \code{formula} are required. A column given as
+a single value is recycled across every row. \code{scale} and \code{shape} default
+to 1 and \code{transition} to 0. Two rows for one event with different
+\code{transition} times give a piecewise hazard.}
 }
 \value{
 A \code{simulab_survival_spec} base \code{data.frame} with one row per hazard
 segment.
 }
 \description{
-Combine survival definitions
+Combine survival definitions into a specification
 }
 \examples{
+# One call, named arguments, one row per event.
+define_survivals(
+  event   = c("time_relapse", "time_death"),
+  formula = c(-8, -9),
+  shape   = 0.3
+)
+
+# A piecewise hazard is two rows for one event.
+define_survivals(
+  event      = c("time", "time"),
+  formula    = c(-8, -6),
+  shape      = 0.3,
+  transition = c(0, 50)
+)
+
+# Definitions built one at a time are still accepted.
 define_survivals(
   define_survival("time_relapse", formula = -8, shape = 0.3),
   define_survival("time_death", formula = -9, shape = 0.3)

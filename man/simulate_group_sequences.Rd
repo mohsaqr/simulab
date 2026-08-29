@@ -24,11 +24,14 @@ simulate_group_sequences(
 \item{actors}{Actors per group, scalar or one value per group.}
 
 \item{transitions}{A common transition matrix, one matrix per group, or
-\code{NULL} for automatic generation.}
+\code{NULL} for randomly generated matrices. A tidy data frame with columns
+\code{group}, \code{from}, \code{to} and \code{probability} gives one matrix per group.}
 
 \item{chain_length}{Sequence length.}
 
-\item{initial}{Common initial probabilities, one vector per group, or \code{NULL}.}
+\item{initial}{Common initial probabilities, one vector per group, or
+\code{NULL}. A tidy data frame with columns \code{group}, \code{state} and \code{probability}
+gives one vector per group.}
 
 \item{group_names}{Optional group labels.}
 

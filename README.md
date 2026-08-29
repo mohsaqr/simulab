@@ -84,6 +84,42 @@ Results are ordinary data frames, so no accessor is needed to analyse them.
 The `what` argument exists to reach the generating parameters, which are the
 part a simulation study needs and a plain data frame cannot carry.
 
+## Long-form input
+
+Every argument that is a matrix, an array or a list of matrices also accepts
+the equivalent long-form data frame. A transition matrix and its tidy table
+generate the same data under the same seed.
+
+```r
+simulate_hmm(
+  n = 40, chain_length = 10,
+  transition = data.frame(from = c("A", "A", "B", "B"),
+                          to = c("A", "B", "A", "B"),
+                          probability = c(0.7, 0.3, 0.4, 0.6)),
+  emission = data.frame(state = c("A", "A", "B", "B"),
+                        observation = c("x", "y", "x", "y"),
+                        probability = c(0.9, 0.1, 0.2, 0.8))
+)
+```
+
+Row and column order follows first appearance, so the layout is controlled by
+ordering the rows of the table. A symmetric argument such as a correlation or
+covariance may be given as one triangle: the mirror cell is filled and the
+diagonal defaults to 1 for a correlation. A list of matrices is one table with
+a grouping column, so `simulate_sequence_clusters()` takes a `cluster` column
+and `simulate_group_sequences()` takes a `group` column.
+
+`simulate_prediction()` takes the levels, effects and sampling probabilities
+of its categorical predictors as one table with `variable`, `level`, `effect`
+and `probability` columns, in place of three parallel lists.
+
+30 of the package's 35 matrix, array and list arguments accept long-form
+input. The remaining five are named lists of data frames, where a list is the
+correct shape.
+
+A table that omits cells raises `simulab_incomplete_tidy_input`; one missing
+a required column raises `simulab_bad_tidy_input`.
+
 ## Reproducibility
 
 Every simulator accepts a `seed` argument. Passing a seed makes the result
@@ -111,22 +147,23 @@ directly on 33 simulators spanning every family.
 
 ## Declarative studies
 
-`define_variable()` records one variable of a data-generating process. It
-takes a name, a `formula` giving the mean or linear predictor, a `variance`,
-a `distribution`, and a `link`. It returns a one-row specification. The
-formula is R source text and may refer to variables defined earlier in the
-same specification.
+`define_variables()` records a data-generating process as a table. It takes
+the columns of that table as named vectors and returns one row per variable.
+`variable` and `formula` are required. A column given as a single value is
+recycled across every variable, so `variance` and `distribution` are written
+once when they are shared.
 
-`define_variables()` collects several such definitions into one specification.
+`formula` is the mean or the linear predictor, written as R source text. It
+may refer to variables defined earlier in the same specification.
 `simulate_study()` takes a sample size and a specification and generates the
-variables in the order they were defined.
+variables in the order they appear.
 
 ```r
 specification <- define_variables(
-  define_variable("baseline", formula = "0", variance = "1", distribution = "normal"),
-  define_variable("treatment", formula = "0.5", distribution = "binary"),
-  define_variable("outcome", formula = "0.4 * baseline + 0.8 * treatment",
-                  variance = "1", distribution = "normal")
+  variable     = c("baseline", "treatment", "outcome"),
+  formula      = c("0", "0.5", "0.4 * baseline + 0.8 * treatment"),
+  variance     = c("1", "0", "1"),
+  distribution = c("normal", "binary", "normal")
 )
 specification
 #>    variable distribution                          formula variance     link
@@ -136,6 +173,17 @@ specification
 
 simulate_study(500, specification, seed = 42)
 ```
+
+`variance` is a variance, not a standard deviation. A `variance` of 100 gives
+a standard deviation of 10.
+
+`define_variable()` builds one row at a time and is accepted by
+`define_variables()` as an alternative to the column form. It takes a name, a
+`formula`, a `variance`, a `distribution` and a `link`. The two forms cannot
+be mixed in one call.
+
+`define_survivals()`, `define_missingnesses()` and `define_conditions()` take
+the same two forms, with the columns their own specifications require.
 
 Seventeen distributions are available: `beta`, `binary`, `binomial`,
 `categorical`, `cluster_size`, `custom`, `deterministic`, `exponential`,

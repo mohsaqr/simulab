@@ -34,12 +34,16 @@ A \code{simulab_sim} base \code{data.frame}. Use
 Simulate a declaratively specified study
 }
 \examples{
+# `formula` is the mean or linear predictor and may refer to variables
+# defined earlier. `variance` is a variance, not a standard deviation, so
+# age has sd 10 and outcome has residual sd 2.
 simulate_study(
   n = 20,
   specification = define_variables(
-    define_variable("age", 40, 100, "normal"),
-    define_variable("treated", 0.5, distribution = "binary"),
-    define_variable("outcome", "10 + 2 * treated", 4, "normal")
+    define_variable("age", formula = 40, variance = 100, distribution = "normal"),
+    define_variable("treated", formula = 0.5, distribution = "binary"),
+    define_variable("outcome", formula = "10 + 2 * treated", variance = 4,
+                    distribution = "normal")
   ),
   seed = 1
 )

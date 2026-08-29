@@ -14,3 +14,5 @@
 ^SAQRLAB_COVERAGE\.md$
 ^local_testing_and_equivalence$
 ^tmp$
+^\.claude$
+^\.DS_Store$

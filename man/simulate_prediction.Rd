@@ -23,7 +23,11 @@ simulate_prediction(
 \item{coefficients}{Named continuous-predictor coefficients with optional
 \code{(Intercept)}.}
 
-\item{categorical_levels}{Named list of levels for categorical predictors.}
+\item{categorical_levels}{Named list of levels for categorical predictors,
+or a tidy data frame with columns \code{variable} and \code{level}. Optional
+\code{effect} and \code{probability} columns in that table supply
+\code{categorical_effects} and \code{category_probabilities}, so one table replaces
+all three arguments.}
 
 \item{categorical_effects}{Named list of level effects matching
 \code{categorical_levels}.}

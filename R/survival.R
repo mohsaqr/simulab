@@ -43,15 +43,38 @@ define_survival <- function(event, formula = 0, scale = 1, shape = 1,
   result
 }
 
-#' Combine survival definitions
+#' Combine survival definitions into a specification
 #'
-#' @param ... Objects created by `define_survival()`.
+#' @param ... Either the columns of a specification given as named vectors
+#'   (`event`, `formula`, `scale`, `shape`, `transition`), or objects created
+#'   by [define_survival()]. The two forms cannot be mixed in one call.
+#'
+#'   In the column form, `event` and `formula` are required. A column given as
+#'   a single value is recycled across every row. `scale` and `shape` default
+#'   to 1 and `transition` to 0. Two rows for one event with different
+#'   `transition` times give a piecewise hazard.
 #'
 #' @return A `simulab_survival_spec` base `data.frame` with one row per hazard
 #'   segment.
 #' @export
 #'
 #' @examples
+#' # One call, named arguments, one row per event.
+#' define_survivals(
+#'   event   = c("time_relapse", "time_death"),
+#'   formula = c(-8, -9),
+#'   shape   = 0.3
+#' )
+#'
+#' # A piecewise hazard is two rows for one event.
+#' define_survivals(
+#'   event      = c("time", "time"),
+#'   formula    = c(-8, -6),
+#'   shape      = 0.3,
+#'   transition = c(0, 50)
+#' )
+#'
+#' # Definitions built one at a time are still accepted.
 #' define_survivals(
 #'   define_survival("time_relapse", formula = -8, shape = 0.3),
 #'   define_survival("time_death", formula = -9, shape = 0.3)
@@ -59,17 +82,39 @@ define_survival <- function(event, formula = 0, scale = 1, shape = 1,
 define_survivals <- function(...) {
   definitions <- list(...)
   stopifnot(
-    "`definitions` must be a list of `simulab_survival_spec` objects, with at least one element" =
-      length(definitions) >= 1L &&
-        all(vapply(definitions, inherits, logical(1), what = "simulab_survival_spec"))
+    "`...` must contain at least one definition or one specification column" =
+      length(definitions) >= 1L
   )
-  result <- do.call(rbind, lapply(definitions, as.data.frame))
+
+  from_constructor <- vapply(definitions, inherits, logical(1),
+                             what = "simulab_survival_spec")
+  if (all(from_constructor)) {
+    result <- do.call(rbind, lapply(definitions, as.data.frame))
+  } else if (any(from_constructor)) {
+    stop(errorCondition(
+      paste0("Give either specification columns or objects from ",
+             "define_survival(), not both in one call."),
+      class = "simulab_mixed_specification", call = NULL
+    ))
+  } else {
+    result <- .spec_from_columns(
+      definitions,
+      required = c("event", "formula"),
+      defaults = list(scale = "1", shape = "1", transition = 0),
+      coerce = list(transition = .as_number)
+    )
+    result <- result[order(result$event, result$transition), , drop = FALSE]
+  }
+
   event_groups <- split(result$transition, result$event)
   invalid <- vapply(event_groups, function(transitions) {
     transitions[1L] != 0 || is.unsorted(transitions, strictly = TRUE)
   }, logical(1))
   if (any(invalid)) {
-    stop("Each event must begin at transition zero and have increasing transitions.", call. = FALSE)
+    stop(errorCondition(
+      "Each event must begin at transition zero and have increasing transitions.",
+      class = "simulab_bad_transition", call = NULL
+    ))
   }
   class(result) <- c("simulab_survival_spec", "data.frame")
   rownames(result) <- NULL

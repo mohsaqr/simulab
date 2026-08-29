@@ -20,14 +20,10 @@ process, generate primary observations, and retrieve known truth as tidy tables.
 library(simulab)
 
 specification <- define_variables(
-  define_variable("baseline", 0, 1, "normal"),
-  define_variable("treatment", 0.5, distribution = "binary"),
-  define_variable(
-    "outcome",
-    "0.5 * baseline + treatment",
-    1,
-    "normal"
-  )
+  variable     = c("baseline", "treatment", "outcome"),
+  formula      = c("0", "0.5", "0.5 * baseline + treatment"),
+  variance     = c("1", "0", "1"),
+  distribution = c("normal", "binary", "normal")
 )
 
 study <- simulate_study(200, specification, seed = 42)

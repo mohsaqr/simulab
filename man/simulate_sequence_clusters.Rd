@@ -18,7 +18,8 @@ simulate_sequence_clusters(
 \arguments{
 \item{n}{Number of sequences.}
 
-\item{transitions}{List of transition matrices.}
+\item{transitions}{List of transition matrices, or a tidy data frame with
+columns \code{cluster}, \code{from}, \code{to} and \code{probability}.}
 
 \item{chain_length}{Sequence length.}
 

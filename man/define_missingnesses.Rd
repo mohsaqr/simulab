@@ -2,21 +2,42 @@
 % Please edit documentation in R/missingness.R
 \name{define_missingnesses}
 \alias{define_missingnesses}
-\title{Combine missingness definitions}
+\title{Combine missingness definitions into a specification}
 \usage{
 define_missingnesses(...)
 }
 \arguments{
-\item{...}{Objects created by \code{define_missingness()}.}
+\item{...}{Either the columns of a specification given as named vectors
+(\code{variable}, \code{formula}, \code{link}, \code{baseline}, \code{monotone}), or objects
+created by \code{\link[=define_missingness]{define_missingness()}}. The two forms cannot be mixed in one
+call.
+
+In the column form, \code{variable} and \code{formula} are required. A column given
+as a single value is recycled across every variable. \code{link} defaults to
+\code{"identity"}, and \code{baseline} and \code{monotone} to \code{FALSE}.}
 }
 \value{
 A \code{simulab_missing_spec} base \code{data.frame} with one row per target
 variable.
 }
 \description{
-Combine missingness definitions
+Combine missingness definitions into a specification
 }
 \examples{
+# One call, named arguments, one row per target variable.
+define_missingnesses(
+  variable = c("outcome", "baseline"),
+  formula  = c("0.2", "0.1")
+)
+
+# `monotone` keeps a unit missing at every later period once it drops out.
+define_missingnesses(
+  variable = c("outcome", "baseline"),
+  formula  = c("0.2", "0.1"),
+  monotone = TRUE
+)
+
+# Definitions built one at a time are still accepted.
 define_missingnesses(
   define_missingness("outcome", formula = "0.2"),
   define_missingness("baseline", formula = "0.1")
