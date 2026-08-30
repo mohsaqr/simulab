@@ -23,6 +23,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-pandoc@v2
+      # simulab depends on igraph, whose RSPM binary links against GLPK. The
+      # runner image does not ship libglpk.so.40, so igraph loads fine at
+      # install time and then fails at dyn.load() during build_reference() —
+      # surfacing as a confusing "Failed to parse Rd in as_igraph.Rd".
+      - name: Install system dependencies (GLPK for igraph)
+        run: sudo apt-get update && sudo apt-get install -y libglpk-dev
+
 
       - uses: r-lib/actions/setup-r@v2
         with:
