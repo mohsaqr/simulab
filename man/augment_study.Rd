@@ -15,11 +15,15 @@ augment_study(data, specification, seed = NULL, envir = parent.frame())
 
 \item{seed}{Optional random seed.}
 
-\item{envir}{Environment used to resolve formula values.}
+\item{envir}{Environment used to resolve functions and external values named
+by a \code{formula}/\code{variance} specification. It is not consulted by the
+distribution-call form, whose parameters must be expressions over columns
+of \code{data} or variables defined earlier in the same specification.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} containing the original and new
-variables.
+A \code{simulab_sim} base \code{data.frame} with one row per row of \code{data},
+containing the original and new variables. Use
+\code{as.data.frame(x, what = "definitions")} for the generating definitions.
 }
 \description{
 A parameter or formula may refer to a column \code{data} already has as readily as

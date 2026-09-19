@@ -7,17 +7,25 @@
 scenario_grid(..., replications = 1L, id = "scenario_id")
 }
 \arguments{
-\item{...}{Named vectors of scenario values.}
+\item{...}{Named vectors of scenario values, at least one, crossed with
+\code{expand.grid()}. The names become the value columns.}
 
-\item{replications}{Replications per scenario combination.}
+\item{replications}{Replications per scenario combination. A single positive
+whole number, defaulting to \code{1}.}
 
-\item{id}{Name of the scenario identifier.}
+\item{id}{Name of the scenario identifier, numbering the distinct
+combinations. A single non-empty string, defaulting to \code{"scenario_id"}.}
 }
 \value{
-A base \code{data.frame} with one row per scenario replication.
+A plain base \code{data.frame}, not a \code{simulab_sim}, with one row per
+scenario replication and columns: the scenario identifier named by \code{id},
+the integer \code{replication} counting from 1 within each scenario, and one
+column per named argument.
 }
 \description{
-Build a replicated scenario grid
+Crosses every combination of the supplied scenario values and repeats each
+combination \code{replications} times, giving the grid a simulation study is run
+over.
 }
 \examples{
 scenario_grid(mean_b = c(0, 0.5), n_b = c(20, 40), replications = 2)

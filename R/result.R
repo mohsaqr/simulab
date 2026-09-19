@@ -2,8 +2,10 @@
 #'
 #' @param x A `simulab_sim` object.
 #'
-#' @return A base `data.frame` with one row per available table and columns
-#'   `table`, `rows`, and `columns`.
+#' @return A base `data.frame` with one row per available table and the columns
+#'   `table` (the name to pass as `what` to `as.data.frame()`), `rows` and
+#'   `columns`. The first row is always the primary `"data"` table; a result
+#'   that carries no extra tables returns that single row.
 #' @export
 #'
 #' @examples
@@ -72,11 +74,13 @@ components <- function(x) {
 #' @param x A `simulab_sim` object.
 #' @param row.names Ignored.
 #' @param optional Ignored.
-#' @param what Name of the table to return. Use `components(x)` to list the
-#'   available choices.
+#' @param what Single string naming the table to return, default `"data"` for
+#'   the primary simulated observations. Use `components(x)` to list the
+#'   available choices; an unrecognised name is an error that lists them.
 #' @param ... Reserved for future methods.
 #'
-#' @return A base `data.frame` containing the requested simulation table.
+#' @return A plain base `data.frame` (the `simulab_sim` class and attributes
+#'   are dropped) containing the requested simulation table.
 #' @export
 #'
 #' @examples
@@ -121,6 +125,10 @@ as.data.frame.simulab_sim <- function(x, row.names = NULL, optional = FALSE,
 
 #' Print a simulation result
 #'
+#' Prints a one-line header giving the simulation type and the full dimensions,
+#' then at most the first 10 rows of the primary data, then a count of the rows
+#' not shown.
+#'
 #' @param x A `simulab_sim` object.
 #' @param ... Arguments passed to the base data-frame print method.
 #'
@@ -152,11 +160,15 @@ print.simulab_sim <- function(x, ...) {
 
 #' Summarize simulated variables
 #'
+#' Summarizes the primary data only; the other components are not included.
+#'
 #' @param object A `simulab_sim` object.
 #' @param ... Reserved for future methods.
 #'
-#' @return A base `data.frame` with one row per variable and columns describing
-#'   storage class, missingness, uniqueness, and numeric summaries.
+#' @return A base `data.frame` with one row per column of the primary data and
+#'   the columns `variable`, `class`, `observations`, `missing`, `unique`,
+#'   `mean`, `sd`, `minimum` and `maximum`. The last four are `NA` for
+#'   non-numeric columns.
 #' @export
 #'
 #' @examples

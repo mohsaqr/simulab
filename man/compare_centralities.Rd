@@ -22,7 +22,11 @@ compare_centralities(
 \item{directed}{Treat networks as directed.}
 }
 \value{
-A tidy base \code{data.frame} with one comparison per measure.
+A tidy base \code{data.frame} with one row per measure and columns
+\code{measure}, \code{method}, \code{correlation}, \code{mae}, and \code{nodes}. Nodes present in
+only one network contribute a centrality of zero to the other.
+\code{correlation} is \code{NA} when either set of centralities has no variance.
+Requires the suggested \code{igraph} package.
 }
 \description{
 Compare node centralities between two networks
@@ -30,5 +34,7 @@ Compare node centralities between two networks
 \examples{
 a <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 1)
 b <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 2)
-compare_centralities(a, b, measures = "degree")
+if (requireNamespace("igraph", quietly = TRUE)) {
+  compare_centralities(a, b, measures = "degree")
+}
 }

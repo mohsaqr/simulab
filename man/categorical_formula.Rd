@@ -7,16 +7,17 @@
 categorical_formula(probabilities = NULL, categories = NULL)
 }
 \arguments{
-\item{probabilities}{Category probabilities.}
+\item{probabilities}{Category probabilities, at least two of them.}
 
-\item{categories}{Number of equal-probability categories when probabilities
-are not supplied.}
+\item{categories}{Number of equal-probability categories, used instead of
+\code{probabilities}.}
 }
 \value{
 A one-row \code{simulab_formula} base \code{data.frame}.
 }
 \description{
-Construct a categorical probability formula
+Supply exactly one of \code{probabilities} and \code{categories}; supplying both, or
+neither, is an error. Probabilities are normalised to sum to one.
 }
 \examples{
 categorical_formula(probabilities = c(0.2, 0.5, 0.3))

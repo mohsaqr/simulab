@@ -8,7 +8,12 @@
 #' @param seed Optional random seed.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
-#'   tidy group/effect parameter tables.
+#'   columns `id`, `group` and `outcome` (renamed by `outcome`). Two tidy tables
+#'   come from `as.data.frame()`: `what = "parameters"` has one row per group
+#'   with columns `group`, `n`, `mean` and `sd`; `what = "effects"` has a single
+#'   row with columns `contrast`, `mean_difference`, `pooled_sd` and `cohens_d`,
+#'   the population Cohen's d formed from the sample-size-weighted pooled
+#'   standard deviation.
 #' @export
 #'
 #' @examples
@@ -101,8 +106,17 @@ simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
 #' @param outcome Name of the outcome variable.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with group parameters and the
-#'   population eta-squared effect.
+#' @return A `simulab_sim` base `data.frame` with one row per observation and
+#'   columns `id`, `group` and `outcome` (renamed by `outcome`). Two tidy tables
+#'   come from `as.data.frame()`: `what = "parameters"` has one row per group
+#'   with columns `group`, `n`, `mean` and `sd`; `what = "effects"` has a single
+#'   row with columns `grand_mean`, `between_sum_squares`
+#'   (`sum(n * (mean - grand_mean)^2)`), `within_sum_squares`
+#'   (`sum((n - 1) * sd^2)`) and `eta_squared`, their ratio
+#'   `between / (between + within)`. Because the within term uses the
+#'   degrees of freedom `n - 1` rather than `n`, `eta_squared` is the
+#'   design's sum-of-squares eta-squared and differs slightly from the
+#'   variance-ratio population eta-squared.
 #' @export
 #'
 #' @examples
@@ -189,8 +203,17 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
 #' @param outcome Name of the outcome variable.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with coefficient, predictor, and
-#'   population R-squared tables.
+#' @return A `simulab_sim` base `data.frame` with one row per observation and
+#'   columns `id`, one column per predictor, and `outcome` (renamed by
+#'   `outcome`). Three tidy tables come from `as.data.frame()`:
+#'   `what = "coefficients"` has one row per term with columns `term` and
+#'   `coefficient`, the intercept first; `what = "effects"` has a single row
+#'   with columns `signal_variance` (the quadratic form of the slopes in the
+#'   predictor covariance matrix), `residual_variance` (`error_sd^2`) and the
+#'   population `r_squared`
+#'   `signal_variance / (signal_variance + residual_variance)`;
+#'   `what = "predictor_correlation"` has one row per correlation-matrix cell
+#'   with columns `row`, `column` and `correlation`.
 #' @export
 #'
 #' @examples
@@ -268,7 +291,8 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
     row.names = NULL
   )
   names(data) <- c("id", predictor_names, outcome)
-  covariance <- diag(predictor_sds) %*% correlation %*% diag(predictor_sds)
+  scale_matrix <- diag(predictor_sds, nrow = length(predictor_sds))
+  covariance <- scale_matrix %*% correlation %*% scale_matrix
   signal_variance <- as.numeric(t(slopes) %*% covariance %*% slopes)
   coefficient_table <- data.frame(
     term = c("(Intercept)", predictor_names),
@@ -305,8 +329,11 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
 #' @param labels Optional cluster labels.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with true cluster membership and
-#'   tidy center/scale tables.
+#' @return A `simulab_sim` base `data.frame` with one row per observation and
+#'   columns `id`, `cluster` (the true membership label) and one column per
+#'   variable. One tidy table comes from `as.data.frame()`:
+#'   `what = "parameters"` has one row per cluster-variable combination with
+#'   columns `cluster`, `variable`, `center`, `sd` and `proportion`.
 #' @export
 #'
 #' @examples
@@ -404,4 +431,3 @@ simulate_clusters <- function(n, centers, sds = 1, proportions = NULL,
   .new_simulab_sim(data, type = "clusters", seed = seed,
                    tables = list(parameters = parameters))
 }
-

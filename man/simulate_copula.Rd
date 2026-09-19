@@ -21,13 +21,22 @@ simulate_copula(
 
 \item{specification}{Variable definitions from \code{\link[=define_variables]{define_variables()}}. In the
 distribution-call form every marginal must carry a quantile function;
-\code{list_distributions(copula = TRUE)} reports which do. In the
-\code{formula}/\code{variance} column form the marginal is stated as a mean and a
-dispersion.}
+\code{list_distributions(copula = TRUE)} reports which do. The
+\code{formula}/\code{variance} column form covers twelve marginals: \code{formula} is
+the mean (through \code{link}) and \code{variance} carries the second parameter,
+which is a variance for \code{normal}, a precision for \code{beta}, a dispersion
+for \code{gamma} and \code{negative_binomial}, and a size for \code{binomial}. It is
+unused by \code{binary}, \code{exponential}, \code{poisson} and \code{no_zero_poisson}; for
+\code{uniform} and \code{uniform_integer} \code{formula} instead carries both limits,
+and for \code{categorical} \code{formula} carries the category probabilities and
+\code{variance} their labels. A marginal outside those twelve raises
+\code{simulab_no_quantile}; state it as a distribution call instead.}
 
-\item{rho}{Optional latent Pearson correlation.}
+\item{rho}{Optional latent Pearson correlation, zero by default.}
 
-\item{tau}{Optional Kendall correlation, overriding \code{rho}.}
+\item{tau}{Optional Kendall correlation, overriding \code{rho}. It is converted
+to the latent Pearson correlation \code{sin(pi * tau / 2)}, so a continuous
+margin pair attains Kendall's tau of \code{tau}.}
 
 \item{structure}{Correlation structure: one of \code{"independent"},
 \code{"exchangeable"}, \code{"ar1"}, or \code{"custom"}. If left unset it is chosen from
@@ -45,8 +54,14 @@ non-zero \code{rho} is a contradiction and raises an error.}
 \item{envir}{Formula evaluation environment.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with one row per observation and a
-tidy latent-correlation table.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id} (renamed by \code{id}) and one column per variable. Two tidy
+tables come from \code{as.data.frame()}: \code{what = "definitions"} restates the
+specification, and \code{what = "latent_correlation"} has one row per
+correlation-matrix cell with columns \code{row}, \code{column} and \code{correlation}.
+That matrix is the correlation of the latent Gaussian variables, not of
+the generated margins, which are pulled apart by their own quantile
+transforms.
 }
 \description{
 Simulate correlated general-distribution variables with a Gaussian copula

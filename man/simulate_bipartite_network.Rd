@@ -32,8 +32,13 @@ simulate_bipartite_network(
 \item{seed}{Optional seed.}
 }
 \value{
-A tidy cross-mode edge-list \code{simulab_sim}; nodes and the
-actor-by-event incidence matrix are components.
+A tidy cross-mode edge-list \code{simulab_sim} base \code{data.frame} with one
+row per actor-event edge and columns \code{from} (always an actor), \code{to}
+(always an event), \code{weight}, \code{from_mode}, and \code{to_mode}. The two modes are
+disjoint, so no edge joins two actors or two events and self-loops cannot
+occur. \code{as.data.frame(x, what = )} also returns \code{nodes} (\code{node}, \code{mode}),
+\code{incidence} (the wide actor-by-event incidence table: an \code{actor} column
+followed by one column per event), and a one-row \code{settings} table.
 }
 \description{
 Simulate a bipartite network

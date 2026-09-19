@@ -1,11 +1,20 @@
 #' Generate parameter combinations
 #'
-#' @param ... Named vectors or two-value numeric ranges.
-#' @param n Number of rows for random or Latin-hypercube designs.
-#' @param method Full grid, random sampling, or Latin hypercube.
-#' @param seed Optional random seed.
+#' @param ... Named vectors, one per parameter. Under `method = "grid"` every
+#'   element is a level of a full factorial crossing. Under the sampling
+#'   methods a length-2 numeric vector is read as a `c(minimum, maximum)` range
+#'   to draw from, and any other vector is sampled from with replacement.
+#' @param n Single positive whole number of rows to draw for the `"random"` and
+#'   `"latin_hypercube"` methods, default `10`. Ignored by `"grid"`, whose row
+#'   count is the product of the parameter lengths.
+#' @param method One of `"grid"` (the default), `"random"`, or
+#'   `"latin_hypercube"`.
+#' @param seed Optional single random seed. It is applied for the sampling
+#'   methods only and is restored on exit.
 #'
-#' @return A base `data.frame` with one row per parameter combination.
+#' @return A base `data.frame` with one row per parameter combination, a
+#'   leading `scenario_id` column numbering the rows, and then one column per
+#'   parameter in the order given.
 #' @export
 #'
 #' @examples
@@ -57,12 +66,19 @@ parameter_grid <- function(..., n = 10L,
 
 #' Apply a function across simulation results
 #'
-#' @param inputs List of data frames or simulation results.
-#' @param fun Function returning a data frame.
+#' @param inputs List with at least one element, commonly data frames or
+#'   simulation results. Element names label the batches; when `inputs` is
+#'   unnamed the positions `"1"`, `"2"`, ... are used instead.
+#' @param fun Function applied to each element. It must return a base
+#'   `data.frame`, and every call must return the same columns, otherwise the
+#'   run is an error.
 #' @param ... Arguments passed to `fun`.
-#' @param id Name of the batch identifier.
+#' @param id Single string naming the batch-label column, default
+#'   `"batch_id"`.
 #'
-#' @return A combined base `data.frame` with one batch identifier per output.
+#' @return A base `data.frame` stacking the `fun` outputs by row, with the
+#'   batch label in a leading column named by `id`, so one row per row of each
+#'   output.
 #' @export
 #'
 #' @examples
@@ -101,10 +117,16 @@ apply_batch <- function(inputs, fun, ..., id = "batch_id") {
 
 #' Fit TNA models to multiple datasets
 #'
-#' @param inputs Named list of sequence data frames.
-#' @param ... Arguments passed to `fit_tna()`.
+#' @param inputs List of sequence data frames, with at least one element.
+#'   Element names label the datasets; when `inputs` is unnamed the labels
+#'   `"Dataset 1"`, `"Dataset 2"`, ... are used instead.
+#' @param ... Arguments passed to [fit_tna()].
 #'
-#' @return A tidy edge-list `simulab_sim` with dataset/model metadata.
+#' @return A `simulab_sim` edge list with one row per dataset and transition: a
+#'   leading `dataset` column followed by the columns [fit_tna()] returns
+#'   (`from`, `to`, `weight`, and `group` when a grouped fit is requested). The
+#'   `model_info` component holds one row per dataset describing the fitted
+#'   model.
 #' @export
 #'
 #' @examples
@@ -154,15 +176,27 @@ fit_tna_batch <- function(inputs, ...) {
 
 #' Bootstrap a TNA model
 #'
-#' @param data Sequence data.
-#' @param model TNA estimator.
-#' @param repetitions Number of bootstrap samples.
-#' @param fraction Fraction of sequences sampled with replacement.
-#' @param format,id,period,state,group Input arguments passed to `fit_tna()`.
-#' @param seed Optional seed.
-#' @param ... Estimator arguments.
+#' @param data Sequence data in long or wide form.
+#' @param model TNA estimator, one of `"tna"` (the default), `"ftna"`,
+#'   `"ctna"`, `"atna"`.
+#' @param repetitions Single whole number of bootstrap samples, at least 2,
+#'   default `100`.
+#' @param fraction Single number in `(0, 1]` giving the fraction of sequences
+#'   drawn with replacement in each repetition, default `1`. At least two
+#'   sequences are always drawn.
+#' @param format,id,period,state,group Arguments describing the shape and
+#'   column names of `data`. They are used to reshape `data` before resampling;
+#'   the resampled sequences are then fitted in wide form, so only `group` is
+#'   forwarded to [fit_tna()]. `group` resamples within each group.
+#' @param seed Optional single seed, restored on exit and recorded on the
+#'   result.
+#' @param ... Further arguments passed to [fit_tna()].
 #'
-#' @return A tidy edge-by-bootstrap `simulab_sim` with percentile summaries.
+#' @return A `simulab_sim` edge list with one row per repetition and
+#'   transition: a leading `iteration` column followed by the columns
+#'   [fit_tna()] returns. The `summary` component holds one row per edge (per
+#'   group, when `group` is given) with the bootstrap `mean`, `sd`, and the
+#'   2.5% and 97.5% percentiles as `lower` and `upper`.
 #' @export
 #'
 #' @examples
@@ -213,15 +247,29 @@ bootstrap_tna <- function(data, model = c("tna", "ftna", "ctna", "atna"),
 
 #' Cross-validate TNA estimators
 #'
-#' @param data Sequence data.
-#' @param models TNA estimators.
-#' @param iterations Number of splits.
-#' @param training_fraction Training fraction.
-#' @param format,id,period,state Input-format arguments.
-#' @param seed Optional seed.
-#' @param ... Estimator arguments.
+#' Each iteration splits the sequences once into a training and a testing set,
+#' fits every estimator to both halves, and compares the two networks with
+#' [compare_networks()].
 #'
-#' @return A tidy base `data.frame` of train/test network agreement metrics.
+#' @param data Sequence data in long or wide form.
+#' @param models Character vector of TNA estimators to compare, any of `"tna"`,
+#'   `"ftna"`, `"ctna"`, `"atna"`. The default runs all four.
+#' @param iterations Number of train/test splits, a whole number of at least 1,
+#'   default `20`.
+#' @param training_fraction Fraction of sequences assigned to the training
+#'   half, strictly between 0 and 1, default `0.7`. At least two training
+#'   sequences are always used, and a split leaving fewer than two testing
+#'   sequences is an error.
+#' @param format,id,period,state Arguments describing the shape and column
+#'   names of `data`. They are used to reshape `data` before splitting; both
+#'   halves are then fitted in wide form.
+#' @param seed Optional single seed, restored on exit.
+#' @param ... Further arguments passed to [fit_tna()].
+#'
+#' @return A plain base `data.frame` with one row per iteration and estimator
+#'   and the columns `iteration`, `model`, and the [compare_networks()]
+#'   agreement metrics `pearson`, `cosine`, `mae`, `rmse`, `jaccard`, `edges_x`
+#'   and `edges_y`. This is not a `simulab_sim`.
 #' @export
 #'
 #' @examples
@@ -272,13 +320,26 @@ cross_validate_tna <- function(data, models = c("tna", "ftna", "ctna", "atna"),
 
 #' Fit TNA to a sequence sample
 #'
-#' @param data Sequence data.
-#' @param fraction Sampling fraction.
-#' @param replace Sample with replacement.
-#' @param seed Optional seed.
-#' @param ... Arguments passed to `fit_tna()`.
+#' @param data Sequence data, in long or wide form.
+#' @param fraction Single number in `(0, 1]` giving the fraction of sequences
+#'   to draw, default `0.3`. At least two sequences are always drawn.
+#' @param replace Single flag, whether to draw with replacement. Default
+#'   `FALSE`.
+#' @param seed Optional single seed, restored on exit.
+#' @param format One of `"auto"`, `"long"` or `"wide"`, naming the layout of
+#'   `data`. The default `"auto"` detects it.
+#' @param id,period,state Column names identifying the sequence, the position
+#'   within it, and the state. Used only when `data` is in long form; the
+#'   defaults are `"id"`, `"period"` and `"state"`.
+#' @param group Optional column name. When given, sequences are sampled within
+#'   each group and the refit is grouped.
+#' @param ... Further arguments passed to [fit_tna()], such as `model`. The
+#'   sampled sequences are always refitted in wide form, so `format` is
+#'   consumed by the sampling step and is not forwarded.
 #'
-#' @return A tidy fitted TNA result.
+#' @return The [fit_tna()] result for the sampled sequences: a `simulab_sim`
+#'   edge list with one row per transition and the columns `from`, `to` and
+#'   `weight`, plus the `initial_probabilities` and `model_info` components.
 #' @export
 #'
 #' @examples
@@ -286,7 +347,9 @@ cross_validate_tna <- function(data, models = c("tna", "ftna", "ctna", "atna"),
 #' if (requireNamespace("tna", quietly = TRUE)) {
 #'   head(sample_tna(data, fraction = 0.5, seed = 1))
 #' }
-sample_tna <- function(data, fraction = 0.3, replace = FALSE, seed = NULL, ...) {
+sample_tna <- function(data, fraction = 0.3, replace = FALSE, seed = NULL,
+                       format = c("auto", "long", "wide"), id = "id",
+                       period = "period", state = "state", group = NULL, ...) {
   stopifnot(
     "`data` must be a data frame" =
       is.data.frame(data),
@@ -297,22 +360,38 @@ sample_tna <- function(data, fraction = 0.3, replace = FALSE, seed = NULL, ...) 
         all(fraction <= 1),
     "`replace` must be a single flag" =
       is.logical(replace) &&
-        length(replace) == 1L
+        length(replace) == 1L,
+    "`id` must be a single non-empty string" =
+      is.character(id) && length(id) == 1L && nzchar(id),
+    "`period` must be a single non-empty string" =
+      is.character(period) && length(period) == 1L && nzchar(period),
+    "`state` must be a single non-empty string" =
+      is.character(state) && length(state) == 1L && nzchar(state),
+    "`group` must be NULL or a single non-empty string" =
+      is.null(group) || (is.character(group) && length(group) == 1L && nzchar(group))
   )
+  format <- match.arg(format)
+  ## The sampling step consumes the column names, because it reshapes `data`
+  ## into wide form before drawing. Forwarding them to fit_tna() as well would
+  ## describe the reshaped table with the pre-reshape names.
   prepared <- .with_seed(seed, .sample_sequence_rows(
-    data, "auto", "id", "period", "state", NULL, fraction, replace
+    data, format, id, period, state, group, fraction, replace
   ))
-  fit_tna(prepared, format = "wide", ...)
+  fit_tna(prepared, format = "wide", group = group, ...)
 }
 
 #' Summarize simulated numeric variables
 #'
-#' @param data Simulation data.
-#' @param by Optional grouping columns.
-#' @param variables Numeric variables. `NULL` selects all numeric non-grouping
-#'   columns.
+#' @param data Simulation data: a `simulab_sim` or a plain base `data.frame`.
+#' @param by Optional character vector of grouping column names. `NULL`, the
+#'   default, summarizes all rows together.
+#' @param variables Character vector of numeric variables to summarize. `NULL`,
+#'   the default, selects every numeric non-grouping column.
 #'
-#' @return A tidy base `data.frame` of variable/group summaries.
+#' @return A plain base `data.frame` with one row per group and variable: the
+#'   `by` columns (or a single `.group` column holding `"all"` when `by` is
+#'   `NULL`), then `variable`, `observations` (the non-missing count), `mean`,
+#'   `sd`, `minimum` and `maximum`.
 #' @export
 #'
 #' @examples
@@ -354,9 +433,12 @@ summarize_simulations <- function(data, by = NULL, variables = NULL) {
 
 #' Export a simulation component
 #'
-#' @param x A simulation result.
-#' @param file Destination `.csv` or `.rds` path.
-#' @param what Component name.
+#' @param x A `simulab_sim` simulation result.
+#' @param file Destination path. The extension decides the format and must be
+#'   `.csv` (written with `utils::write.csv()`, without row names) or `.rds`;
+#'   any other extension is an error.
+#' @param what Single string naming the component to write, default `"data"`.
+#'   Use `components(x)` to list the choices.
 #'
 #' @return The normalized output path, invisibly.
 #' @export

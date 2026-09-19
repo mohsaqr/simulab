@@ -12,16 +12,25 @@ parameter_grid(
 )
 }
 \arguments{
-\item{...}{Named vectors or two-value numeric ranges.}
+\item{...}{Named vectors, one per parameter. Under \code{method = "grid"} every
+element is a level of a full factorial crossing. Under the sampling
+methods a length-2 numeric vector is read as a \code{c(minimum, maximum)} range
+to draw from, and any other vector is sampled from with replacement.}
 
-\item{n}{Number of rows for random or Latin-hypercube designs.}
+\item{n}{Single positive whole number of rows to draw for the \code{"random"} and
+\code{"latin_hypercube"} methods, default \code{10}. Ignored by \code{"grid"}, whose row
+count is the product of the parameter lengths.}
 
-\item{method}{Full grid, random sampling, or Latin hypercube.}
+\item{method}{One of \code{"grid"} (the default), \code{"random"}, or
+\code{"latin_hypercube"}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional single random seed. It is applied for the sampling
+methods only and is restored on exit.}
 }
 \value{
-A base \code{data.frame} with one row per parameter combination.
+A base \code{data.frame} with one row per parameter combination, a
+leading \code{scenario_id} column numbering the rows, and then one column per
+parameter in the order given.
 }
 \description{
 Generate parameter combinations

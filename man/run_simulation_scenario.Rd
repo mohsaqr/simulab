@@ -7,12 +7,13 @@
 run_simulation_scenario(scenario, seed = NULL)
 }
 \arguments{
-\item{scenario}{Scenario from \code{simulation_scenarios()}.}
+\item{scenario}{A single scenario name from \code{\link[=simulation_scenarios]{simulation_scenarios()}}.}
 
 \item{seed}{Optional seed.}
 }
 \value{
-A \code{simulab_sim} result.
+The \code{simulab_sim} base \code{data.frame} returned by the simulator the
+scenario calls, whose columns depend on the scenario's family.
 }
 \description{
 Run a built-in simulation scenario

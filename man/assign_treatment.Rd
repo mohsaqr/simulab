@@ -15,31 +15,47 @@ assign_treatment(
 )
 }
 \arguments{
-\item{data}{Base \code{data.frame}.}
+\item{data}{Base \code{data.frame}, or a \code{simulab_sim}, with at least one row.}
 
-\item{groups}{Number of treatment groups or their labels.}
+\item{groups}{Number of treatment groups, as a single whole number of at
+least 2 (defaulting to \code{2}), or an atomic vector of at least two unique
+labels. A count of 2 is labelled \code{0} and \code{1}, and a larger count \code{1} to
+\code{groups}.}
 
-\item{balanced}{Use exact balance within strata.}
+\item{balanced}{Use exact allocation within each stratum. A single flag,
+defaulting to \code{TRUE}. \code{FALSE} draws each row independently instead, so the
+realized group sizes vary.}
 
-\item{strata}{Optional stratification variables.}
+\item{strata}{Optional character vector of stratification variables, all
+present in \code{data}. Defaults to \code{NULL}, one stratum holding every row.}
 
-\item{ratios}{Relative allocation ratios.}
+\item{ratios}{Relative allocation ratios, a positive numeric vector with one
+value per group. Defaults to \code{NULL}, equal allocation.}
 
-\item{name}{Name of the treatment variable.}
+\item{name}{Name of the treatment variable, which must not already exist in
+\code{data}. A single non-empty string, defaulting to \code{"treatment"}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with a treatment variable and a
-tidy allocation table.
+A \code{simulab_sim} base \code{data.frame} with the columns of \code{data} followed
+by the treatment variable named by \code{name}, one row per input row. The
+component \code{allocation}, reached with
+\code{as.data.frame(x, what = "allocation")}, holds one row per stratum and
+group, with columns \code{stratum}, \code{treatment} and \code{observations}.
 }
 \description{
-Assign randomized treatment groups
+Randomizes the rows of \code{data} to treatment groups, independently within each
+combination of the \code{strata} variables. Balanced assignment allocates the
+group sizes a stratum is due, rounding the shares to whole units and giving
+the remainder to the groups with the largest fractional part, then permutes
+them; unbalanced assignment draws each row independently with probabilities
+proportional to \code{ratios}.
 }
 \examples{
 data <- data.frame(id = 1:100, site = rep(c("north", "south"), each = 50))
 
 result <- assign_treatment(data, groups = 2, strata = "site", seed = 1)
 head(result)
-table(as.data.frame(result)$treatment)
+as.data.frame(result, what = "allocation")
 }

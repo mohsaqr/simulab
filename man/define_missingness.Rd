@@ -13,22 +13,35 @@ define_missingness(
 )
 }
 \arguments{
-\item{variable}{Variable that may be missing.}
+\item{variable}{Variable that may be missing. A single non-empty string.}
 
-\item{formula}{Probability or log-odds formula.}
+\item{formula}{Missingness formula, given as a number, a string, or an
+unquoted expression over the data columns. It is read as a probability
+under the identity link and as log odds under the logit link. It is stored
+as text and evaluated row by row.}
 
-\item{link}{Identity or logit link.}
+\item{link}{Scale the formula is stated on, one of \code{"identity"} (the default)
+or \code{"logit"}.}
 
-\item{baseline}{Apply one baseline missingness draw to every period for a
-unit.}
+\item{baseline}{Replace every period's draw for a unit with its first
+period's draw, so the unit is either always or never missing. A single
+flag, defaulting to \code{FALSE}. It needs \code{id} and \code{period} in
+\code{\link[=missingness_matrix]{missingness_matrix()}}.}
 
-\item{monotone}{Once missing, remain missing at later periods.}
+\item{monotone}{Once missing, remain missing at every later period. A single
+flag, defaulting to \code{FALSE}. It needs \code{id} and \code{period} in
+\code{\link[=missingness_matrix]{missingness_matrix()}}.}
 }
 \value{
-A one-row \code{simulab_missing_spec} base \code{data.frame}.
+A one-row \code{simulab_missing_spec} base \code{data.frame} with the character
+columns \code{variable}, \code{formula} and \code{link} and the logical columns \code{baseline}
+and \code{monotone}.
 }
 \description{
-Define missingness for one variable
+Records the rule that decides whether one variable is missing for a row. The
+rule is a formula evaluated row by row against the data, so missingness may
+depend on any column: on a fully observed covariate, which is MAR, or on the
+variable's own value, which is MNAR.
 }
 \examples{
 define_missingness("outcome", formula = "0.2")

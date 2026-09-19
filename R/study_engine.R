@@ -386,10 +386,13 @@
 #' @param id Name of the identifier column.
 #' @param seed Optional random seed. The caller's random-number state is
 #'   restored on exit.
-#' @param envir Environment used to resolve functions and external values in
-#'   formulas.
+#' @param envir Environment used to resolve functions and external values named
+#'   by a `formula`/`variance` specification. It is not consulted by the
+#'   distribution-call form, whose parameters must be expressions over variables
+#'   defined earlier in the same specification.
 #'
-#' @return A `simulab_sim` base `data.frame`. Use
+#' @return A `simulab_sim` base `data.frame` with `n` rows: the identifier
+#'   column followed by one column per variable. Use
 #'   `as.data.frame(x, what = "definitions")` for the generating definitions.
 #' @export
 #'
@@ -478,10 +481,14 @@ simulate_study <- function(n, specification, id = "id", seed = NULL,
 #'   [define_variables()], in either the distribution-call form or the
 #'   `formula`/`variance` column form.
 #' @param seed Optional random seed.
-#' @param envir Environment used to resolve formula values.
+#' @param envir Environment used to resolve functions and external values named
+#'   by a `formula`/`variance` specification. It is not consulted by the
+#'   distribution-call form, whose parameters must be expressions over columns
+#'   of `data` or variables defined earlier in the same specification.
 #'
-#' @return A `simulab_sim` base `data.frame` containing the original and new
-#'   variables.
+#' @return A `simulab_sim` base `data.frame` with one row per row of `data`,
+#'   containing the original and new variables. Use
+#'   `as.data.frame(x, what = "definitions")` for the generating definitions.
 #'
 #' @section Conditions:
 #' `simulab_existing_variable` when the specification names a column `data`

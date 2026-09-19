@@ -2,20 +2,33 @@
 % Please edit documentation in R/api.R
 \name{list_simulators}
 \alias{list_simulators}
-\title{List canonical simulation verbs}
+\title{List public simulation and generation verbs}
 \usage{
-list_simulators(family = NULL)
+list_simulators(family = NULL, kind = NULL, dispatchable = NULL)
 }
 \arguments{
-\item{family}{Optional family filter.}
+\item{family}{Optional single-string family filter, one of \code{"general"},
+\code{"statistical"}, \code{"latent"}, \code{"longitudinal"}, \code{"measurement"},
+\code{"sequence"}, \code{"survival"}, \code{"empirical"}, \code{"functional"} or \code{"network"}.
+An unknown family is an error.}
+
+\item{kind}{Optional single-string kind filter: \code{"simulator"},
+\code{"generator"}, \code{"workflow"}, or \code{"dispatcher"}. An unknown kind is an
+error.}
+
+\item{dispatchable}{Optional single logical filter: \code{TRUE} keeps only the
+verbs that can be called through \code{\link[=simulate_data]{simulate_data()}}, \code{FALSE} keeps only
+those that cannot.}
 }
 \value{
-A base \code{data.frame} with simulator, family, and primary shape.
+A base \code{data.frame} with one row per catalogued verb and the columns
+\code{simulator} (the catalogue name), \code{function_name}, \code{kind}, \code{family},
+\code{primary_shape} and \code{dispatchable}.
 }
 \description{
-List canonical simulation verbs
+List public simulation and generation verbs
 }
 \examples{
 head(list_simulators())
-list_simulators(family = "network")
+list_simulators(kind = "workflow")
 }

@@ -31,11 +31,48 @@ test_that("simulate_hmm accepts tidy transition and emission tables", {
 test_that("simulate_longitudinal accepts a tidy transition table", {
   transition <- matrix(c(0.5, 0.1, 0, 0.4), 2, byrow = TRUE,
                        dimnames = list(c("v1", "v2"), c("v1", "v2")))
+  ## The VAR recursion is `transition %*% (previous - mean)`, so a matrix ROW
+  ## is the driven variable and a COLUMN the driving one. The tidy spelling of
+  ## that matrix therefore names the row `to` and the column `from`.
   expect_equal(
     as.data.frame(simulate_longitudinal(20, 15, transition, seed = 1)),
     as.data.frame(simulate_longitudinal(
-      20, 15, long_form(transition, "from", "to", "coefficient"), seed = 1))
+      20, 15, long_form(transition, "to", "from", "coefficient"), seed = 1))
   )
+})
+
+test_that("a tidy `from`/`to` transition names the direction of the effect", {
+  ## Regression test: `from` must be the variable at t-1 that does the driving
+  ## and `to` the variable at t that is driven. These were previously swapped,
+  ## so a user who wrote `from = v1, to = v2` silently got the effect of v2
+  ## on v1.
+  tidy <- data.frame(
+    from        = c("v1", "v1", "v2", "v2"),
+    to          = c("v1", "v2", "v1", "v2"),
+    coefficient = c(0.5, 0.8, 0.0, 0.4),
+    stringsAsFactors = FALSE
+  )
+  panel <- as.data.frame(
+    simulate_longitudinal(n = 300, occasions = 40, transition = tidy, seed = 11)
+  )
+  panel <- panel[order(panel$id, panel$occasion), ]
+  lag_within <- function(values, id) {
+    stats::ave(values, id, FUN = function(z) c(NA, z[-length(z)]))
+  }
+  panel$v1_lag <- lag_within(panel$v1, panel$id)
+  panel$v2_lag <- lag_within(panel$v2, panel$id)
+  panel <- panel[!is.na(panel$v1_lag), ]
+
+  driven <- stats::coef(stats::lm(v2 ~ v1_lag + v2_lag, data = panel))
+  other <- stats::coef(stats::lm(v1 ~ v1_lag + v2_lag, data = panel))
+
+  ## from v1 -> to v2 is 0.8, so it appears in the v2 equation on v1's lag.
+  expect_equal(unname(driven[["v1_lag"]]), 0.8, tolerance = 0.05)
+  ## from v2 -> to v1 is 0, so v1 does not respond to v2's lag.
+  expect_equal(unname(other[["v2_lag"]]), 0, tolerance = 0.05)
+  ## The diagonal terms stay where they were.
+  expect_equal(unname(other[["v1_lag"]]), 0.5, tolerance = 0.05)
+  expect_equal(unname(driven[["v2_lag"]]), 0.4, tolerance = 0.05)
 })
 
 test_that("simulate_clusters accepts tidy centres", {

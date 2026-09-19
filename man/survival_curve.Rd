@@ -7,22 +7,34 @@
 survival_curve(formula, shape, scale = 1, n = 100L, time_limits = NULL)
 }
 \arguments{
-\item{formula}{Log-hazard intercept.}
+\item{formula}{Intercept of the linear predictor on the log scale. A single
+finite number. \code{exp(formula)} multiplies the cumulative hazard, and equals
+the hazard only when \code{shape} and \code{scale} are both 1.}
 
-\item{shape}{Positive shape parameter.}
+\item{shape}{Positive Weibull shape in the simstudy parameterization, the
+exponent applied to the transformed time. A single positive number.}
 
-\item{scale}{Positive scale parameter.}
+\item{scale}{Positive Weibull scale, dividing the cumulative hazard. A single
+positive number, defaulting to \code{1}.}
 
-\item{n}{Number of curve points.}
+\item{n}{Number of curve points. A single whole number of at least 2,
+defaulting to \code{100}.}
 
-\item{time_limits}{Optional time range.}
+\item{time_limits}{Optional inclusive time range, as an increasing
+non-negative numeric vector of length 2, that the curve is restricted to.
+Defaults to \code{NULL}, the whole curve. Points outside the range are dropped,
+so fewer than \code{n} rows are returned.}
 }
 \value{
-A base \code{data.frame} with one row per curve point and columns \code{time}
-and \code{survival}.
+A base \code{data.frame} with one row per retained curve point, in
+increasing time order, and columns \code{time} and \code{survival}.
 }
 \description{
-Compute a tidy Weibull survival curve
+Evaluates the simstudy Weibull curve of \code{\link[=define_survival]{define_survival()}},
+\code{S(t) = exp(-exp(formula) * t^(1 / shape) / scale)}, at \code{n} survival
+probabilities spread evenly from \code{1 - 1 / n} down to \code{1 / n}, inverting it
+for the matching times. The points are therefore equally spaced in survival
+probability, not in time.
 }
 \examples{
 curve <- survival_curve(formula = -8, shape = 0.3, n = 10)

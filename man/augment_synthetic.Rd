@@ -11,12 +11,16 @@ augment_synthetic(data, source, variables = NULL, seed = NULL)
 
 \item{source}{Source base \code{data.frame}.}
 
-\item{variables}{Variables to resample.}
+\item{variables}{Variables to resample. \code{NULL}, the default, resamples every
+variable in \code{source}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with resampled variables added.
+A \code{simulab_sim} base \code{data.frame} with the resampled variables added,
+one source row drawn per row of \code{data}.
+\code{as.data.frame(x, what = "provenance")} gives the source row each
+destination row was drawn from.
 }
 \description{
 Add jointly resampled source variables to existing data

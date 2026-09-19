@@ -7,22 +7,33 @@
 expand_clusters(data, cluster, size, unit = "id", include_cluster_data = TRUE)
 }
 \arguments{
-\item{data}{Cluster-level base \code{data.frame}.}
+\item{data}{Cluster-level base \code{data.frame}, or a \code{simulab_sim}, with one row
+per cluster and at least one row.}
 
-\item{cluster}{Name of the cluster identifier.}
+\item{cluster}{Name of the cluster identifier. A single string naming a
+column of \code{data}.}
 
-\item{size}{Name of a cluster-size variable or a positive integer applied to
-every cluster.}
+\item{size}{Units per cluster: the name of a cluster-size column of \code{data},
+or a single positive whole number applied to every cluster.}
 
-\item{unit}{Name of the new unit identifier.}
+\item{unit}{Name of the new unit identifier, numbered \code{1} to the total number
+of units across all clusters rather than restarting within a cluster. A
+single non-empty string, defaulting to \code{"id"}.}
 
-\item{include_cluster_data}{Include all cluster-level columns.}
+\item{include_cluster_data}{Copy every cluster-level column down to the
+units. A single flag, defaulting to \code{TRUE}. \code{FALSE} keeps only the cluster
+identifier.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with one row per unit.
+A \code{simulab_sim} base \code{data.frame} with one row per unit, the unit
+identifier first and then the retained cluster-level columns. The component
+\code{clusters}, reached with \code{as.data.frame(x, what = "clusters")}, holds one
+row per input cluster with columns \code{cluster}, the identifier values under
+that fixed name whatever \code{cluster} was called, and the integer \code{size}.
 }
 \description{
-Expand cluster-level rows into unit-level rows
+Repeats every cluster-level row once per unit it contains, so cluster
+attributes are copied down to the units, and numbers the units.
 }
 \examples{
 clusters <- data.frame(cluster = 1:5, site = rep(c("north", "south"), length.out = 5))

@@ -7,7 +7,9 @@
 simulation_scenarios()
 }
 \value{
-A base \code{data.frame} with scenario, family, and description.
+A base \code{data.frame} with one row per scenario and columns \code{scenario},
+\code{family} and \code{description}. Every \code{scenario} is accepted by
+\code{\link[=run_simulation_scenario]{run_simulation_scenario()}}.
 }
 \description{
 List built-in simulation scenarios

@@ -1,10 +1,23 @@
 #' Simulate a correlation design
 #'
+#' A thin wrapper around [simulate_correlated()] that supplies defaults for
+#' `means` and `sds`, so `simulate_correlation(n)` generates a single standard
+#' normal variable. `structure` is forwarded only when it is supplied, which
+#' keeps [simulate_correlated()]'s own default resolution intact: `"custom"`
+#' when `correlation` is given, `"exchangeable"` when a non-zero `rho` is
+#' given, and `"independent"` otherwise.
+#'
 #' @param n Number of observations.
 #' @param means,sds,rho,structure,correlation,variable_names,seed Arguments passed
-#'   to `simulate_correlated()`.
+#'   to [simulate_correlated()]. Unlike that function, `means` defaults to `0`.
+#'   One variable is generated per element of `means`; `sds` must be a single
+#'   value, which is recycled, or one value per mean.
 #'
-#' @return A `simulab_sim` base `data.frame`.
+#' @return A `simulab_sim` base `data.frame` with one row per observation and
+#'   an `id` column followed by one column per variable. The `parameters`,
+#'   `correlation` and `covariance` components hold the requested means and
+#'   standard deviations and the tidy correlation and covariance matrices; use
+#'   `components()` to list them.
 #' @export
 #'
 #' @examples
@@ -31,10 +44,14 @@ simulate_correlation <- function(n, means = 0, sds = 1, rho = 0,
 #' @param specification Survival definitions from [define_survivals()], in
 #'   either the `hazard()` call form or the column form.
 #' @param covariates Optional baseline base `data.frame` with `n` rows.
-#' @param id Identifier name used when covariates are omitted.
-#' @param seed,digits,envir Arguments passed to `augment_survival()`.
+#' @param id Identifier name used when covariates are omitted. Defaults to
+#'   `"id"` and is ignored when `covariates` is supplied.
+#' @param seed,digits,envir Arguments passed to [augment_survival()].
 #'
-#' @return A `simulab_sim` base `data.frame`.
+#' @return A `simulab_sim` base `data.frame` with one row per simulated
+#'   subject: the identifier (or the supplied covariates) followed by one
+#'   column per event defined in `specification`. The `survival_definitions`
+#'   component holds the specification that generated it.
 #' @export
 #'
 #' @examples
@@ -82,12 +99,16 @@ simulate_survival <- function(n, specification, covariates = NULL, id = "id",
 
 #' Add factorial conditions to existing rows
 #'
-#' @param data Input base `data.frame`.
-#' @param factors Named integer vector giving factor levels.
-#' @param coding Factor coding passed to `factorial_design()`.
+#' @param data Input base `data.frame`, with at least one row.
+#' @param factors Named numeric vector of whole numbers giving the number of
+#'   levels of each factor. Every entry must be at least 2.
+#' @param coding Factor coding passed to [factorial_design()]: `"dummy"` (the
+#'   default), `"effect"` or `"level"`.
 #'
-#' @return A `simulab_sim` base `data.frame` containing every row-condition
-#'   combination.
+#' @return A `simulab_sim` base `data.frame` with one row per row of `data`
+#'   crossed with every design condition, so `nrow(data) * prod(factors)` rows:
+#'   the columns of `data` followed by one column per factor. The `design`
+#'   component holds the distinct conditions, one row each.
 #' @export
 #'
 #' @examples
@@ -120,40 +141,84 @@ augment_factorial <- function(data, factors,
                    tables = list(design = design))
 }
 
-#' List canonical simulation verbs
+# The public simulation registry is the single source for both discovery and
+# dispatch. Keeping the callable beside its metadata prevents a simulator from
+# being added to one surface while silently missing from the other.
+.simulator_registry <- function() {
+  data.frame(
+    simulator = c(
+      "study", "correlation", "correlated", "copula", "ordinal", "ttest",
+      "anova", "regression", "clusters", "lpa", "ml_lpa", "lca", "factors",
+      "multilevel", "growth", "longitudinal", "irt", "markov",
+      "transition_system", "sequences", "sequence_clusters", "hmm",
+      "group_sequences", "group_tna", "event_log", "until_event", "survival",
+      "proportional_survival", "prediction", "synthetic", "density", "spline",
+      "network", "edge_list", "temporal_network", "network_matrix",
+      "bipartite_network", "multiplex_network", "tna_network",
+      "sequence_batches", "tna_batches", "network_batches", "scenarios", "data"
+    ),
+    function_name = c(
+      "simulate_study", "simulate_correlation", "simulate_correlated",
+      "simulate_copula", "simulate_ordinal", "simulate_ttest", "simulate_anova",
+      "simulate_regression", "simulate_clusters", "simulate_lpa",
+      "simulate_ml_lpa", "simulate_lca",
+      "simulate_factors", "simulate_multilevel", "simulate_growth",
+      "simulate_longitudinal", "simulate_irt", "simulate_markov",
+      "generate_transition_system", "simulate_sequences",
+      "simulate_sequence_clusters", "simulate_hmm", "simulate_group_sequences",
+      "simulate_group_tna", "simulate_event_log", "simulate_until_event",
+      "simulate_survival", "simulate_proportional_survival", "simulate_prediction",
+      "simulate_synthetic", "simulate_density", "simulate_spline",
+      "simulate_network", "simulate_edge_list", "simulate_temporal_network",
+      "simulate_network_matrix", "simulate_bipartite_network",
+      "simulate_multiplex_network", "simulate_tna_network",
+      "simulate_sequence_batches", "simulate_tna_batches",
+      "simulate_network_batches", "simulate_scenarios", "simulate_data"
+    ),
+    kind = c(
+      rep("simulator", 18L), "generator", rep("simulator", 6L), "workflow",
+      rep("simulator", 13L), rep("workflow", 4L), "dispatcher"
+    ),
+    family = c(
+      rep("general", 5L), rep("statistical", 4L), rep("latent", 4L),
+      rep("longitudinal", 3L), "measurement", rep("sequence", 9L),
+      rep("survival", 2L), "statistical", rep("empirical", 2L), "functional",
+      rep("network", 7L), rep("sequence", 2L), "network", rep("general", 2L)
+    ),
+    primary_shape = c(
+      rep("wide", 17L), "long", "edge_list", "long", "long", "long", "long",
+      "long", "long", "long", rep("wide", 6L), rep("edge_list", 3L), "matrix",
+      rep("edge_list", 3L), "long", "edge_list", "edge_list", "varies", "varies"
+    ),
+    dispatchable = c(rep(TRUE, 43L), FALSE),
+    stringsAsFactors = FALSE,
+    row.names = NULL
+  )
+}
+
+#' List public simulation and generation verbs
 #'
-#' @param family Optional family filter.
+#' @param family Optional single-string family filter, one of `"general"`,
+#'   `"statistical"`, `"latent"`, `"longitudinal"`, `"measurement"`,
+#'   `"sequence"`, `"survival"`, `"empirical"`, `"functional"` or `"network"`.
+#'   An unknown family is an error.
+#' @param kind Optional single-string kind filter: `"simulator"`,
+#'   `"generator"`, `"workflow"`, or `"dispatcher"`. An unknown kind is an
+#'   error.
+#' @param dispatchable Optional single logical filter: `TRUE` keeps only the
+#'   verbs that can be called through [simulate_data()], `FALSE` keeps only
+#'   those that cannot.
 #'
-#' @return A base `data.frame` with simulator, family, and primary shape.
+#' @return A base `data.frame` with one row per catalogued verb and the columns
+#'   `simulator` (the catalogue name), `function_name`, `kind`, `family`,
+#'   `primary_shape` and `dispatchable`.
 #' @export
 #'
 #' @examples
 #' head(list_simulators())
-#' list_simulators(family = "network")
-list_simulators <- function(family = NULL) {
-  catalogue <- data.frame(
-    simulator = c(
-      "study", "correlation", "copula", "ordinal", "ttest", "anova",
-      "regression", "clusters", "lpa", "lca", "factors", "multilevel",
-      "growth", "longitudinal", "irt", "markov", "sequence_clusters",
-      "hmm", "group_sequences", "group_tna", "event_log", "survival",
-      "proportional_survival", "prediction", "synthetic", "density",
-      "spline", "network", "edge_list", "temporal_network",
-      "network_matrix", "bipartite_network", "multiplex_network", "tna_network"
-    ),
-    family = c(
-      rep("general", 4L), rep("statistical", 4L), rep("latent", 3L),
-      rep("longitudinal", 3L), "measurement", rep("sequence", 6L),
-      rep("survival", 2L), "statistical", rep("empirical", 2L),
-      "functional", rep("network", 7L)
-    ),
-    primary_shape = c(
-      rep("wide", 15L), rep("long", 6L), rep("wide", 6L),
-      rep("edge_list", 3L), "matrix", rep("edge_list", 3L)
-    ),
-    stringsAsFactors = FALSE,
-    row.names = NULL
-  )
+#' list_simulators(kind = "workflow")
+list_simulators <- function(family = NULL, kind = NULL, dispatchable = NULL) {
+  catalogue <- .simulator_registry()
   if (!is.null(family)) {
     stopifnot(
       "`family` must be a single string" =
@@ -162,8 +227,26 @@ list_simulators <- function(family = NULL) {
     )
     if (!family %in% unique(catalogue$family)) stop("Unknown simulator family.", call. = FALSE)
     catalogue <- catalogue[catalogue$family == family, , drop = FALSE]
-    rownames(catalogue) <- NULL
   }
+  if (!is.null(kind)) {
+    stopifnot(
+      "`kind` must be a single string" =
+        is.character(kind) &&
+          length(kind) == 1L
+    )
+    if (!kind %in% unique(.simulator_registry()$kind)) stop("Unknown simulator kind.", call. = FALSE)
+    catalogue <- catalogue[catalogue$kind == kind, , drop = FALSE]
+  }
+  if (!is.null(dispatchable)) {
+    stopifnot(
+      "`dispatchable` must be a single logical value" =
+        is.logical(dispatchable) &&
+          length(dispatchable) == 1L &&
+          !is.na(dispatchable)
+    )
+    catalogue <- catalogue[catalogue$dispatchable == dispatchable, , drop = FALSE]
+  }
+  rownames(catalogue) <- NULL
   catalogue
 }
 
@@ -172,10 +255,13 @@ list_simulators <- function(family = NULL) {
 #' `simulate_data()` is a discoverable dispatcher. Direct verbs remain the
 #' preferred interface because they provide explicit, documented arguments.
 #'
-#' @param type Simulator name from `list_simulators()`.
-#' @param ... Arguments passed to the selected canonical simulation verb.
+#' @param type Dispatchable simulator name, taken from the `simulator` column
+#'   of [list_simulators()]. An unknown name, or a name whose `dispatchable`
+#'   entry is `FALSE`, is an error.
+#' @param ... Arguments passed on to the selected canonical simulation verb.
 #'
-#' @return A `simulab_sim` base `data.frame`.
+#' @return Whatever the selected verb returns, which for every dispatchable
+#'   entry is a `simulab_sim` base `data.frame`.
 #' @export
 #'
 #' @examples
@@ -188,43 +274,40 @@ simulate_data <- function(type, ...) {
         length(type) == 1L &&
         all(nzchar(type))
   )
-  functions <- c(
-    study = "simulate_study", correlation = "simulate_correlation",
-    copula = "simulate_copula", ordinal = "simulate_ordinal",
-    ttest = "simulate_ttest", anova = "simulate_anova",
-    regression = "simulate_regression", clusters = "simulate_clusters",
-    lpa = "simulate_lpa", lca = "simulate_lca", factors = "simulate_factors",
-    multilevel = "simulate_multilevel", growth = "simulate_growth",
-    longitudinal = "simulate_longitudinal", irt = "simulate_irt",
-    markov = "simulate_markov", sequence_clusters = "simulate_sequence_clusters",
-    hmm = "simulate_hmm", group_sequences = "simulate_group_sequences",
-    group_tna = "simulate_group_tna", event_log = "simulate_event_log",
-    survival = "simulate_survival",
-    proportional_survival = "simulate_proportional_survival",
-    prediction = "simulate_prediction",
-    synthetic = "simulate_synthetic", density = "simulate_density",
-    spline = "simulate_spline", network = "simulate_network",
-    edge_list = "simulate_edge_list",
-    temporal_network = "simulate_temporal_network",
-    network_matrix = "simulate_network_matrix",
-    bipartite_network = "simulate_bipartite_network",
-    multiplex_network = "simulate_multiplex_network",
-    tna_network = "simulate_tna_network"
-  )
-  if (!type %in% names(functions)) {
+  entry <- .simulator_registry()
+  entry <- entry[entry$simulator == type, , drop = FALSE]
+  if (!nrow(entry)) {
     stop(sprintf("Unknown simulator '%s'. Use list_simulators() for choices.", type), call. = FALSE)
   }
-  do.call(get(functions[[type]], mode = "function"), list(...))
+  if (!entry$dispatchable[[1L]]) {
+    stop(sprintf("'%s' is a %s and cannot dispatch itself.", type, entry$kind[[1L]]),
+         call. = FALSE)
+  }
+  simulator <- get(entry$function_name[[1L]], envir = environment(simulate_data),
+                   mode = "function")
+  do.call(simulator, list(...))
 }
 
 #' Compare recovered estimates with known simulation truth
 #'
-#' @param estimates Tidy estimates with term and estimate columns.
-#' @param truth Tidy truth with term and truth columns.
-#' @param term,estimate,true_value Column names.
-#' @param tolerance Absolute error tolerance for successful recovery.
+#' @param estimates Tidy base `data.frame` with a term column and an estimate
+#'   column.
+#' @param truth Tidy base `data.frame` with a term column and a true-value
+#'   column.
+#' @param term Name of the term column in both frames, default `"term"`. It is
+#'   the key the two frames are merged on.
+#' @param estimate Name of the estimate column in `estimates`, default
+#'   `"estimate"`.
+#' @param true_value Name of the true-value column in `truth`, default
+#'   `"truth"`.
+#' @param tolerance Single non-negative absolute-error tolerance for successful
+#'   recovery, default `0.1`.
 #'
-#' @return A base `data.frame` with bias, absolute/relative error, and recovery.
+#' @return A base `data.frame` with one row per term appearing in either frame
+#'   (the merge keeps unmatched terms) and the columns `term`, `estimate`,
+#'   `truth`, `bias` (estimate minus truth), `absolute_error`,
+#'   `relative_error` (`NA` where truth is zero) and `recovered`, a logical
+#'   that is `TRUE` when `absolute_error` is at most `tolerance`.
 #' @export
 #'
 #' @examples
@@ -261,19 +344,31 @@ validate_recovery <- function(estimates, truth, term = "term", estimate = "estim
 
 #' Run a simulator across a scenario grid
 #'
-#' Scenario columns are matched to simulator arguments. Identifier and
-#' replication columns are added to each generated observation, which makes
-#' the result immediately suitable for grouped estimation and recovery checks.
+#' Every column of `scenarios` other than `id` and `replication` is passed to
+#' the simulator as a named argument, so the column names must be simulator
+#' argument names and must not repeat an argument given in `...`. The
+#' identifier and replication values are prepended to each generated
+#' observation, which makes the result immediately suitable for grouped
+#' estimation and recovery checks. Every scenario must produce the same primary
+#' columns, otherwise the run is an error.
 #'
-#' @param scenarios A base `data.frame`, commonly from `scenario_grid()`.
-#' @param simulator Canonical simulator name from `list_simulators()`.
+#' @param scenarios A base `data.frame` with at least one row, commonly from
+#'   [scenario_grid()], containing the `id` and `replication` columns.
+#' @param simulator Canonical simulator name, taken from the `simulator` column
+#'   of [list_simulators()] and dispatched through [simulate_data()].
 #' @param ... Arguments held constant across scenarios.
-#' @param id Scenario identifier column.
-#' @param replication Replication column.
-#' @param seed Optional base seed. Each row receives a deterministic offset.
+#' @param id Single string naming the scenario identifier column of
+#'   `scenarios`, default `"scenario_id"`.
+#' @param replication Single string naming the replication column of
+#'   `scenarios`, default `"replication"`.
+#' @param seed Optional single base seed. Row `i` of `scenarios` is simulated
+#'   with `seed + i - 1`, unless `scenarios` or `...` already supplies a
+#'   `seed`.
 #'
-#' @return A combined `simulab_sim` base `data.frame`; the scenario grid is a
-#'   secondary component.
+#' @return A `simulab_sim` base `data.frame` stacking every scenario's output,
+#'   with one row per generated observation: the `id` and `replication` columns
+#'   first, then the simulator's own columns. The `scenarios` component holds
+#'   the grid that was run, one row per scenario.
 #' @export
 #'
 #' @examples

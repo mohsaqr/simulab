@@ -4,21 +4,48 @@
 \alias{sample_tna}
 \title{Fit TNA to a sequence sample}
 \usage{
-sample_tna(data, fraction = 0.3, replace = FALSE, seed = NULL, ...)
+sample_tna(
+  data,
+  fraction = 0.3,
+  replace = FALSE,
+  seed = NULL,
+  format = c("auto", "long", "wide"),
+  id = "id",
+  period = "period",
+  state = "state",
+  group = NULL,
+  ...
+)
 }
 \arguments{
-\item{data}{Sequence data.}
+\item{data}{Sequence data, in long or wide form.}
 
-\item{fraction}{Sampling fraction.}
+\item{fraction}{Single number in \verb{(0, 1]} giving the fraction of sequences
+to draw, default \code{0.3}. At least two sequences are always drawn.}
 
-\item{replace}{Sample with replacement.}
+\item{replace}{Single flag, whether to draw with replacement. Default
+\code{FALSE}.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional single seed, restored on exit.}
 
-\item{...}{Arguments passed to \code{fit_tna()}.}
+\item{format}{One of \code{"auto"}, \code{"long"} or \code{"wide"}, naming the layout of
+\code{data}. The default \code{"auto"} detects it.}
+
+\item{id, period, state}{Column names identifying the sequence, the position
+within it, and the state. Used only when \code{data} is in long form; the
+defaults are \code{"id"}, \code{"period"} and \code{"state"}.}
+
+\item{group}{Optional column name. When given, sequences are sampled within
+each group and the refit is grouped.}
+
+\item{...}{Further arguments passed to \code{\link[=fit_tna]{fit_tna()}}, such as \code{model}. The
+sampled sequences are always refitted in wide form, so \code{format} is
+consumed by the sampling step and is not forwarded.}
 }
 \value{
-A tidy fitted TNA result.
+The \code{\link[=fit_tna]{fit_tna()}} result for the sampled sequences: a \code{simulab_sim}
+edge list with one row per transition and the columns \code{from}, \code{to} and
+\code{weight}, plus the \code{initial_probabilities} and \code{model_info} components.
 }
 \description{
 Fit TNA to a sequence sample

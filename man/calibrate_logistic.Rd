@@ -37,7 +37,15 @@ coefficients are proportionally scaled to reach this target.}
 \item{tolerance}{Numerical root tolerance.}
 }
 \value{
-A base \code{data.frame} with one row per calibrated coefficient.
+A base \code{data.frame} with one row per calibrated coefficient and
+columns \code{term}, \code{coefficient}, \code{calibration} and \code{coefficient_scale}.
+Coefficients are log-odds on the logit scale. The first row is
+\code{"(Intercept)"}, followed by the \code{treatment} row when \code{risk_ratio} or
+\code{risk_difference} was supplied, then one row per name of \code{coefficients}.
+\code{calibration} names the target that was solved for -- \code{"prevalence"},
+\code{"auc"}, \code{"risk_ratio"} or \code{"risk_difference"} -- and
+\code{coefficient_scale} is the factor the supplied covariate coefficients
+were multiplied by, which is \code{1} unless \code{auc} was given.
 }
 \description{
 Calibrate logistic coefficients to prevalence and treatment contrast

@@ -7,15 +7,19 @@
 summarize_simulations(data, by = NULL, variables = NULL)
 }
 \arguments{
-\item{data}{Simulation data.}
+\item{data}{Simulation data: a \code{simulab_sim} or a plain base \code{data.frame}.}
 
-\item{by}{Optional grouping columns.}
+\item{by}{Optional character vector of grouping column names. \code{NULL}, the
+default, summarizes all rows together.}
 
-\item{variables}{Numeric variables. \code{NULL} selects all numeric non-grouping
-columns.}
+\item{variables}{Character vector of numeric variables to summarize. \code{NULL},
+the default, selects every numeric non-grouping column.}
 }
 \value{
-A tidy base \code{data.frame} of variable/group summaries.
+A plain base \code{data.frame} with one row per group and variable: the
+\code{by} columns (or a single \code{.group} column holding \code{"all"} when \code{by} is
+\code{NULL}), then \code{variable}, \code{observations} (the non-missing count), \code{mean},
+\code{sd}, \code{minimum} and \code{maximum}.
 }
 \description{
 Summarize simulated numeric variables

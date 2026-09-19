@@ -27,8 +27,17 @@ simulate_anova(
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with group parameters and the
-population eta-squared effect.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id}, \code{group} and \code{outcome} (renamed by \code{outcome}). Two tidy tables
+come from \code{as.data.frame()}: \code{what = "parameters"} has one row per group
+with columns \code{group}, \code{n}, \code{mean} and \code{sd}; \code{what = "effects"} has a single
+row with columns \code{grand_mean}, \code{between_sum_squares}
+(\code{sum(n * (mean - grand_mean)^2)}), \code{within_sum_squares}
+(\code{sum((n - 1) * sd^2)}) and \code{eta_squared}, their ratio
+\code{between / (between + within)}. Because the within term uses the
+degrees of freedom \code{n - 1} rather than \code{n}, \code{eta_squared} is the
+design's sum-of-squares eta-squared and differs slightly from the
+variance-ratio population eta-squared.
 }
 \description{
 Simulate a one-way group design

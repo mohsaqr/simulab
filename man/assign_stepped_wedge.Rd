@@ -19,33 +19,56 @@ assign_stepped_wedge(
 )
 }
 \arguments{
-\item{data}{Long-form base \code{data.frame}.}
+\item{data}{Long-form base \code{data.frame}, or a \code{simulab_sim}, with one row per
+cluster unit and period and at least one row.}
 
-\item{cluster}{Cluster identifier.}
+\item{cluster}{Cluster identifier. A single string naming a column of \code{data},
+whose number of unique values must be divisible by \code{waves}.}
 
-\item{period}{Period variable.}
+\item{period}{Period variable. A single string naming a column of \code{data},
+which must reach \code{start + (waves - 1) * wave_length + lag}.}
 
-\item{waves}{Number of waves.}
+\item{waves}{Number of waves. A single positive whole number.}
 
-\item{wave_length}{Periods between wave starts.}
+\item{wave_length}{Periods between consecutive wave starts. A single positive
+whole number.}
 
-\item{start}{First treatment-start period.}
+\item{start}{Treatment-start period of the first wave. A single number.}
 
-\item{lag}{Transition periods before treatment becomes active.}
+\item{lag}{Transition periods after a cluster's start before treatment
+becomes active. A single non-negative whole number, defaulting to \code{0}.}
 
-\item{treatment}{Name of the active-treatment variable.}
+\item{treatment}{Name of the active-treatment variable, which is \code{1} from
+\code{treatment_start + lag} onwards and \code{0} before. A single string, defaulting
+to \code{"treatment"}.}
 
-\item{transition}{Name of the transition variable.}
+\item{transition}{Name of the transition variable, which is \code{1} in the \code{lag}
+periods between a cluster's \code{treatment_start} and the start of active
+treatment. A single string, defaulting to \code{"transition"}. The column is
+only added when \code{lag} is above \code{0}.}
 
-\item{randomize}{Randomize clusters to waves.}
+\item{randomize}{Randomize the allocation of clusters to waves. A single
+flag, defaulting to \code{TRUE}. \code{FALSE} fills the waves in the order the
+clusters appear in \code{data}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} and a tidy cluster-wave schedule.
+A \code{simulab_sim} base \code{data.frame} with the columns of \code{data} followed
+by the transition variable (only when \code{lag} is above \code{0}) and the treatment
+variable, one row per input row. The component \code{schedule}, reached with
+\code{as.data.frame(x, what = "schedule")}, holds one row per cluster with the
+cluster identifier under its own name plus columns \code{wave} and
+\code{treatment_start}.
 }
 \description{
-Assign a stepped-wedge treatment schedule
+Splits the clusters into equally sized waves and switches each wave on at
+\code{start + (wave - 1) * wave_length}, the wave's treatment-start period. A row
+is treated from \code{treatment_start + lag} onwards, and the \code{lag} periods from
+\code{treatment_start} up to that point are flagged as transition periods instead.
+The period values are compared as they stand, so they must be on the same
+scale as \code{start}. Periods created by \code{\link[=expand_periods]{expand_periods()}} are numbered from
+\code{0}.
 }
 \examples{
 data <- expand_clusters(

@@ -25,7 +25,12 @@ compare_tna_models(
 \item{...}{Estimator arguments.}
 }
 \value{
-A tidy edge-list \code{simulab_sim} with one row per model/group/edge.
+A tidy edge-list \code{simulab_sim} base \code{data.frame} with one row per
+model/group/edge and columns \code{model}, \code{from}, \code{to}, and \code{weight}
+(with \code{group} inserted when \code{group} is supplied). A stacked \code{model_info}
+table, one row per fitted model and group, is available through
+\code{as.data.frame()}. The fitted native models are stored as a named list and
+returned by \code{as_tna_model()}.
 }
 \description{
 Compare multiple TNA estimators on the same sequences

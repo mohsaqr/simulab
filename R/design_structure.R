@@ -8,14 +8,27 @@
 
 #' Expand cluster-level rows into unit-level rows
 #'
-#' @param data Cluster-level base `data.frame`.
-#' @param cluster Name of the cluster identifier.
-#' @param size Name of a cluster-size variable or a positive integer applied to
-#'   every cluster.
-#' @param unit Name of the new unit identifier.
-#' @param include_cluster_data Include all cluster-level columns.
+#' Repeats every cluster-level row once per unit it contains, so cluster
+#' attributes are copied down to the units, and numbers the units.
 #'
-#' @return A `simulab_sim` base `data.frame` with one row per unit.
+#' @param data Cluster-level base `data.frame`, or a `simulab_sim`, with one row
+#'   per cluster and at least one row.
+#' @param cluster Name of the cluster identifier. A single string naming a
+#'   column of `data`.
+#' @param size Units per cluster: the name of a cluster-size column of `data`,
+#'   or a single positive whole number applied to every cluster.
+#' @param unit Name of the new unit identifier, numbered `1` to the total number
+#'   of units across all clusters rather than restarting within a cluster. A
+#'   single non-empty string, defaulting to `"id"`.
+#' @param include_cluster_data Copy every cluster-level column down to the
+#'   units. A single flag, defaulting to `TRUE`. `FALSE` keeps only the cluster
+#'   identifier.
+#'
+#' @return A `simulab_sim` base `data.frame` with one row per unit, the unit
+#'   identifier first and then the retained cluster-level columns. The component
+#'   `clusters`, reached with `as.data.frame(x, what = "clusters")`, holds one
+#'   row per input cluster with columns `cluster`, the identifier values under
+#'   that fixed name whatever `cluster` was called, and the integer `size`.
 #' @export
 #'
 #' @examples
@@ -104,21 +117,52 @@ expand_clusters <- function(data, cluster, size, unit = "id",
 
 #' Expand observations across periods
 #'
-#' @param data Base `data.frame` with one row per observational unit.
-#' @param periods Number of periods, a variable containing counts, or `NULL`
-#'   when `period_values` is supplied.
-#' @param id Identifier variable.
-#' @param period Name of the period column.
-#' @param period_values Optional common period values.
-#' @param interval_mean Optional constant or variable defining mean intervals.
-#' @param interval_dispersion Optional constant or variable defining gamma
-#'   interval dispersion.
-#' @param time Name of the generated elapsed-time column.
-#' @param time_variables Optional wide variables to gather by period.
-#' @param value Name of the gathered time-varying value.
-#' @param seed Optional random seed for irregular intervals.
+#' Repeats every unit's row once per period, numbering the periods and adding
+#' the elapsed time each period falls at. Units may be followed for different
+#' numbers of periods, and the spacing may be regular or irregular. A set of
+#' wide columns, one per period, can be gathered into a single long value column
+#' at the same time.
 #'
-#' @return A `simulab_sim` base `data.frame` with one row per unit-period.
+#' @param data Base `data.frame`, or a `simulab_sim`, with one row per
+#'   observational unit and at least one row.
+#' @param periods Number of periods: a single whole number applied to every
+#'   unit, the name of a column of `data` holding a count per unit, or `NULL`
+#'   when `period_values` is supplied.
+#' @param id Identifier variable. A single string naming a column of `data`. It
+#'   is carried into the schedule component; the returned rows are the input
+#'   rows repeated, so the identifier is not renumbered.
+#' @param period Name of the period column. A single non-empty string,
+#'   defaulting to `"period"`. Periods generated from `periods` are numbered
+#'   from `0`, so a unit followed for `k` periods gets `0` to `k - 1`.
+#' @param period_values Optional atomic vector of period values shared by every
+#'   unit, used in place of the numbering above. Defaults to `NULL`, and may not
+#'   be combined with `periods`.
+#' @param interval_mean Mean interval between consecutive periods: a single
+#'   number, the name of a column of `data`, or `NULL` (the default) for an
+#'   interval of `1`.
+#' @param interval_dispersion Dispersion of the gamma-distributed intervals: a
+#'   single non-negative number, or the name of a column of `data`. Defaults to
+#'   `0`, exactly regular spacing; a positive value draws each interval from a
+#'   gamma distribution with mean `interval_mean` and variance
+#'   `interval_mean^2 * interval_dispersion`.
+#' @param time Name of the generated elapsed-time column, which starts at `0`
+#'   for every unit and accumulates the intervals. A single string, defaulting
+#'   to `"time"`.
+#' @param time_variables Optional character vector of wide columns of `data`,
+#'   exactly one per period, gathered into the long value column and then
+#'   dropped. Defaults to `NULL`.
+#' @param value Name of the gathered time-varying value. A single non-empty
+#'   string, defaulting to `"value"`.
+#' @param seed Optional random seed for irregular intervals. A single number, or
+#'   `NULL` (the default).
+#'
+#' @return A `simulab_sim` base `data.frame` with one row per unit-period,
+#'   holding the columns of `data` plus the period and elapsed-time columns, and
+#'   the gathered value column in place of `time_variables` when those are
+#'   given. The component `schedule`, reached with
+#'   `as.data.frame(x, what = "schedule")`, holds one row per input unit with
+#'   columns `input_row`, `id`, `periods`, `interval_mean` and
+#'   `interval_dispersion`.
 #' @export
 #'
 #' @examples
@@ -238,13 +282,26 @@ expand_periods <- function(data, periods = NULL, id = "id", period = "period",
 
 #' Create a full factorial design
 #'
-#' @param factors Named integer vector giving the number of levels per factor.
-#' @param replications Number of replications per factor combination.
-#' @param coding Numeric coding for factor levels.
-#' @param id Identifier-column name.
+#' Crosses every level of every factor, repeats each combination `replications`
+#' times, and returns one numeric column per factor holding its coded level.
+#'
+#' @param factors Named numeric vector of whole numbers giving the number of
+#'   levels per factor, each at least 2. The names become the design columns.
+#' @param replications Number of replications per factor combination. A single
+#'   positive whole number, defaulting to `1`.
+#' @param coding Numeric coding of the levels, one value per factor per row, one
+#'   of `"dummy"` (the default), which codes the levels `0` to `levels - 1`,
+#'   `"effect"`, which codes a two-level factor `-1` and `1` and codes a factor
+#'   with more levels exactly as `"dummy"` does, or `"level"`, which keeps the
+#'   level numbers `1` to `levels`.
+#' @param id Identifier-column name, numbering the rows. A single non-empty
+#'   string, defaulting to `"id"`.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per replicated factor
-#'   combination.
+#'   combination (`replications * prod(factors)` rows), the identifier column
+#'   first and then one coded column per factor. The component `factors`,
+#'   reached with `as.data.frame(x, what = "factors")`, holds one row per factor
+#'   with columns `factor`, the integer `levels` and `coding`.
 #' @export
 #'
 #' @examples
@@ -301,16 +358,35 @@ factorial_design <- function(factors, replications = 1L,
 
 #' Encode categorical variables
 #'
-#' @param data Base `data.frame`.
-#' @param variables Categorical variables to encode.
-#' @param coding Factor, dummy, or effect coding.
-#' @param labels Optional labels for factor coding, as a named list per
-#'   variable or a tidy data frame with columns `variable`, `level` and
-#'   `label`.
-#' @param prefix Prefix for generated variables.
-#' @param replace Remove source variables after encoding.
+#' Turns categorical columns into the numeric columns a model needs. Dummy
+#' coding is one indicator per level, with no reference level dropped; effect
+#' coding drops the last level's indicator and codes that level `-1` across the
+#' remaining columns; factor coding leaves one factor column.
 #'
-#' @return A `simulab_sim` base `data.frame` with encoded variables.
+#' @param data Base `data.frame`, or a `simulab_sim`.
+#' @param variables Categorical variables to encode. A character vector of at
+#'   least one column name of `data`. Levels are taken in the order
+#'   `factor()` sorts them.
+#' @param coding Encoding to apply, one of `"factor"` (the default), one factor
+#'   column named `<prefix><variable>`, `"dummy"`, one 0/1 indicator per level
+#'   named `<prefix><variable>_<level>`, or `"effect"`, the same indicators
+#'   without the last level's column and with `-1` in every column for that
+#'   level.
+#' @param labels Optional replacement level labels, as a named list per
+#'   variable, one atomic vector shared by every variable, or a tidy data frame
+#'   with columns `variable`, `level` and `label`. Defaults to `NULL`, the
+#'   values as they stand. The labels are passed to `factor()`, so they rename
+#'   the levels in sorted order and also feed the generated column names.
+#' @param prefix Prefix for generated variables. A single string, defaulting to
+#'   `"f_"`.
+#' @param replace Remove the source variables after encoding. A single flag,
+#'   defaulting to `FALSE`.
+#'
+#' @return A `simulab_sim` base `data.frame` with the columns of `data`, minus
+#'   the source variables when `replace` is `TRUE`, followed by the generated
+#'   columns, one row per input row. The component `encoding`, reached with
+#'   `as.data.frame(x, what = "encoding")`, holds one row per generated column
+#'   with columns `source`, `encoded` and `coding`.
 #' @export
 #'
 #' @examples
@@ -382,11 +458,21 @@ encode_factors <- function(data, variables,
 
 #' Build a replicated scenario grid
 #'
-#' @param ... Named vectors of scenario values.
-#' @param replications Replications per scenario combination.
-#' @param id Name of the scenario identifier.
+#' Crosses every combination of the supplied scenario values and repeats each
+#' combination `replications` times, giving the grid a simulation study is run
+#' over.
 #'
-#' @return A base `data.frame` with one row per scenario replication.
+#' @param ... Named vectors of scenario values, at least one, crossed with
+#'   `expand.grid()`. The names become the value columns.
+#' @param replications Replications per scenario combination. A single positive
+#'   whole number, defaulting to `1`.
+#' @param id Name of the scenario identifier, numbering the distinct
+#'   combinations. A single non-empty string, defaulting to `"scenario_id"`.
+#'
+#' @return A plain base `data.frame`, not a `simulab_sim`, with one row per
+#'   scenario replication and columns: the scenario identifier named by `id`,
+#'   the integer `replication` counting from 1 within each scenario, and one
+#'   column per named argument.
 #' @export
 #'
 #' @examples
@@ -419,11 +505,16 @@ scenario_grid <- function(..., replications = 1L, id = "scenario_id") {
 
 #' Merge study data by identifiers
 #'
-#' @param x,y Base data frames.
-#' @param by Identifier variables shared by both inputs.
-#' @param join Join type.
+#' @param x,y Base data frames, or `simulab_sim` objects, to join.
+#' @param by Identifier variables shared by both inputs. A character vector of
+#'   at least one name present in both.
+#' @param join Join type, one of `"inner"` (the default), keeping only matched
+#'   identifiers, `"full"`, keeping every row of both inputs, or `"left"`,
+#'   keeping every row of `x`.
 #'
-#' @return A `simulab_sim` base `data.frame` containing the merged data.
+#' @return A `simulab_sim` base `data.frame` containing the merged data, sorted
+#'   by `by` as `merge()` leaves it, with unmatched cells filled with `NA` under
+#'   the `"full"` and `"left"` joins.
 #' @export
 #'
 #' @examples
@@ -454,11 +545,15 @@ merge_studies <- function(x, y, by, join = c("inner", "full", "left")) {
 
 #' Select or remove study variables
 #'
-#' @param data Base `data.frame`.
-#' @param keep Variables to retain.
-#' @param drop Variables to remove.
+#' @param data Base `data.frame`, or a `simulab_sim`.
+#' @param keep Variables to retain, in the order given. A character vector of
+#'   column names, or `NULL` (the default).
+#' @param drop Variables to remove, the others keeping their order. A character
+#'   vector of column names, or `NULL` (the default). Only one of `keep` and
+#'   `drop` may be given.
 #'
-#' @return A `simulab_sim` base `data.frame` with the requested variables.
+#' @return A `simulab_sim` base `data.frame` with every row of `data` and the
+#'   requested variables.
 #' @export
 #'
 #' @examples

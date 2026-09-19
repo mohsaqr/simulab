@@ -14,24 +14,49 @@ inject_missingness(
 )
 }
 \arguments{
-\item{data}{Complete base \code{data.frame}.}
+\item{data}{Complete base \code{data.frame}, or a \code{simulab_sim}, with at least one
+row.}
 
-\item{mechanism}{Missingness mechanism.}
+\item{mechanism}{Missingness mechanism, one of \code{"MCAR"} (the default),
+\code{"MAR"} or \code{"MNAR"}.}
 
-\item{proportion}{Target missing fraction.}
+\item{proportion}{Target missing fraction, the mean cell probability rather
+than a realized count. A single number between 0 and 1, defaulting to
+\code{0.1}; the realized fraction is random around it and is reported in the
+\code{missingness_summary} component.}
 
-\item{variables}{Variables to make missing. \code{NULL} selects every variable.}
+\item{variables}{Variables to make missing. A character vector of column
+names, or \code{NULL} (the default), which selects every column of \code{data},
+identifiers included. Under \code{"MAR"} the \code{predictor} is removed from this
+set.}
 
-\item{predictor}{Observed predictor for MAR missingness.}
+\item{predictor}{Fully observed predictor that drives MAR missingness. A
+single string naming a column of \code{data}, required when \code{mechanism} is
+\code{"MAR"} and ignored otherwise. Defaults to \code{NULL}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame}. The cell-level missingness mask is
-available with \code{as.data.frame(x, what = "missingness")}.
+A \code{simulab_sim} base \code{data.frame} with the columns and rows of
+\code{data}, the drawn cells of the target variables replaced by \code{NA}.
+Components: \code{missingness}, the cell-level mask reached with
+\code{as.data.frame(x, what = "missingness")}, one row per observation and
+target variable with columns \code{observation}, \code{variable}, \code{probability},
+the logical \code{missing} and \code{mechanism}; and \code{missingness_summary}, one row
+per target variable with columns \code{variable}, \code{realized_proportion} and
+\code{target_proportion}.
 }
 \description{
-Inject MCAR, MAR, or MNAR missingness
+Blanks cells of \code{data} under one of the three standard mechanisms. \code{"MCAR"}
+gives every row the same probability \code{proportion}, so missingness depends on
+nothing. \code{"MAR"} makes it depend on the fully observed \code{predictor}, which is
+itself never made missing. \code{"MNAR"} makes each target variable's missingness
+depend on its own value, so the values that disappear are not a random sample
+of them. For MAR and MNAR the probability increases with the driving
+variable's rank: its ties-averaged rank mapped into \verb{(0, 1)}, or \code{0.5} for a
+missing or constant driver, scaled by the multiplier that makes the mean
+probability equal \code{proportion}, and capped at 1. Each MAR target therefore
+shares one probability vector, while each MNAR target gets its own.
 }
 \examples{
 data <- data.frame(id = 1:200, x = stats::rnorm(200), y = stats::rnorm(200))

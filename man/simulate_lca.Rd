@@ -14,23 +14,39 @@ simulate_lca(
 )
 }
 \arguments{
-\item{n}{Number of observations.}
+\item{n}{Number of observations. A single whole number of at least 2.}
 
 \item{probabilities}{Item probabilities as an array with dimensions class,
 indicator and category, or as a tidy data frame with columns \code{class},
-\code{indicator}, \code{category} and \code{probability}.}
+\code{indicator}, \code{category} and \code{probability}. Category probabilities must
+sum to one within each class and indicator. Only the \code{indicator} dimnames
+are used, to name the indicator columns; any class and category dimnames
+are ignored, so class and category labels must be supplied through
+\code{class_labels} and \code{category_labels}.}
 
-\item{proportions}{Latent-class proportions.}
+\item{proportions}{Latent-class proportions, one positive value per class;
+they are rescaled to sum to one. \code{NULL} (the default) makes every class
+equally likely.}
 
-\item{class_labels, category_labels}{Optional labels.}
+\item{class_labels, category_labels}{Optional labels, one unique value per
+class and per category. \code{class_labels} defaults to \code{"Class 1"},
+\code{"Class 2"} and so on; \code{category_labels} defaults to the integers
+\code{1:categories}, which are the values written into the indicator columns.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with true class and indicators.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id}, \code{latent_class} (the true class label) and one column per
+indicator holding the sampled value of \code{category_labels}. A \code{parameters}
+component holds one row per class-by-indicator-by-category combination
+with columns \code{latent_class}, \code{indicator}, \code{category}, \code{probability} and
+\code{proportion}.
 }
 \description{
-Simulate a latent class model
+Draws a latent class for each observation from \code{proportions}, then draws
+every indicator independently from that class's category probabilities
+(the usual local-independence assumption of latent class analysis).
 }
 \examples{
 # `probabilities` is a class x indicator x category array. Values fill the
@@ -47,8 +63,14 @@ probabilities <- array(
   )
 )
 
+# Only the `indicator` dimnames name the output columns, so the class and
+# category labels are passed explicitly.
 result <- simulate_lca(
-  n = 200, probabilities = probabilities, proportions = c(0.6, 0.4), seed = 1
+  n = 200,
+  probabilities = probabilities,
+  proportions = c(0.6, 0.4),
+  category_labels = c("no", "yes"),
+  seed = 1
 )
 head(result)
 as.data.frame(result, what = "parameters")

@@ -1,11 +1,21 @@
 #' Simulate repeated sequence datasets
 #'
-#' @param repetitions Number of datasets.
-#' @param ... Arguments passed to `simulate_sequences()`.
-#' @param seed Optional base seed. Each dataset uses a deterministic offset.
+#' Calls [simulate_sequences()] `repetitions` times and stacks the results, so
+#' each dataset is drawn from its own transition system rather than from a
+#' shared one.
 #'
-#' @return A combined long-form `simulab_sim` with dataset identifiers and
-#'   dataset-specific transition parameters.
+#' @param repetitions Number of datasets. A single positive whole number.
+#' @param ... Arguments passed to [simulate_sequences()].
+#' @param seed Optional base seed. A single number, or `NULL` (the default).
+#'   Dataset `i` uses `seed + i - 1`.
+#'
+#' @return A `simulab_sim` base `data.frame` in long form, one row per dataset,
+#'   sequence and position, with the column `dataset` followed by the columns
+#'   [simulate_sequences()] returns (`id`, `period` and `state`). Components:
+#'   `transitions`, the generating transition probabilities, one row per dataset
+#'   and from/to pair with columns `dataset`, `from`, `to` and `probability`;
+#'   and `initial_probabilities`, one row per dataset and state with columns
+#'   `dataset`, `state` and `probability`.
 #' @export
 #'
 #' @examples
@@ -46,13 +56,23 @@ simulate_sequence_batches <- function(repetitions, ..., seed = NULL) {
 
 #' Simulate and fit repeated TNA networks
 #'
-#' @param repetitions Number of fitted networks.
-#' @param model TNA estimator.
-#' @param ... Arguments passed to `simulate_sequences()`.
-#' @param seed Optional base seed. Each dataset uses a deterministic offset.
+#' Generates `repetitions` sequence datasets with [simulate_sequence_batches()]
+#' and fits one transition network to each with [fit_tna()], so the estimated
+#' networks can be held against the transition systems that generated them.
 #'
-#' @return A tidy fitted-edge `simulab_sim` with network identifiers; generated
-#'   sequences and true transitions are available as components.
+#' @param repetitions Number of fitted networks. A single positive whole number.
+#' @param model TNA estimator, one of `"tna"` (the default), `"ftna"`, `"ctna"`
+#'   or `"atna"`.
+#' @param ... Arguments passed to [simulate_sequences()].
+#' @param seed Optional base seed. A single number, or `NULL` (the default).
+#'   Dataset `i` uses `seed + i - 1`.
+#'
+#' @return A `simulab_sim` base `data.frame` of fitted edges, one row per
+#'   network and from/to pair, with columns `network`, `from`, `to` and
+#'   `weight`. Components: `sequences`, the generated sequences in long form
+#'   with columns `dataset`, `id`, `period` and `state`; `true_transitions`, the
+#'   generating probabilities with columns `dataset`, `from`, `to` and
+#'   `probability`; and `model_info`, one row per network describing the fit.
 #' @export
 #'
 #' @examples
@@ -93,11 +113,18 @@ simulate_tna_batches <- function(repetitions, model = c("tna", "ftna", "ctna", "
 
 #' Simulate repeated networks
 #'
-#' @param repetitions Number of networks.
-#' @param ... Arguments passed to `simulate_network()`.
-#' @param seed Optional base seed. Each network uses a deterministic offset.
+#' Calls [simulate_network()] `repetitions` times and stacks the edge lists.
 #'
-#' @return A combined tidy edge-list `simulab_sim` with network identifiers.
+#' @param repetitions Number of networks. A single positive whole number.
+#' @param ... Arguments passed to [simulate_network()].
+#' @param seed Optional base seed. A single number, or `NULL` (the default).
+#'   Network `i` uses `seed + i - 1`.
+#'
+#' @return A `simulab_sim` base `data.frame` edge list, one row per network and
+#'   edge, with the column `network` followed by the columns
+#'   [simulate_network()] returns (`from`, `to` and `weight`). The component
+#'   `settings`, reached with `as.data.frame(x, what = "settings")`, holds one
+#'   row per network with its generator arguments and realized edge count.
 #' @export
 #'
 #' @examples
@@ -137,20 +164,40 @@ simulate_network_batches <- function(repetitions, ..., seed = NULL) {
 
 #' Evaluate TNA estimation against generated truth
 #'
-#' @param repetitions Number of simulation replications.
-#' @param n Number of sequences per replication.
-#' @param chain_length Sequence length.
-#' @param n_states Number of states.
-#' @param models TNA estimators to evaluate.
-#' @param concentration,diagonal_concentration Transition-system parameters.
-#' @param missing_tail Trailing missing positions passed to
-#'   `simulate_sequences()`.
-#' @param threshold Edge-presence threshold for recovery metrics.
-#' @param seed Optional base seed.
-#' @param ... Arguments passed to `fit_tna()`.
+#' Draws a transition system per replication, simulates sequences from it, fits
+#' each estimator in `models`, and scores the fitted edges against the
+#' generating probabilities. Fitted weights are row-normalized before the
+#' comparison, so estimators on different weight scales are all read as
+#' transition probabilities.
 #'
-#' @return A tidy `simulab_sim` of replication/model agreement metrics, with
-#'   generated truth and estimated edges as components.
+#' @param repetitions Number of simulation replications. A single positive whole
+#'   number, defaulting to `100`.
+#' @param n Number of sequences per replication. A single whole number of at
+#'   least 2, defaulting to `200`.
+#' @param chain_length Sequence length. A single whole number of at least 2,
+#'   defaulting to `25`.
+#' @param n_states Number of states. A single whole number of at least 2,
+#'   defaulting to `6`.
+#' @param models TNA estimators to evaluate. A character vector of at least one
+#'   of `"tna"`, `"ftna"`, `"ctna"` and `"atna"`, all four by default.
+#' @param concentration,diagonal_concentration Transition-system parameters
+#'   passed to [generate_transition_system()], defaulting to `1` and `0`.
+#' @param missing_tail Trailing missing positions passed to
+#'   [simulate_sequences()], defaulting to `c(0L, 5L)`.
+#' @param threshold Absolute weight threshold above which an edge counts as
+#'   present, in both the agreement and the recovery metrics. A single
+#'   non-negative number, defaulting to `0`.
+#' @param seed Optional base seed. A single number, or `NULL` (the default).
+#'   Replication `i` draws its transition system with `seed + i - 1` and its
+#'   sequences with that offset plus `100000`.
+#' @param ... Arguments passed to [fit_tna()].
+#'
+#' @return A `simulab_sim` base `data.frame` with one row per replication and
+#'   model, holding `iteration`, `model`, the [compare_networks()] agreement
+#'   metrics and the [evaluate_edge_recovery()] summary. Components: `truth`,
+#'   the generating probabilities with columns `iteration`, `from`, `to` and
+#'   `weight`; and `estimated_edges`, the row-normalized fitted edges with
+#'   columns `iteration`, `model`, `from`, `to` and `weight`.
 #' @export
 #'
 #' @examples
@@ -240,16 +287,28 @@ evaluate_tna_estimation <- function(repetitions = 100L, n = 200L,
 
 #' Assess split-half TNA reliability
 #'
-#' @param data Sequence data accepted by `fit_tna()`.
-#' @param model TNA estimator.
-#' @param iterations Number of random split halves.
-#' @param split Fraction assigned to the first half.
-#' @param format,id,period,state Input-format arguments.
-#' @param seed Optional seed.
-#' @param ... Arguments passed to `fit_tna()`.
+#' Splits the sequences at random into two halves, fits the same estimator to
+#' each, and compares the two networks. Repeating that over `iterations`
+#' independent splits shows how stable an estimate this much data supports.
 #'
-#' @return A tidy base `data.frame` with one row of network agreement metrics
-#'   per split.
+#' @param data Sequence data accepted by [fit_tna()], with at least 4 rows.
+#' @param model TNA estimator, one of `"tna"` (the default), `"ftna"`, `"ctna"`
+#'   or `"atna"`.
+#' @param iterations Number of random split halves. A single whole number of at
+#'   least 2, defaulting to `100`.
+#' @param split Fraction of the sequences assigned to the first half, rounded
+#'   down. A single number strictly between 0 and 1, defaulting to `0.5`. Each
+#'   half must end up with at least two sequences.
+#' @param format,id,period,state Input-format arguments passed on when the
+#'   sequences are prepared: `format` is one of `"auto"` (the default), `"long"`
+#'   or `"wide"`, and the other three name the identifier, period and state
+#'   columns of long input.
+#' @param seed Optional seed. A single number, or `NULL` (the default).
+#' @param ... Arguments passed to [fit_tna()].
+#'
+#' @return A plain base `data.frame`, not a `simulab_sim`, with one row per
+#'   split, holding `iteration`, `model` and the [compare_networks()] agreement
+#'   metrics for the two halves.
 #' @export
 #'
 #' @examples

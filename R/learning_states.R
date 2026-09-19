@@ -66,9 +66,14 @@ learning_state_categories <- function() {
 
 #' List categorized learning states for sequence simulation
 #'
-#' @param categories One or more learning-state categories, or `"all"`.
+#' @param categories A character vector of one or more category identifiers
+#'   from [learning_state_categories()], or `"all"` (the default) for every
+#'   category. Unknown identifiers raise an error.
 #'
-#' @return A tidy base `data.frame` with category and state columns.
+#' @return A tidy base `data.frame` with one row per category-state pair and
+#'   columns `category` and `state`. A state may belong to more than one
+#'   category and then appears once per category, so `state` is not unique:
+#'   the full catalogue has 209 rows covering 202 distinct states.
 #' @export
 #'
 #' @examples
@@ -97,11 +102,19 @@ learning_states <- function(categories = "all") {
 
 #' Sample learning states reproducibly
 #'
-#' @param n Number of unique states.
-#' @param categories Categories passed to `learning_states()`.
+#' Samples without replacement from the distinct states of the selected
+#' categories, so the result never repeats a state.
+#'
+#' @param n Number of unique states to draw. A single positive whole number,
+#'   at most the number of distinct states in the selected categories.
+#' @param categories Categories passed to [learning_states()], defaulting to
+#'   `"all"`.
 #' @param seed Optional random seed.
 #'
-#' @return A tidy base `data.frame` with selection order, category, and state.
+#' @return A tidy base `data.frame` with `n` rows, one per sampled state, and
+#'   columns `order` (the selection order, `1:n`), `category` and `state`. A
+#'   state belonging to several categories gets all of them in `category`,
+#'   joined by `";"`.
 #' @export
 #'
 #' @examples

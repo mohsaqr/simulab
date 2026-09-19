@@ -321,7 +321,9 @@ calibrate_distribution <- function(distribution = c("beta", "gamma", "negative_b
 #' Most inversions are closed form. For a scale family whose shape is fixed by
 #' the coefficient of variation alone -- Weibull, log-logistic, Frechet,
 #' Nakagami -- the shape is found by root finding and the scale then follows
-#' exactly. Some families cannot reach every pair: a Nakagami squared
+#' exactly. Two one-parameter families, `chi` and `zero_truncated_poisson`,
+#' likewise invert their mean by root finding. Some families cannot reach
+#' every pair: a Nakagami squared
 #' coefficient of variation is at most `pi / 2 - 1`, a Lomax with a finite
 #' variance always has one above 1, and a beta variance is below
 #' `mean * (1 - mean)`. Those are refused rather than approximated.
@@ -335,7 +337,11 @@ calibrate_distribution <- function(distribution = c("beta", "gamma", "negative_b
 #' @return A base `data.frame` with one row per target and parameter, and
 #'   columns `distribution`, `mean`, `variance`, `parameter` and `value`. The
 #'   `parameter` names are those [list_distributions()] reports, so the result
-#'   states a distribution call.
+#'   states a distribution call. For a one-parameter family the reported
+#'   `variance` is the one the solved parameters imply rather than a target.
+#'   Called with no arguments the result is instead the catalogue: one row per
+#'   invertible distribution, with columns `distribution`, `parameters` and
+#'   `targets`.
 #'
 #' @section Conditions:
 #' `simulab_unattainable_moments` when no member of the family has the
@@ -433,8 +439,14 @@ calibrate_moments <- function(distribution = NULL, mean = NULL, variance = NULL)
 #' @param mean Poisson or negative-binomial mean.
 #' @param dispersion Gamma or negative-binomial dispersion.
 #'
-#' @return A base `data.frame` with one row per target ICC and the required
-#'   random-effect variance.
+#' @return A base `data.frame` with one row per target ICC and columns `icc`,
+#'   `distribution` and `random_effect_variance`. Except for the `normal`
+#'   `total_variance` case, which returns `icc * total_variance`, the variance
+#'   is `icc / (1 - icc)` times a residual variance on the linear-predictor
+#'   scale: `within_variance` for `normal`, the logistic latent variance
+#'   `pi^2 / 3` for `binary`, `log(1 + 1 / mean)` for `poisson`,
+#'   `trigamma(1 / dispersion)` for `gamma`, and
+#'   `trigamma(1 / (1 / mean + dispersion))` for `negative_binomial`.
 #' @export
 #'
 #' @examples
@@ -514,7 +526,15 @@ calibrate_icc <- function(icc,
 #'   coefficients are proportionally scaled to reach this target.
 #' @param tolerance Numerical root tolerance.
 #'
-#' @return A base `data.frame` with one row per calibrated coefficient.
+#' @return A base `data.frame` with one row per calibrated coefficient and
+#'   columns `term`, `coefficient`, `calibration` and `coefficient_scale`.
+#'   Coefficients are log-odds on the logit scale. The first row is
+#'   `"(Intercept)"`, followed by the `treatment` row when `risk_ratio` or
+#'   `risk_difference` was supplied, then one row per name of `coefficients`.
+#'   `calibration` names the target that was solved for -- `"prevalence"`,
+#'   `"auc"`, `"risk_ratio"` or `"risk_difference"` -- and
+#'   `coefficient_scale` is the factor the supplied covariate coefficients
+#'   were multiplied by, which is `1` unless `auc` was given.
 #' @export
 #'
 #' @examples

@@ -14,25 +14,42 @@ encode_factors(
 )
 }
 \arguments{
-\item{data}{Base \code{data.frame}.}
+\item{data}{Base \code{data.frame}, or a \code{simulab_sim}.}
 
-\item{variables}{Categorical variables to encode.}
+\item{variables}{Categorical variables to encode. A character vector of at
+least one column name of \code{data}. Levels are taken in the order
+\code{factor()} sorts them.}
 
-\item{coding}{Factor, dummy, or effect coding.}
+\item{coding}{Encoding to apply, one of \code{"factor"} (the default), one factor
+column named \verb{<prefix><variable>}, \code{"dummy"}, one 0/1 indicator per level
+named \verb{<prefix><variable>_<level>}, or \code{"effect"}, the same indicators
+without the last level's column and with \code{-1} in every column for that
+level.}
 
-\item{labels}{Optional labels for factor coding, as a named list per
-variable or a tidy data frame with columns \code{variable}, \code{level} and
-\code{label}.}
+\item{labels}{Optional replacement level labels, as a named list per
+variable, one atomic vector shared by every variable, or a tidy data frame
+with columns \code{variable}, \code{level} and \code{label}. Defaults to \code{NULL}, the
+values as they stand. The labels are passed to \code{factor()}, so they rename
+the levels in sorted order and also feed the generated column names.}
 
-\item{prefix}{Prefix for generated variables.}
+\item{prefix}{Prefix for generated variables. A single string, defaulting to
+\code{"f_"}.}
 
-\item{replace}{Remove source variables after encoding.}
+\item{replace}{Remove the source variables after encoding. A single flag,
+defaulting to \code{FALSE}.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with encoded variables.
+A \code{simulab_sim} base \code{data.frame} with the columns of \code{data}, minus
+the source variables when \code{replace} is \code{TRUE}, followed by the generated
+columns, one row per input row. The component \code{encoding}, reached with
+\code{as.data.frame(x, what = "encoding")}, holds one row per generated column
+with columns \code{source}, \code{encoded} and \code{coding}.
 }
 \description{
-Encode categorical variables
+Turns categorical columns into the numeric columns a model needs. Dummy
+coding is one indicator per level, with no reference level dropped; effect
+coding drops the last level's indicator and codes that level \code{-1} across the
+remaining columns; factor coding leaves one factor column.
 }
 \examples{
 data <- data.frame(id = 1:6, arm = rep(c("a", "b", "c"), each = 2))

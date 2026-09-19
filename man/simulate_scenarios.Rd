@@ -14,26 +14,38 @@ simulate_scenarios(
 )
 }
 \arguments{
-\item{scenarios}{A base \code{data.frame}, commonly from \code{scenario_grid()}.}
+\item{scenarios}{A base \code{data.frame} with at least one row, commonly from
+\code{\link[=scenario_grid]{scenario_grid()}}, containing the \code{id} and \code{replication} columns.}
 
-\item{simulator}{Canonical simulator name from \code{list_simulators()}.}
+\item{simulator}{Canonical simulator name, taken from the \code{simulator} column
+of \code{\link[=list_simulators]{list_simulators()}} and dispatched through \code{\link[=simulate_data]{simulate_data()}}.}
 
 \item{...}{Arguments held constant across scenarios.}
 
-\item{id}{Scenario identifier column.}
+\item{id}{Single string naming the scenario identifier column of
+\code{scenarios}, default \code{"scenario_id"}.}
 
-\item{replication}{Replication column.}
+\item{replication}{Single string naming the replication column of
+\code{scenarios}, default \code{"replication"}.}
 
-\item{seed}{Optional base seed. Each row receives a deterministic offset.}
+\item{seed}{Optional single base seed. Row \code{i} of \code{scenarios} is simulated
+with \code{seed + i - 1}, unless \code{scenarios} or \code{...} already supplies a
+\code{seed}.}
 }
 \value{
-A combined \code{simulab_sim} base \code{data.frame}; the scenario grid is a
-secondary component.
+A \code{simulab_sim} base \code{data.frame} stacking every scenario's output,
+with one row per generated observation: the \code{id} and \code{replication} columns
+first, then the simulator's own columns. The \code{scenarios} component holds
+the grid that was run, one row per scenario.
 }
 \description{
-Scenario columns are matched to simulator arguments. Identifier and
-replication columns are added to each generated observation, which makes
-the result immediately suitable for grouped estimation and recovery checks.
+Every column of \code{scenarios} other than \code{id} and \code{replication} is passed to
+the simulator as a named argument, so the column names must be simulator
+argument names and must not repeat an argument given in \code{...}. The
+identifier and replication values are prepended to each generated
+observation, which makes the result immediately suitable for grouped
+estimation and recovery checks. Every scenario must produce the same primary
+columns, otherwise the run is an error.
 }
 \examples{
 scenarios <- scenario_grid(mean_b = c(0, 0.5), replications = 2)

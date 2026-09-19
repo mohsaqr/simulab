@@ -16,28 +16,56 @@ simulate_proportional_survival(
 )
 }
 \arguments{
-\item{n}{Sample size.}
+\item{n}{Sample size. A single whole number of at least 5.}
 
-\item{coefficients}{Covariate log-hazard coefficients.}
+\item{coefficients}{Covariate log-hazard coefficients, a numeric vector with
+at least one element and one entry per covariate. Its names become the
+covariate columns; unnamed vectors are named \code{X1}, \code{X2}, and so on.}
 
-\item{baseline}{Weibull, exponential, or Gompertz baseline.}
+\item{baseline}{Baseline hazard family, one of \code{"weibull"} (the default),
+\code{"exponential"} or \code{"gompertz"}.}
 
-\item{rate}{Positive baseline rate.}
+\item{rate}{Positive scale factor of the baseline cumulative hazard. A single
+positive number, defaulting to \code{0.1}. It is the constant hazard when
+\code{baseline} is \code{"exponential"}.}
 
-\item{shape}{Positive Weibull/Gompertz shape.}
+\item{shape}{Positive shape of the Weibull or Gompertz baseline, in the
+textbook parameterization of the formulas above (so the hazard rises with
+time when \code{shape} is above 1 for a Weibull baseline). A single positive
+number, defaulting to \code{1}. It is ignored for an exponential baseline.}
 
-\item{censoring}{Target censoring fraction.}
+\item{censoring}{Target fraction of censored observations. A single number in
+\verb{[0, 1)}, defaulting to \code{0.3}. Exactly \code{0} turns censoring off and every
+observation is then an event; the realized fraction is random around the
+target otherwise.}
 
-\item{covariate_distribution}{Normal or binary covariates.}
+\item{covariate_distribution}{Distribution the covariates are drawn from,
+independently, one of \code{"normal"} (the default, standard normal) or
+\code{"binary"} (Bernoulli with probability 0.5).}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with observed time, status,
-covariates, and tidy parameters.
+A \code{simulab_sim} base \code{data.frame} with one row per unit and columns
+\code{id}, \code{time} (the observed time, the smaller of the event and censoring
+times), the integer \code{status} (\strong{\code{1} for an event and \code{0} for a censored
+observation}), and one covariate column per entry of \code{coefficients}.
+Components: \code{parameters} (one row per term, columns \code{term} and \code{value},
+holding the coefficients followed by \code{baseline_rate}, \code{shape} and the
+solved \code{censoring_rate}) and \code{diagnostics} (one row, columns
+\code{target_censoring}, \code{realized_censoring} and \code{baseline}).
 }
 \description{
-Simulate proportional-hazards survival data with calibrated censoring
+Draws independent covariates, multiplies the baseline cumulative hazard by
+\code{exp(x \%*\% coefficients)}, and inverts it to an event time, so the model is
+proportional hazards and each coefficient is a log hazard ratio. The three
+baselines are, for a unit with linear predictor \code{eta},
+Weibull \code{H(t) = rate * exp(eta) * t^shape},
+exponential \code{H(t) = rate * exp(eta) * t}, and
+Gompertz \code{H(t) = rate * exp(eta) * (exp(shape * t) - 1) / shape}.
+Censoring is random, not administrative: an independent exponential censoring
+time is drawn for every unit, its rate solved so that the expected censored
+fraction equals \code{censoring}.
 }
 \examples{
 result <- simulate_proportional_survival(

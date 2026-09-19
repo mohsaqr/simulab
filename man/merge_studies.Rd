@@ -7,14 +7,19 @@
 merge_studies(x, y, by, join = c("inner", "full", "left"))
 }
 \arguments{
-\item{x, y}{Base data frames.}
+\item{x, y}{Base data frames, or \code{simulab_sim} objects, to join.}
 
-\item{by}{Identifier variables shared by both inputs.}
+\item{by}{Identifier variables shared by both inputs. A character vector of
+at least one name present in both.}
 
-\item{join}{Join type.}
+\item{join}{Join type, one of \code{"inner"} (the default), keeping only matched
+identifiers, \code{"full"}, keeping every row of both inputs, or \code{"left"},
+keeping every row of \code{x}.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} containing the merged data.
+A \code{simulab_sim} base \code{data.frame} containing the merged data, sorted
+by \code{by} as \code{merge()} leaves it, with unmatched cells filled with \code{NA} under
+the \code{"full"} and \code{"left"} joins.
 }
 \description{
 Merge study data by identifiers

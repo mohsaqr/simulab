@@ -13,7 +13,9 @@ as_tna_model(x, group = NULL)
 complete native grouped model is returned.}
 }
 \value{
-A native \code{tna} or \code{group_tna} model object.
+A native \code{tna} or \code{group_tna} model object. For a
+\code{compare_tna_models()} result the stored models are returned as a list
+named by model type instead.
 }
 \description{
 Convert a tidy simulab TNA result to a native tna model

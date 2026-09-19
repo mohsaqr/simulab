@@ -9,10 +9,15 @@ as_igraph(x, directed = TRUE)
 \arguments{
 \item{x}{A simulab network, tidy edge list, matrix, or native TNA model.}
 
-\item{directed}{Whether the resulting graph is directed.}
+\item{directed}{Whether the resulting graph is directed. It is not inferred
+from \code{x}, so a network generated with \code{directed = FALSE} must be converted
+with \code{directed = FALSE} as well.}
 }
 \value{
-A native \code{igraph} object.
+A native \code{igraph} object carrying a \code{weight} edge attribute. When \code{x}
+is a \code{simulab_sim} with a \code{nodes} component, that node set supplies the
+vertices, so isolates are preserved; otherwise the vertices are the nodes
+appearing in the edge list.
 }
 \description{
 Convert tidy network data to an igraph object

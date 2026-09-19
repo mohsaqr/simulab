@@ -20,24 +20,31 @@ simulate_markov(
 \arguments{
 \item{n}{Number of chains.}
 
-\item{transition}{Square transition matrix or tidy transition table.}
+\item{transition}{Square transition matrix, or a tidy transition table with
+\code{from}, \code{to}, and \code{probability} columns. Every row of the implied matrix
+must sum to one.}
 
 \item{chain_length}{Chain length.}
 
-\item{initial}{Starting-state probabilities or a single fixed start state.}
+\item{initial}{Starting-state probabilities or a single fixed start state.
+When \code{NULL}, every chain starts in the first state.}
 
 \item{states}{Optional state labels.}
 
-\item{trim_state}{Optional terminal state. Later observations are removed.}
+\item{trim_state}{Optional terminal state. The first occurrence is kept and
+all later observations of that chain are removed.}
 
 \item{id, period, state}{Output variable names.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A long-form \code{simulab_sim} base \code{data.frame} with one row per chain
-position. Wide chains, transitions, and initial probabilities are available
-through \code{as.data.frame()}.
+A long-form \code{simulab_sim} base \code{data.frame} with columns \code{id},
+\code{period}, and \code{state} (renamed by those arguments), one row per chain
+position. \code{as.data.frame(x, what = )} also returns \code{transitions}
+(\code{from}, \code{to}, \code{probability}), \code{initial_probabilities} (\code{state},
+\code{probability}), and \code{wide} (one row per chain, columns \code{id}, \code{S1}, \code{S2},
+...).
 }
 \description{
 Simulate Markov chains

@@ -31,7 +31,8 @@ is generated.}
 
 \item{chain_length}{Maximum sequence length.}
 
-\item{initial}{Initial probabilities or a fixed starting state.}
+\item{initial}{Initial probabilities or a fixed starting state. When \code{NULL}
+and \code{transition} is supplied, every sequence starts in the first state.}
 
 \item{states}{State labels.}
 
@@ -62,9 +63,12 @@ sequence.}
 \item{seed}{Optional random seed.}
 }
 \value{
-A long-form \code{simulab_sim} base \code{data.frame}. Wide sequences,
-transition probabilities, initial probabilities, and settings are tidy
-components.
+A long-form \code{simulab_sim} base \code{data.frame} with columns \code{id},
+\code{period}, and \code{state}, one row per observed sequence position.
+\code{as.data.frame(x, what = )} also returns \code{transitions} (\code{from}, \code{to},
+\code{probability}, row-stochastic in \code{from}), \code{initial_probabilities}
+(\code{state}, \code{probability}), \code{wide} (one row per sequence, columns \code{id},
+\code{S1}, \code{S2}, ...), and a one-row \code{settings} table.
 }
 \description{
 Simulate basic or perturbed state sequences

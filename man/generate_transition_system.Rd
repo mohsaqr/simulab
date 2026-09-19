@@ -18,18 +18,23 @@ generate_transition_system(
 
 \item{states}{Optional state labels.}
 
-\item{concentration}{Dirichlet concentration for off-diagonal transitions.}
+\item{concentration}{Dirichlet concentration applied to every transition and
+to the initial-state probabilities.}
 
-\item{diagonal_concentration}{Optional additional self-transition
-concentration.}
+\item{diagonal_concentration}{Optional extra concentration added to the
+self-transition (diagonal) entries only. The default \code{0} leaves
+self-transitions no more likely than any other transition.}
 
-\item{state_categories}{Optional learning-state categories.}
+\item{state_categories}{Optional learning-state categories, used only when
+\code{states} is \code{NULL}, to draw state labels with \code{sample_learning_states()}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A tidy transition-edge \code{simulab_sim} with initial probabilities as a
-component.
+A tidy transition-edge \code{simulab_sim} base \code{data.frame} with
+\code{n_states^2} rows and columns \code{from}, \code{to}, and \code{probability}; every
+\code{from} state's probabilities sum to one. An \code{initial_probabilities} table
+(\code{state}, \code{probability}) is available through \code{as.data.frame()}.
 }
 \description{
 Generate a transition system

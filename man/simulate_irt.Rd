@@ -16,31 +16,66 @@ simulate_irt(
 )
 }
 \arguments{
-\item{n}{Number of respondents.}
+\item{n}{Number of respondents. A single whole number of at least 2.}
 
-\item{discrimination}{Positive item discriminations.}
+\item{discrimination}{Positive item discriminations, a scalar recycled
+across items (the default, \code{1}) or one value per item. Must equal one for
+\code{model = "rasch"}.}
 
-\item{difficulty}{Item difficulties. A vector gives dichotomous items; a
-matrix gives ordered thresholds by item.}
+\item{difficulty}{Item difficulties, on the same scale as the latent
+ability. A numeric vector, one difficulty per item, for the dichotomous
+models. \code{model = "graded"} instead requires an item-by-threshold matrix
+(or a tidy data frame with columns \code{item}, \code{dimension} and \code{difficulty})
+whose thresholds increase within each item.}
 
 \item{dimensions}{Item-by-dimension loading weights, or a tidy data frame
-with columns \code{item}, \code{dimension} and \code{loading}. \code{NULL} uses one
-dimension.}
+with columns \code{item}, \code{dimension} and \code{loading}. \code{NULL} (the default) uses
+one dimension. Each row is rescaled to unit length before use, so only
+the relative weights within an item matter, not their scale. Row and
+column names, when present, name the items and the ability columns.}
 
 \item{ability_correlation}{Latent ability correlation matrix, or a tidy
-data frame with columns \code{row}, \code{column} and \code{correlation}.}
+data frame with columns \code{row}, \code{column} and \code{correlation}. \code{NULL} (the
+default) makes the abilities uncorrelated.}
 
-\item{model}{Logistic model: Rasch, 2PL, 3PL, or graded response.}
+\item{model}{Logistic model: \code{"2pl"} (the default), \code{"rasch"}, \code{"3pl"}, or
+\code{"graded"}.}
 
-\item{guessing}{Lower-asymptote guessing parameters for 3PL items.}
+\item{guessing}{Lower-asymptote guessing parameters in \verb{[0, 1)}, a scalar
+recycled across items (the default, \code{0.2}) or one value per item. It is
+silently reset to zero unless \code{model = "3pl"}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with responses and true parameters.
+A \code{simulab_sim} base \code{data.frame} with one row per respondent and
+columns \code{id} and one integer column per item, coded \code{0}/\code{1} for the
+dichotomous models and \code{0} to the number of thresholds for
+\code{model = "graded"}. An \code{abilities} component holds one row per respondent
+with columns \code{id} and one true ability per dimension. A \code{parameters}
+component holds one row per item for the dichotomous models, with columns
+\code{item}, \code{parameter} (\code{"difficulty"}), \code{category} (\code{NA}), \code{value},
+\code{discrimination} and \code{guessing}; for \code{model = "graded"} it holds one row
+per item-by-threshold combination, with \code{parameter} equal to
+\code{"threshold"}, \code{category} the threshold index, and no \code{guessing} column.
 }
 \description{
-Simulate item-response data
+Draws latent abilities from a standard multivariate normal (mean zero, unit
+variance, correlation \code{ability_correlation}), projects them onto each item
+through \code{dimensions}, and samples responses from a logistic item-response
+model.
+}
+\details{
+For the dichotomous models the probability of a correct response is
+\code{guessing + (1 - guessing) * plogis(discrimination * (theta - difficulty))},
+so \code{difficulty} is on the ability scale (the point of inflection), not an
+intercept. \code{"rasch"} fixes all discriminations at one and \code{"2pl"} sets
+\code{guessing} to zero; only \code{"3pl"} uses \code{guessing}.
+
+For \code{model = "graded"} the cumulative category probabilities are
+\code{plogis(discrimination * (theta - threshold))} for each threshold of an
+item, and the category probabilities are their successive differences, so
+the thresholds are also on the ability scale.
 }
 \examples{
 result <- simulate_irt(

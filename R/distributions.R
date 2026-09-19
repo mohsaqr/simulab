@@ -13,10 +13,12 @@
 ## `simulate_copula()` in one definition.
 ##
 ## A distribution that has both is stating the same thing twice, so the two can
-## drift apart; a test asserts that they agree. Only base R's own samplers are
-## registered alongside a quantile function, because they are R's tuned
-## implementations. Everything simulab defines itself is defined once, as a
-## quantile function, and `.distribution_sampler()` derives the sampler.
+## drift apart; a test asserts that they agree. A sampler is registered
+## alongside a quantile function only where base R already supplies a tuned
+## one -- the exceptions are `binary` and `deterministic`, which wrap
+## `rbinom(size = 1)` and `rep_len()`. Everything else simulab defines itself
+## is defined once, as a quantile function, and `.distribution_sampler()`
+## derives the sampler.
 ##
 ## Distributions are data here rather than branches of a switch(), which is
 ## what makes the catalogue extensible and listable. Everything is built on

@@ -14,16 +14,30 @@ validate_recovery(
 )
 }
 \arguments{
-\item{estimates}{Tidy estimates with term and estimate columns.}
+\item{estimates}{Tidy base \code{data.frame} with a term column and an estimate
+column.}
 
-\item{truth}{Tidy truth with term and truth columns.}
+\item{truth}{Tidy base \code{data.frame} with a term column and a true-value
+column.}
 
-\item{term, estimate, true_value}{Column names.}
+\item{term}{Name of the term column in both frames, default \code{"term"}. It is
+the key the two frames are merged on.}
 
-\item{tolerance}{Absolute error tolerance for successful recovery.}
+\item{estimate}{Name of the estimate column in \code{estimates}, default
+\code{"estimate"}.}
+
+\item{true_value}{Name of the true-value column in \code{truth}, default
+\code{"truth"}.}
+
+\item{tolerance}{Single non-negative absolute-error tolerance for successful
+recovery, default \code{0.1}.}
 }
 \value{
-A base \code{data.frame} with bias, absolute/relative error, and recovery.
+A base \code{data.frame} with one row per term appearing in either frame
+(the merge keeps unmatched terms) and the columns \code{term}, \code{estimate},
+\code{truth}, \code{bias} (estimate minus truth), \code{absolute_error},
+\code{relative_error} (\code{NA} where truth is zero) and \code{recovered}, a logical
+that is \code{TRUE} when \code{absolute_error} is at most \code{tolerance}.
 }
 \description{
 Compare recovered estimates with known simulation truth

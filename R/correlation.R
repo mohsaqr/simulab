@@ -144,9 +144,9 @@
 #' @param structure Correlation structure: one of `"independent"`,
 #'   `"exchangeable"`, `"ar1"`, or `"custom"`. If left unset it is chosen from
 #'   the other arguments: `"custom"` when `correlation` is supplied,
-#'   `"exchangeable"` when a non-zero `rho` (or `tau`) is supplied, and
-#'   `"independent"` otherwise. Passing `"independent"` together with a
-#'   non-zero `rho` is a contradiction and raises an error.
+#'   `"exchangeable"` when a non-zero `rho` is supplied, and `"independent"`
+#'   otherwise. Passing `"independent"` together with a non-zero `rho` is a
+#'   contradiction and raises a `simulab_contradictory_structure` error.
 #' @param correlation Custom correlation matrix.
 #' @param variable_names Optional variable names.
 #'
@@ -231,7 +231,8 @@ correlation_structure <- function(n_variables, rho = 0,
         nrow(correlation) == length(means)
   )
 
-  covariance <- diag(sds) %*% correlation %*% diag(sds)
+  scale_matrix <- diag(sds, nrow = length(sds))
+  covariance <- scale_matrix %*% correlation %*% scale_matrix
   eigen_result <- eigen(covariance, symmetric = TRUE)
   if (min(eigen_result$values) < -1e-8) {
     stop("Requested covariance matrix is not positive semidefinite.", call. = FALSE)
@@ -252,17 +253,22 @@ correlation_structure <- function(n_variables, rho = 0,
 #' @param structure Correlation structure: one of `"independent"`,
 #'   `"exchangeable"`, `"ar1"`, or `"custom"`. If left unset it is chosen from
 #'   the other arguments: `"custom"` when `correlation` is supplied,
-#'   `"exchangeable"` when a non-zero `rho` (or `tau`) is supplied, and
-#'   `"independent"` otherwise. Passing `"independent"` together with a
-#'   non-zero `rho` is a contradiction and raises an error.
+#'   `"exchangeable"` when a non-zero `rho` is supplied, and `"independent"`
+#'   otherwise. Passing `"independent"` together with a non-zero `rho` is a
+#'   contradiction and raises a `simulab_contradictory_structure` error.
 #' @param correlation A custom correlation matrix or tidy table returned by
 #'   `correlation_structure()`.
 #' @param variable_names Optional variable names.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame`. The requested correlation and
-#'   covariance structures are available through `as.data.frame()` using
-#'   `what = "correlation"` or `what = "covariance"`.
+#' @return A `simulab_sim` base `data.frame` with one row per observation and
+#'   columns `id` and one column per variable. Three tidy tables come from
+#'   `as.data.frame()`: `what = "parameters"` has one row per variable with
+#'   columns `variable`, `mean` and `sd`; `what = "correlation"` and
+#'   `what = "covariance"` each have one row per matrix cell with columns
+#'   `row`, `column` and `correlation` or `covariance`. The covariance is the
+#'   correlation matrix scaled by `sds` on both sides, so `sds` are standard
+#'   deviations rather than variances.
 #' @export
 #'
 #' @examples
@@ -318,7 +324,10 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
   if (!is.null(correlation)) structure <- "custom"
   correlation_matrix <- .correlation_matrix(length(means), rho, structure, correlation)
   dimnames(correlation_matrix) <- list(variable_names, variable_names)
-  covariance_matrix <- diag(sds) %*% correlation_matrix %*% diag(sds)
+  ## `nrow` is required: `diag()` on a length-one numeric builds an identity
+  ## matrix of that size rather than a one-by-one scale matrix.
+  scale_matrix <- diag(sds, nrow = length(sds))
+  covariance_matrix <- scale_matrix %*% correlation_matrix %*% scale_matrix
   dimnames(covariance_matrix) <- list(variable_names, variable_names)
 
   values <- .with_seed(
@@ -361,7 +370,14 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
 #' @param variable_names Optional variable names.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with one row per observation.
+#' @return A `simulab_sim` base `data.frame` with one row per observation and
+#'   columns `id` and one column per variable, each holding a category label.
+#'   Two tidy tables come from `as.data.frame()`: `what = "probabilities"` has
+#'   one row per variable and category with columns `variable`, `category` and
+#'   `probability`; `what = "correlation"` has one row per latent
+#'   correlation-matrix cell with columns `row`, `column` and `correlation`.
+#'   That correlation is the latent Gaussian one, not the correlation of the
+#'   realised categories, which is attenuated by the thresholding.
 #' @export
 #'
 #' @examples
@@ -525,7 +541,8 @@ simulate_ordinal <- function(n, probabilities, n_variables = 1L, rho = 0,
 #' @param n_clusters Number of cluster-specific structures.
 #'
 #' @return A base `data.frame` with one row per cluster and correlation-matrix
-#'   cell.
+#'   cell, and columns `row`, `column`, `correlation` and `cluster`. The `row`
+#'   and `column` labels are of the form `period_<p>_unit_<u>`.
 #' @export
 #'
 #' @examples

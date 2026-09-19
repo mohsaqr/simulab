@@ -18,25 +18,37 @@ cross_validate_tna(
 )
 }
 \arguments{
-\item{data}{Sequence data.}
+\item{data}{Sequence data in long or wide form.}
 
-\item{models}{TNA estimators.}
+\item{models}{Character vector of TNA estimators to compare, any of \code{"tna"},
+\code{"ftna"}, \code{"ctna"}, \code{"atna"}. The default runs all four.}
 
-\item{iterations}{Number of splits.}
+\item{iterations}{Number of train/test splits, a whole number of at least 1,
+default \code{20}.}
 
-\item{training_fraction}{Training fraction.}
+\item{training_fraction}{Fraction of sequences assigned to the training
+half, strictly between 0 and 1, default \code{0.7}. At least two training
+sequences are always used, and a split leaving fewer than two testing
+sequences is an error.}
 
-\item{format, id, period, state}{Input-format arguments.}
+\item{format, id, period, state}{Arguments describing the shape and column
+names of \code{data}. They are used to reshape \code{data} before splitting; both
+halves are then fitted in wide form.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional single seed, restored on exit.}
 
-\item{...}{Estimator arguments.}
+\item{...}{Further arguments passed to \code{\link[=fit_tna]{fit_tna()}}.}
 }
 \value{
-A tidy base \code{data.frame} of train/test network agreement metrics.
+A plain base \code{data.frame} with one row per iteration and estimator
+and the columns \code{iteration}, \code{model}, and the \code{\link[=compare_networks]{compare_networks()}}
+agreement metrics \code{pearson}, \code{cosine}, \code{mae}, \code{rmse}, \code{jaccard}, \code{edges_x}
+and \code{edges_y}. This is not a \code{simulab_sim}.
 }
 \description{
-Cross-validate TNA estimators
+Each iteration splits the sequences once into a training and a testing set,
+fits every estimator to both halves, and compares the two networks with
+\code{\link[=compare_networks]{compare_networks()}}.
 }
 \examples{
 data <- simulate_sequences(n = 60, n_states = 3, chain_length = 12, seed = 1)

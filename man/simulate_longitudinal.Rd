@@ -19,39 +19,67 @@ simulate_longitudinal(
 )
 }
 \arguments{
-\item{n}{Number of units.}
+\item{n}{Number of units. A single positive whole number.}
 
-\item{occasions}{Number of occasions.}
+\item{occasions}{Number of occasions retained per unit. A single whole
+number of at least 2.}
 
 \item{transition}{Lag-one coefficients as a square matrix, or as a tidy
-data frame with columns \code{from}, \code{to} and \code{coefficient}.}
+data frame with columns \code{from}, \code{to} and \code{coefficient} (\code{from} supplies
+the matrix row and \code{to} the column). Entry \verb{[i, j]} multiplies variable
+\code{j} at the previous occasion when forming variable \code{i} at the current
+occasion, so rows index the \emph{receiving} variable and columns the
+\emph{predicting} variable. The spectral radius must be below one.}
 
-\item{intercept}{Variable intercepts.}
+\item{intercept}{Variable intercepts, a scalar recycled across variables
+(the default, \code{0}) or one value per variable. The intercept is added to
+the deviation from the person mean at every occasion, so a non-zero
+intercept shifts the stationary mean to
+\code{person_mean + solve(diag(p) - transition) \%*\% intercept} and the
+\code{person_means} component is then no longer the realised process mean.}
 
 \item{innovation_covariance}{Innovation covariance matrix, or a tidy data
-frame with columns \code{row}, \code{column} and \code{covariance}.}
+frame with columns \code{row}, \code{column} and \code{covariance}. Must be symmetric
+and positive semidefinite. \code{NULL} (the default) uses the identity.}
 
 \item{initial_covariance}{Initial-state covariance matrix, or a tidy data
-frame with columns \code{row}, \code{column} and \code{covariance}.}
+frame with columns \code{row}, \code{column} and \code{covariance}. \code{NULL} (the default)
+reuses \code{innovation_covariance}.}
 
 \item{between_covariance}{Between-unit covariance of person means, or a
-tidy data frame with columns \code{row}, \code{column} and \code{covariance}.}
+tidy data frame with columns \code{row}, \code{column} and \code{covariance}. \code{NULL}
+(the default) is a zero matrix, giving every unit the same person mean,
+\code{grand_means}.}
 
-\item{grand_means}{Population means.}
+\item{grand_means}{Population means, a scalar recycled across variables
+(the default, \code{0}) or one value per variable.}
 
-\item{beeps_per_day}{Optional number of occasions per day. Temporal carryover
-resets at each day boundary.}
+\item{beeps_per_day}{Optional number of occasions per day; \code{occasions} must
+be divisible by it. Adds \code{day} and \code{beep} columns to the returned data.
+Temporal carryover resets at each day boundary.}
 
-\item{burn_in}{Warm-up occasions discarded before output.}
+\item{burn_in}{Warm-up occasions generated and then discarded before
+output. A single non-negative whole number, defaulting to \code{50}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A long-form \code{simulab_sim} base \code{data.frame}; wide observations and
-transition/covariance tables are available as components.
+A long-form \code{simulab_sim} base \code{data.frame} with one row per
+unit-occasion (\code{n * occasions} rows) and columns \code{id}, \code{occasion} and one
+per variable, plus \code{day} and \code{beep} when \code{beeps_per_day} is supplied.
+Components: \code{wide} (one row per unit, one \verb{<variable>.<occasion>} column
+per measurement), \code{transition}, \code{innovation_covariance} and
+\code{between_covariance} (tidy matrix tables with columns \code{row}, \code{column} and
+\code{coefficient} or \code{covariance}), and \code{person_means} (one row per unit with
+columns \code{id} and one per variable).
 }
 \description{
-Simulate a multivariate longitudinal VAR process
+Draws a person mean for each unit from \code{between_covariance} around
+\code{grand_means}, then runs a first-order vector autoregression on the
+deviations from that person mean:
+\verb{y_t = mu + intercept + transition \%*\% (y_\{t-1\} - mu) + e_t}, with \code{e_t}
+drawn from \code{innovation_covariance}. The first \code{burn_in} occasions are
+discarded so the retained occasions are near stationarity.
 }
 \examples{
 # `transition` is the lag-one coefficient matrix of the VAR process.

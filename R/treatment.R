@@ -21,16 +21,34 @@
 
 #' Assign randomized treatment groups
 #'
-#' @param data Base `data.frame`.
-#' @param groups Number of treatment groups or their labels.
-#' @param balanced Use exact balance within strata.
-#' @param strata Optional stratification variables.
-#' @param ratios Relative allocation ratios.
-#' @param name Name of the treatment variable.
-#' @param seed Optional random seed.
+#' Randomizes the rows of `data` to treatment groups, independently within each
+#' combination of the `strata` variables. Balanced assignment allocates the
+#' group sizes a stratum is due, rounding the shares to whole units and giving
+#' the remainder to the groups with the largest fractional part, then permutes
+#' them; unbalanced assignment draws each row independently with probabilities
+#' proportional to `ratios`.
 #'
-#' @return A `simulab_sim` base `data.frame` with a treatment variable and a
-#'   tidy allocation table.
+#' @param data Base `data.frame`, or a `simulab_sim`, with at least one row.
+#' @param groups Number of treatment groups, as a single whole number of at
+#'   least 2 (defaulting to `2`), or an atomic vector of at least two unique
+#'   labels. A count of 2 is labelled `0` and `1`, and a larger count `1` to
+#'   `groups`.
+#' @param balanced Use exact allocation within each stratum. A single flag,
+#'   defaulting to `TRUE`. `FALSE` draws each row independently instead, so the
+#'   realized group sizes vary.
+#' @param strata Optional character vector of stratification variables, all
+#'   present in `data`. Defaults to `NULL`, one stratum holding every row.
+#' @param ratios Relative allocation ratios, a positive numeric vector with one
+#'   value per group. Defaults to `NULL`, equal allocation.
+#' @param name Name of the treatment variable, which must not already exist in
+#'   `data`. A single non-empty string, defaulting to `"treatment"`.
+#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#'
+#' @return A `simulab_sim` base `data.frame` with the columns of `data` followed
+#'   by the treatment variable named by `name`, one row per input row. The
+#'   component `allocation`, reached with
+#'   `as.data.frame(x, what = "allocation")`, holds one row per stratum and
+#'   group, with columns `stratum`, `treatment` and `observations`.
 #' @export
 #'
 #' @examples
@@ -38,7 +56,7 @@
 #'
 #' result <- assign_treatment(data, groups = 2, strata = "site", seed = 1)
 #' head(result)
-#' table(as.data.frame(result)$treatment)
+#' as.data.frame(result, what = "allocation")
 assign_treatment <- function(data, groups = 2L, balanced = TRUE,
                              strata = NULL, ratios = NULL,
                              name = "treatment", seed = NULL) {
@@ -116,16 +134,36 @@ assign_treatment <- function(data, groups = 2L, balanced = TRUE,
 
 #' Generate observational treatment or exposure groups
 #'
-#' @param data Base `data.frame`.
-#' @param formulas Character vector of probability formulas. An implicit final
-#'   group receives the remaining probability.
-#' @param link Identity or multinomial-logit link.
-#' @param labels Optional group labels.
-#' @param name Name of the exposure variable.
-#' @param seed Optional random seed.
-#' @param envir Formula evaluation environment.
+#' Evaluates one formula per modelled group against every row of `data` and
+#' draws that row's exposure from the resulting probabilities, so the formulas
+#' are the propensity model. One group is always implicit: it is listed last and
+#' takes the remaining probability, which makes it the reference category of the
+#' logit link.
 #'
-#' @return A `simulab_sim` base `data.frame` with the generated exposure group.
+#' @param data Base `data.frame`, or a `simulab_sim`, with at least one row.
+#' @param formulas Character vector of at least one formula, each an expression
+#'   over the columns of `data`. Under the identity link they are evaluated on
+#'   the probability scale; under the logit link they are the log odds of that
+#'   group relative to the implicit final group, that is a multinomial logit
+#'   linear predictor. An implicit final group receives the remaining
+#'   probability.
+#' @param link Scale the formulas are stated on, one of `"identity"` (the
+#'   default) or `"logit"`, the multinomial-logit link.
+#' @param labels Optional atomic vector of group labels, one per formula plus
+#'   one for the implicit final group. Defaults to `NULL`: `c(1, 0)` for a
+#'   single formula, so the modelled group is `1` and the implicit reference is
+#'   `0`, and `1` to the number of groups otherwise, the implicit group last.
+#' @param name Name of the exposure variable, which must not already exist in
+#'   `data`. A single non-empty string, defaulting to `"treatment"`.
+#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param envir Environment the formulas are evaluated in after the data
+#'   columns. Defaults to the caller's environment.
+#'
+#' @return A `simulab_sim` base `data.frame` with the columns of `data` followed
+#'   by the exposure variable named by `name`, one row per input row. The
+#'   component `probabilities`, reached with
+#'   `as.data.frame(x, what = "probabilities")`, holds one row per observation
+#'   and group, with columns `observation`, `group` and `probability`.
 #' @export
 #'
 #' @examples
@@ -197,19 +235,44 @@ observe_treatment <- function(data, formulas,
 
 #' Assign a stepped-wedge treatment schedule
 #'
-#' @param data Long-form base `data.frame`.
-#' @param cluster Cluster identifier.
-#' @param period Period variable.
-#' @param waves Number of waves.
-#' @param wave_length Periods between wave starts.
-#' @param start First treatment-start period.
-#' @param lag Transition periods before treatment becomes active.
-#' @param treatment Name of the active-treatment variable.
-#' @param transition Name of the transition variable.
-#' @param randomize Randomize clusters to waves.
-#' @param seed Optional random seed.
+#' Splits the clusters into equally sized waves and switches each wave on at
+#' `start + (wave - 1) * wave_length`, the wave's treatment-start period. A row
+#' is treated from `treatment_start + lag` onwards, and the `lag` periods from
+#' `treatment_start` up to that point are flagged as transition periods instead.
+#' The period values are compared as they stand, so they must be on the same
+#' scale as `start`. Periods created by [expand_periods()] are numbered from
+#' `0`.
 #'
-#' @return A `simulab_sim` base `data.frame` and a tidy cluster-wave schedule.
+#' @param data Long-form base `data.frame`, or a `simulab_sim`, with one row per
+#'   cluster unit and period and at least one row.
+#' @param cluster Cluster identifier. A single string naming a column of `data`,
+#'   whose number of unique values must be divisible by `waves`.
+#' @param period Period variable. A single string naming a column of `data`,
+#'   which must reach `start + (waves - 1) * wave_length + lag`.
+#' @param waves Number of waves. A single positive whole number.
+#' @param wave_length Periods between consecutive wave starts. A single positive
+#'   whole number.
+#' @param start Treatment-start period of the first wave. A single number.
+#' @param lag Transition periods after a cluster's start before treatment
+#'   becomes active. A single non-negative whole number, defaulting to `0`.
+#' @param treatment Name of the active-treatment variable, which is `1` from
+#'   `treatment_start + lag` onwards and `0` before. A single string, defaulting
+#'   to `"treatment"`.
+#' @param transition Name of the transition variable, which is `1` in the `lag`
+#'   periods between a cluster's `treatment_start` and the start of active
+#'   treatment. A single string, defaulting to `"transition"`. The column is
+#'   only added when `lag` is above `0`.
+#' @param randomize Randomize the allocation of clusters to waves. A single
+#'   flag, defaulting to `TRUE`. `FALSE` fills the waves in the order the
+#'   clusters appear in `data`.
+#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#'
+#' @return A `simulab_sim` base `data.frame` with the columns of `data` followed
+#'   by the transition variable (only when `lag` is above `0`) and the treatment
+#'   variable, one row per input row. The component `schedule`, reached with
+#'   `as.data.frame(x, what = "schedule")`, holds one row per cluster with the
+#'   cluster identifier under its own name plus columns `wave` and
+#'   `treatment_start`.
 #' @export
 #'
 #' @examples

@@ -16,15 +16,23 @@ network_centrality(
 
 \item{measures}{Centrality measures.}
 
-\item{directed}{Treat edges as directed.}
+\item{directed}{Treat edges as directed. This governs the graph conversion
+and the \code{betweenness}, \code{eigenvector}, and \code{pagerank} measures only;
+\code{degree}, \code{strength}, and \code{closeness} always combine incoming and outgoing
+ties. \code{betweenness} and \code{closeness} use \verb{1 / |weight|} as the edge
+distance.}
 }
 \value{
-A tidy base \code{data.frame} with one node/measure/value row.
+A tidy base \code{data.frame} with one row per node and measure and
+columns \code{node}, \code{measure}, and \code{value}, stacked measure after measure.
+Requires the suggested \code{igraph} package.
 }
 \description{
 Calculate tidy network centralities
 }
 \examples{
 network <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 1)
-head(network_centrality(network, measures = c("degree", "strength")))
+if (requireNamespace("igraph", quietly = TRUE)) {
+  head(network_centrality(network, measures = c("degree", "strength")))
+}
 }

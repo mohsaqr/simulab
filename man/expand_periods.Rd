@@ -19,35 +19,64 @@ expand_periods(
 )
 }
 \arguments{
-\item{data}{Base \code{data.frame} with one row per observational unit.}
+\item{data}{Base \code{data.frame}, or a \code{simulab_sim}, with one row per
+observational unit and at least one row.}
 
-\item{periods}{Number of periods, a variable containing counts, or \code{NULL}
+\item{periods}{Number of periods: a single whole number applied to every
+unit, the name of a column of \code{data} holding a count per unit, or \code{NULL}
 when \code{period_values} is supplied.}
 
-\item{id}{Identifier variable.}
+\item{id}{Identifier variable. A single string naming a column of \code{data}. It
+is carried into the schedule component; the returned rows are the input
+rows repeated, so the identifier is not renumbered.}
 
-\item{period}{Name of the period column.}
+\item{period}{Name of the period column. A single non-empty string,
+defaulting to \code{"period"}. Periods generated from \code{periods} are numbered
+from \code{0}, so a unit followed for \code{k} periods gets \code{0} to \code{k - 1}.}
 
-\item{period_values}{Optional common period values.}
+\item{period_values}{Optional atomic vector of period values shared by every
+unit, used in place of the numbering above. Defaults to \code{NULL}, and may not
+be combined with \code{periods}.}
 
-\item{interval_mean}{Optional constant or variable defining mean intervals.}
+\item{interval_mean}{Mean interval between consecutive periods: a single
+number, the name of a column of \code{data}, or \code{NULL} (the default) for an
+interval of \code{1}.}
 
-\item{interval_dispersion}{Optional constant or variable defining gamma
-interval dispersion.}
+\item{interval_dispersion}{Dispersion of the gamma-distributed intervals: a
+single non-negative number, or the name of a column of \code{data}. Defaults to
+\code{0}, exactly regular spacing; a positive value draws each interval from a
+gamma distribution with mean \code{interval_mean} and variance
+\code{interval_mean^2 * interval_dispersion}.}
 
-\item{time}{Name of the generated elapsed-time column.}
+\item{time}{Name of the generated elapsed-time column, which starts at \code{0}
+for every unit and accumulates the intervals. A single string, defaulting
+to \code{"time"}.}
 
-\item{time_variables}{Optional wide variables to gather by period.}
+\item{time_variables}{Optional character vector of wide columns of \code{data},
+exactly one per period, gathered into the long value column and then
+dropped. Defaults to \code{NULL}.}
 
-\item{value}{Name of the gathered time-varying value.}
+\item{value}{Name of the gathered time-varying value. A single non-empty
+string, defaulting to \code{"value"}.}
 
-\item{seed}{Optional random seed for irregular intervals.}
+\item{seed}{Optional random seed for irregular intervals. A single number, or
+\code{NULL} (the default).}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with one row per unit-period.
+A \code{simulab_sim} base \code{data.frame} with one row per unit-period,
+holding the columns of \code{data} plus the period and elapsed-time columns, and
+the gathered value column in place of \code{time_variables} when those are
+given. The component \code{schedule}, reached with
+\code{as.data.frame(x, what = "schedule")}, holds one row per input unit with
+columns \code{input_row}, \code{id}, \code{periods}, \code{interval_mean} and
+\code{interval_dispersion}.
 }
 \description{
-Expand observations across periods
+Repeats every unit's row once per period, numbering the periods and adding
+the elapsed time each period falls at. Units may be followed for different
+numbers of periods, and the spacing may be regular or irregular. A set of
+wide columns, one per period, can be gathered into a single long value column
+at the same time.
 }
 \examples{
 data <- data.frame(id = 1:10)

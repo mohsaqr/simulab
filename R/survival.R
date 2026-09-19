@@ -1,12 +1,30 @@
 #' Define a survival process
 #'
-#' @param event Name of the event-time variable.
-#' @param formula Log-hazard formula.
-#' @param scale Positive Weibull scale formula.
-#' @param shape Positive Weibull shape formula in the simstudy parameterization.
-#' @param transition Time at which this hazard specification begins.
+#' Records one Weibull hazard segment for one event time. The simstudy
+#' parameterization is used throughout: an event time drawn from this segment
+#' has survival function `S(t) = exp(-exp(formula) * t^(1 / shape) / scale)`, so
+#' `shape` is the *reciprocal* of the textbook Weibull shape, and
+#' `exp(formula)` multiplies the whole cumulative hazard. A coefficient inside
+#' `formula` is therefore a log hazard ratio, while `formula` itself equals the
+#' log hazard only when `shape` and `scale` are both 1.
 #'
-#' @return A one-row `simulab_survival_spec` base `data.frame`.
+#' @param event Name of the event-time variable. A single non-empty string.
+#' @param formula Linear predictor on the log scale, given as a number, a
+#'   string, or an unquoted expression over the covariate columns (for example
+#'   `"-8 + 0.5 * treatment"`). Defaults to `0`. It is stored as text and
+#'   evaluated row by row against the data.
+#' @param scale Positive Weibull scale, as a number, a string, or an expression
+#'   over the covariates. Defaults to `1`. It divides the cumulative hazard.
+#' @param shape Positive Weibull shape in the simstudy parameterization (the
+#'   exponent applied to the transformed time, so the hazard is constant when
+#'   `shape` is 1 and decreasing when `shape` is above 1). Defaults to `1`.
+#' @param transition Time at which this hazard segment begins. A single finite
+#'   non-negative number, defaulting to `0`. The first segment of an event must
+#'   start at `0`.
+#'
+#' @return A one-row `simulab_survival_spec` base `data.frame` with columns
+#'   `event`, `formula`, `scale` and `shape` (all character, the stored
+#'   definition text) and the numeric column `transition`.
 #' @export
 #'
 #' @examples
@@ -49,11 +67,13 @@ define_survival <- function(event, formula = 0, scale = 1, shape = 1,
 #'
 #'   **Hazard calls.** `time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3)`
 #'   names the event with the argument name and states its hazard as a call.
-#'   `log_rate` is the log hazard and may be any expression over the covariates;
-#'   `shape` and `scale` default to 1 and `from`, the time at which the segment
-#'   begins, to 0. Arguments may be positional or named, and repeating the
-#'   argument name gives one event several segments, which is a piecewise
-#'   hazard.
+#'   `log_rate` is the linear predictor on the log scale, the `formula` of
+#'   [define_survival()], so a coefficient inside it is a log hazard ratio. It
+#'   may be any expression over the covariates; `shape` and `scale` default to 1
+#'   and `from`, the time at which the segment begins, to 0. Arguments may be
+#'   positional, in the order `log_rate`, `shape`, `scale`, `from`, or named,
+#'   and repeating the argument name gives one event several segments, which is
+#'   a piecewise hazard.
 #'
 #'   **Specification columns** given as named vectors (`event`, `formula`,
 #'   `scale`, `shape`, `transition`).
@@ -68,7 +88,9 @@ define_survival <- function(event, formula = 0, scale = 1, shape = 1,
 #'   `transition` times give a piecewise hazard.
 #'
 #' @return A `simulab_survival_spec` base `data.frame` with one row per hazard
-#'   segment.
+#'   segment and the columns of [define_survival()]: `event`, `formula`,
+#'   `scale`, `shape` and `transition`. Rows written by the column form and by
+#'   the hazard-call form are ordered by `event` and then `transition`.
 #' @export
 #'
 #' @examples
@@ -206,14 +228,31 @@ define_survivals <- function(...) {
 
 #' Add one or more survival processes to data
 #'
-#' @param data Baseline base `data.frame`.
-#' @param specification Definitions from `define_survivals()`.
-#' @param seed Optional random seed.
-#' @param digits Optional number of decimal places.
-#' @param envir Formula evaluation environment.
+#' Draws one latent event time per process for every row of `data`, from the
+#' Weibull hazard of [define_survival()]. The times are uncensored: censoring
+#' and competing-risk coding are applied afterwards, for example with
+#' [combine_competing_risks()]. An event with several rows in `specification`
+#' has a piecewise hazard, whose `scale` and `shape` must stay constant across
+#' its segments.
 #'
-#' @return A `simulab_sim` base `data.frame` with one event-time variable per
-#'   process.
+#' @param data Baseline base `data.frame`, or a `simulab_sim`, with at least one
+#'   row. Its columns are the covariates the formulas may refer to, and none of
+#'   them may already carry an event name.
+#' @param specification Definitions from [define_survivals()], a
+#'   `simulab_survival_spec` object.
+#' @param seed Optional random seed. A single number, or `NULL` (the default) to
+#'   leave the stream untouched.
+#' @param digits Optional number of decimal places the event times are rounded
+#'   to. A single non-negative whole number, or `NULL` (the default) for
+#'   unrounded times.
+#' @param envir Environment the formulas are evaluated in after the data
+#'   columns. Defaults to the caller's environment.
+#'
+#' @return A `simulab_sim` base `data.frame` with the columns of `data` followed
+#'   by one numeric event-time column per process, named by its `event`, and one
+#'   row per input row. The component `survival_definitions`, reached with
+#'   `as.data.frame(x, what = "survival_definitions")`, is the specification as
+#'   a plain `data.frame`.
 #' @export
 #'
 #' @examples
@@ -264,16 +303,36 @@ augment_survival <- function(data, specification, seed = NULL, digits = NULL,
 
 #' Combine competing event times
 #'
-#' @param data Base `data.frame` containing event-time variables.
-#' @param events Event-time variable names.
-#' @param censor Optional censoring-event variable.
-#' @param time Name of the observed-time variable.
-#' @param event Name of the integer event-code variable.
-#' @param type Name of the event-type variable.
-#' @param keep_events Retain the component event-time variables.
+#' Reduces several latent event times to the one observed first: the observed
+#' time is their row-wise minimum and the event code says which process won.
+#' Naming one of them in `censor` turns that process into censoring, so its code
+#' is `0` and the remaining processes are coded `1, 2, ...` in the order they
+#' appear in `events`. Without `censor` every row is an event and no code is
+#' `0`. Ties are broken in favour of the earlier entry of `events`.
 #'
-#' @return A `simulab_sim` base `data.frame` with observed time, event code,
-#'   and event type.
+#' @param data Base `data.frame`, or a `simulab_sim`, containing the event-time
+#'   variables, with at least one row.
+#' @param events Event-time variable names. A character vector of at least two
+#'   names, all present in `data`, holding complete numeric times.
+#' @param censor Optional name of the one entry of `events` that represents
+#'   censoring rather than an event. A single string, or `NULL` (the default)
+#'   when every process is an event.
+#' @param time Name of the observed-time variable. A single string, defaulting
+#'   to `"time"`.
+#' @param event Name of the integer event-code variable. A single string,
+#'   defaulting to `"event"`. The code is `0` for the process named in `censor`
+#'   and `1, 2, ...` for the other entries of `events`, in their given order.
+#' @param type Name of the character event-type variable, holding the winning
+#'   process name. A single string, defaulting to `"event_type"`.
+#' @param keep_events Retain the component event-time variables. A single flag,
+#'   defaulting to `FALSE`, which drops them.
+#'
+#' @return A `simulab_sim` base `data.frame` with one row per input row: the
+#'   columns of `data` (without the entries of `events` unless `keep_events` is
+#'   `TRUE`) followed by `time`, `event` and `type` under the names given by
+#'   those arguments. The component `events`, reached with
+#'   `as.data.frame(x, what = "events")`, is the codebook, one row per process
+#'   with columns `event_type`, `event_code` and the logical `censoring`.
 #' @export
 #'
 #' @examples
@@ -345,11 +404,22 @@ combine_competing_risks <- function(data, events, censor = NULL,
 
 #' Calibrate a Weibull survival curve to target points
 #'
-#' @param time Increasing positive times.
-#' @param survival Decreasing survival probabilities.
+#' Finds the `formula` and `shape` whose simstudy Weibull curve,
+#' `S(t) = exp(-exp(formula) * t^(1 / shape))` with `scale` fixed at 1, passes
+#' as closely as possible through the supplied points. The fit is a
+#' least-squares fit of `log(time)` on `log(-log(survival))`, run with
+#' `L-BFGS-B`, and the returned `formula` and `shape` can be handed straight to
+#' [define_survival()] or [survival_curve()].
 #'
-#' @return A one-row base `data.frame` with calibrated `formula`, `shape`,
-#'   convergence code, and root mean squared error.
+#' @param time Increasing positive times. A finite numeric vector of at least
+#'   two strictly increasing values, the same length as `survival`.
+#' @param survival Survival probabilities at those times. A finite numeric
+#'   vector strictly inside `(0, 1)` and strictly decreasing.
+#'
+#' @return A one-row base `data.frame` with the calibrated numeric `formula` and
+#'   `shape`, the `optim()` `convergence` code (always `0`, since a
+#'   non-converged fit raises an error), and `rmse`, the root mean squared
+#'   residual **on the log-time scale**.
 #' @export
 #'
 #' @examples
@@ -392,14 +462,28 @@ calibrate_survival <- function(time, survival) {
 
 #' Compute a tidy Weibull survival curve
 #'
-#' @param formula Log-hazard intercept.
-#' @param shape Positive shape parameter.
-#' @param scale Positive scale parameter.
-#' @param n Number of curve points.
-#' @param time_limits Optional time range.
+#' Evaluates the simstudy Weibull curve of [define_survival()],
+#' `S(t) = exp(-exp(formula) * t^(1 / shape) / scale)`, at `n` survival
+#' probabilities spread evenly from `1 - 1 / n` down to `1 / n`, inverting it
+#' for the matching times. The points are therefore equally spaced in survival
+#' probability, not in time.
 #'
-#' @return A base `data.frame` with one row per curve point and columns `time`
-#'   and `survival`.
+#' @param formula Intercept of the linear predictor on the log scale. A single
+#'   finite number. `exp(formula)` multiplies the cumulative hazard, and equals
+#'   the hazard only when `shape` and `scale` are both 1.
+#' @param shape Positive Weibull shape in the simstudy parameterization, the
+#'   exponent applied to the transformed time. A single positive number.
+#' @param scale Positive Weibull scale, dividing the cumulative hazard. A single
+#'   positive number, defaulting to `1`.
+#' @param n Number of curve points. A single whole number of at least 2,
+#'   defaulting to `100`.
+#' @param time_limits Optional inclusive time range, as an increasing
+#'   non-negative numeric vector of length 2, that the curve is restricted to.
+#'   Defaults to `NULL`, the whole curve. Points outside the range are dropped,
+#'   so fewer than `n` rows are returned.
+#'
+#' @return A base `data.frame` with one row per retained curve point, in
+#'   increasing time order, and columns `time` and `survival`.
 #' @export
 #'
 #' @examples

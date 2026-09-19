@@ -7,11 +7,14 @@
 write_simulation(x, file, what = "data")
 }
 \arguments{
-\item{x}{A simulation result.}
+\item{x}{A \code{simulab_sim} simulation result.}
 
-\item{file}{Destination \code{.csv} or \code{.rds} path.}
+\item{file}{Destination path. The extension decides the format and must be
+\code{.csv} (written with \code{utils::write.csv()}, without row names) or \code{.rds};
+any other extension is an error.}
 
-\item{what}{Component name.}
+\item{what}{Single string naming the component to write, default \code{"data"}.
+Use \code{components(x)} to list the choices.}
 }
 \value{
 The normalized output path, invisibly.

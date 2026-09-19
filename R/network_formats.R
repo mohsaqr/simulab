@@ -68,8 +68,11 @@
 #' @param class_probabilities Optional edge-class probabilities.
 #' @param seed Optional seed.
 #'
-#' @return A tidy `simulab_sim` with `from`, `to`, and `weight` columns; node,
-#'   adjacency, and settings tables are components.
+#' @return A tidy `simulab_sim` base `data.frame` with one row per edge and
+#'   columns `from`, `to`, and `weight` (plus `edge_class` when `edge_classes`
+#'   is supplied). `as.data.frame(x, what = )` also returns `nodes`
+#'   (`node`, `type`), `adjacency` (a long `row`/`column`/`weight` table over
+#'   all ordered node pairs), and a one-row `settings` table.
 #' @export
 #'
 #' @examples
@@ -127,14 +130,21 @@ simulate_edge_list <- function(nodes, edges = NULL, probability = 0.1,
 #'   the next period.
 #' @param directed Generate directed dyads.
 #' @param loops Permit self-loops.
-#' @param weight Edge-spell weight distribution.
+#' @param weight Edge-spell weight distribution. One weight is drawn per spell
+#'   and held constant while the spell is active.
 #' @param weight_mean,weight_sd,weight_range Weight parameters.
 #' @param node_type Optional node type for each node.
 #' @param seed Optional seed.
 #'
-#' @return A tidy spell-level `simulab_sim` with `from`, `to`, `onset`,
-#'   `terminus`, `weight`, and `censored`. Event and snapshot edge lists are
-#'   available as components.
+#' @return A tidy spell-level `simulab_sim` base `data.frame` with one row per
+#'   activity spell and columns `from`, `to`, `onset`, `terminus`, `weight`,
+#'   and `censored`. `terminus` is exclusive: the spell covers periods `onset`
+#'   through `terminus - 1`, so a spell still active in the final period has
+#'   `terminus == periods + 1` and `censored == TRUE`.
+#'   `as.data.frame(x, what = )` also returns `events` (`from`, `to`, `time`,
+#'   `event` -- `"formation"` or `"dissolution"` -- and `weight`, ordered by
+#'   time), `snapshots` (one row per active dyad per period: `period`, `from`,
+#'   `to`, `weight`), `nodes` (`node`, `type`), and a one-row `settings` table.
 #' @export
 #'
 #' @examples
@@ -287,13 +297,21 @@ simulate_temporal_network <- function(nodes, periods,
 #' @param probability Probability of a non-zero dyad.
 #' @param directed Generate an asymmetric matrix where applicable.
 #' @param loops Permit non-zero diagonal entries.
-#' @param weighted Generate weighted adjacency/co-occurrence values.
+#' @param weighted Generate weighted adjacency/co-occurrence values. Ignored by
+#'   the `frequency` and `transition` types, which are always weighted.
 #' @param weight_range Range for continuous weights.
-#' @param frequency_mean Mean positive count for frequency matrices.
+#' @param frequency_mean Mean positive count for frequency matrices; drawn as
+#'   `1 + rpois(frequency_mean - 1)`, so entries are at least one.
 #' @param seed Optional seed.
 #'
-#' @return A tidy full matrix table with `from`, `to`, and `value`; non-zero
-#'   edges, nodes, and a wide matrix are components.
+#' @return A tidy `simulab_sim` base `data.frame` holding the complete matrix in
+#'   long form: `nodes^2` rows with columns `from`, `to`, and `value`, zeros
+#'   included. `as.data.frame(x, what = )` also returns `edges` (the non-zero
+#'   rows only), `nodes` (`node`), `matrix` (the wide form: a `from` column
+#'   followed by one column per node), and a one-row `settings` table whose
+#'   `directed` field reports whether the generated matrix is asymmetric.
+#'   The `transition` type is row-stochastic: every `from` state's `value`
+#'   entries sum to one.
 #' @export
 #'
 #' @examples
@@ -397,8 +415,13 @@ simulate_network_matrix <- function(nodes,
 #' @param weight_mean,weight_sd,weight_range Weight parameters.
 #' @param seed Optional seed.
 #'
-#' @return A tidy cross-mode edge-list `simulab_sim`; nodes and the
-#'   actor-by-event incidence matrix are components.
+#' @return A tidy cross-mode edge-list `simulab_sim` base `data.frame` with one
+#'   row per actor-event edge and columns `from` (always an actor), `to`
+#'   (always an event), `weight`, `from_mode`, and `to_mode`. The two modes are
+#'   disjoint, so no edge joins two actors or two events and self-loops cannot
+#'   occur. `as.data.frame(x, what = )` also returns `nodes` (`node`, `mode`),
+#'   `incidence` (the wide actor-by-event incidence table: an `actor` column
+#'   followed by one column per event), and a one-row `settings` table.
 #' @export
 #'
 #' @examples
@@ -487,8 +510,13 @@ simulate_bipartite_network <- function(actors, events, edges = NULL,
 #' @param node_type Optional node type for each node.
 #' @param seed Optional base seed; layers use deterministic offsets.
 #'
-#' @return A tidy layered edge-list `simulab_sim` with `layer`, `from`, `to`,
-#'   and `weight`; nodes, layers, adjacency, and settings are components.
+#' @return A tidy layered edge-list `simulab_sim` base `data.frame` with one row
+#'   per edge and columns `layer`, `from`, `to`, and `weight`. Every layer is
+#'   drawn independently over the same node set.
+#'   `as.data.frame(x, what = )` also returns `nodes` (`node`, `type`),
+#'   `layers` (`layer`, `probability`), `adjacency` (a long
+#'   `layer`/`row`/`column`/`weight` table over all ordered node pairs in every
+#'   layer), and a one-row `settings` table.
 #' @export
 #'
 #' @examples
@@ -536,7 +564,7 @@ simulate_multiplex_network <- function(nodes, layers, edges = NULL,
     )
   }, seq_along(layer_labels), layer_labels, probability)
   data <- do.call(rbind, Map(function(result, layer) {
-    data.frame(layer = layer, .plain_data(result), check.names = FALSE,
+    data.frame(layer = rep(layer, nrow(result)), .plain_data(result), check.names = FALSE,
                row.names = NULL)
   }, simulations, layer_labels))
   adjacency <- do.call(rbind, Map(function(result, layer) {

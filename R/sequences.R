@@ -92,17 +92,24 @@
 #' Simulate Markov chains
 #'
 #' @param n Number of chains.
-#' @param transition Square transition matrix or tidy transition table.
+#' @param transition Square transition matrix, or a tidy transition table with
+#'   `from`, `to`, and `probability` columns. Every row of the implied matrix
+#'   must sum to one.
 #' @param chain_length Chain length.
 #' @param initial Starting-state probabilities or a single fixed start state.
+#'   When `NULL`, every chain starts in the first state.
 #' @param states Optional state labels.
-#' @param trim_state Optional terminal state. Later observations are removed.
+#' @param trim_state Optional terminal state. The first occurrence is kept and
+#'   all later observations of that chain are removed.
 #' @param id,period,state Output variable names.
 #' @param seed Optional random seed.
 #'
-#' @return A long-form `simulab_sim` base `data.frame` with one row per chain
-#'   position. Wide chains, transitions, and initial probabilities are available
-#'   through `as.data.frame()`.
+#' @return A long-form `simulab_sim` base `data.frame` with columns `id`,
+#'   `period`, and `state` (renamed by those arguments), one row per chain
+#'   position. `as.data.frame(x, what = )` also returns `transitions`
+#'   (`from`, `to`, `probability`), `initial_probabilities` (`state`,
+#'   `probability`), and `wide` (one row per chain, columns `id`, `S1`, `S2`,
+#'   ...).
 #' @export
 #'
 #' @examples
@@ -221,12 +228,15 @@ simulate_markov <- function(n, transition, chain_length, initial = NULL,
 #' @param data Base `data.frame` with a unique identifier.
 #' @param transition,chain_length,states,trim_state Markov-chain arguments.
 #' @param initial Starting-state probabilities or the name of an input variable
-#'   containing each row's starting state.
+#'   containing each row's starting state. When `NULL`, every chain starts in
+#'   the first state.
 #' @param id,period,state Output variable names.
 #' @param seed Optional random seed.
 #'
-#' @return A long-form `simulab_sim` base `data.frame` combining input variables
-#'   with one row per chain position.
+#' @return A long-form `simulab_sim` base `data.frame` combining the input
+#'   variables with one row per chain position: `id`, `period`, `state`,
+#'   followed by the other input columns. A `transitions` table
+#'   (`from`, `to`, `probability`) is available through `as.data.frame()`.
 #' @export
 #'
 #' @examples

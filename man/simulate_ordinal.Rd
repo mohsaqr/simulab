@@ -37,7 +37,14 @@ Gaussian generator.}
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with one row per observation.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id} and one column per variable, each holding a category label.
+Two tidy tables come from \code{as.data.frame()}: \code{what = "probabilities"} has
+one row per variable and category with columns \code{variable}, \code{category} and
+\code{probability}; \code{what = "correlation"} has one row per latent
+correlation-matrix cell with columns \code{row}, \code{column} and \code{correlation}.
+That correlation is the latent Gaussian one, not the correlation of the
+realised categories, which is attenuated by the thresholding.
 }
 \description{
 Simulate correlated ordinal variables

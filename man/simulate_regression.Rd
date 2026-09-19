@@ -31,8 +31,17 @@ simulate_regression(
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with coefficient, predictor, and
-population R-squared tables.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id}, one column per predictor, and \code{outcome} (renamed by
+\code{outcome}). Three tidy tables come from \code{as.data.frame()}:
+\code{what = "coefficients"} has one row per term with columns \code{term} and
+\code{coefficient}, the intercept first; \code{what = "effects"} has a single row
+with columns \code{signal_variance} (the quadratic form of the slopes in the
+predictor covariance matrix), \code{residual_variance} (\code{error_sd^2}) and the
+population \code{r_squared}
+\code{signal_variance / (signal_variance + residual_variance)};
+\code{what = "predictor_correlation"} has one row per correlation-matrix cell
+with columns \code{row}, \code{column} and \code{correlation}.
 }
 \description{
 Simulate a linear regression design

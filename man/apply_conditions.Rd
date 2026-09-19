@@ -14,7 +14,9 @@ form written with \code{when()} or the \code{formula}/\code{variance} column for
 
 \item{seed}{Optional random seed.}
 
-\item{envir}{Formula evaluation environment.}
+\item{envir}{Environment used to resolve values a condition or formula names
+but the data does not carry. Distribution parameters inside \code{when()} are
+evaluated against the data alone, so they may only name columns.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with conditional variables added.

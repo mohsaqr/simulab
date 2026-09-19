@@ -19,22 +19,34 @@ bootstrap_tna(
 )
 }
 \arguments{
-\item{data}{Sequence data.}
+\item{data}{Sequence data in long or wide form.}
 
-\item{model}{TNA estimator.}
+\item{model}{TNA estimator, one of \code{"tna"} (the default), \code{"ftna"},
+\code{"ctna"}, \code{"atna"}.}
 
-\item{repetitions}{Number of bootstrap samples.}
+\item{repetitions}{Single whole number of bootstrap samples, at least 2,
+default \code{100}.}
 
-\item{fraction}{Fraction of sequences sampled with replacement.}
+\item{fraction}{Single number in \verb{(0, 1]} giving the fraction of sequences
+drawn with replacement in each repetition, default \code{1}. At least two
+sequences are always drawn.}
 
-\item{format, id, period, state, group}{Input arguments passed to \code{fit_tna()}.}
+\item{format, id, period, state, group}{Arguments describing the shape and
+column names of \code{data}. They are used to reshape \code{data} before resampling;
+the resampled sequences are then fitted in wide form, so only \code{group} is
+forwarded to \code{\link[=fit_tna]{fit_tna()}}. \code{group} resamples within each group.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional single seed, restored on exit and recorded on the
+result.}
 
-\item{...}{Estimator arguments.}
+\item{...}{Further arguments passed to \code{\link[=fit_tna]{fit_tna()}}.}
 }
 \value{
-A tidy edge-by-bootstrap \code{simulab_sim} with percentile summaries.
+A \code{simulab_sim} edge list with one row per repetition and
+transition: a leading \code{iteration} column followed by the columns
+\code{\link[=fit_tna]{fit_tna()}} returns. The \code{summary} component holds one row per edge (per
+group, when \code{group} is given) with the bootstrap \code{mean}, \code{sd}, and the
+2.5\% and 97.5\% percentiles as \code{lower} and \code{upper}.
 }
 \description{
 Bootstrap a TNA model

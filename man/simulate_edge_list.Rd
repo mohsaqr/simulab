@@ -44,8 +44,11 @@ simulate_edge_list(
 \item{seed}{Optional seed.}
 }
 \value{
-A tidy \code{simulab_sim} with \code{from}, \code{to}, and \code{weight} columns; node,
-adjacency, and settings tables are components.
+A tidy \code{simulab_sim} base \code{data.frame} with one row per edge and
+columns \code{from}, \code{to}, and \code{weight} (plus \code{edge_class} when \code{edge_classes}
+is supplied). \code{as.data.frame(x, what = )} also returns \code{nodes}
+(\code{node}, \code{type}), \code{adjacency} (a long \code{row}/\code{column}/\code{weight} table over
+all ordered node pairs), and a one-row \code{settings} table.
 }
 \description{
 Simulate a tidy network edge list

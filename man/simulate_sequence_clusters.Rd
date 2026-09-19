@@ -23,19 +23,24 @@ columns \code{cluster}, \code{from}, \code{to} and \code{probability}.}
 
 \item{chain_length}{Sequence length.}
 
-\item{proportions}{Cluster proportions.}
+\item{proportions}{Cluster proportions. When \code{NULL}, clusters are equally
+likely.}
 
-\item{initial}{Optional common initial probabilities.}
+\item{initial}{Optional common initial probabilities, shared by every
+cluster. When \code{NULL}, every sequence starts in the first state.}
 
 \item{labels}{Optional sequence-cluster labels.}
 
-\item{states}{Optional state labels.}
+\item{states}{Optional state labels. When the matrices carry no dimnames and
+\code{states} is \code{NULL}, states are labelled by their row index.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A long-form \code{simulab_sim} base \code{data.frame} with true sequence
-cluster and tidy transition parameters.
+A long-form \code{simulab_sim} base \code{data.frame} with columns \code{id},
+\code{period}, \code{state}, and the true \code{sequence_cluster}, one row per sequence
+position. A \code{transitions} table (\code{sequence_cluster}, \code{from}, \code{to},
+\code{probability}) is available through \code{as.data.frame()}.
 }
 \description{
 Simulate sequences from a mixture of transition systems

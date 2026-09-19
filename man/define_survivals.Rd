@@ -11,11 +11,13 @@ define_survivals(...)
 
 \strong{Hazard calls.} \code{time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3)}
 names the event with the argument name and states its hazard as a call.
-\code{log_rate} is the log hazard and may be any expression over the covariates;
-\code{shape} and \code{scale} default to 1 and \code{from}, the time at which the segment
-begins, to 0. Arguments may be positional or named, and repeating the
-argument name gives one event several segments, which is a piecewise
-hazard.
+\code{log_rate} is the linear predictor on the log scale, the \code{formula} of
+\code{\link[=define_survival]{define_survival()}}, so a coefficient inside it is a log hazard ratio. It
+may be any expression over the covariates; \code{shape} and \code{scale} default to 1
+and \code{from}, the time at which the segment begins, to 0. Arguments may be
+positional, in the order \code{log_rate}, \code{shape}, \code{scale}, \code{from}, or named,
+and repeating the argument name gives one event several segments, which is
+a piecewise hazard.
 
 \strong{Specification columns} given as named vectors (\code{event}, \code{formula},
 \code{scale}, \code{shape}, \code{transition}).
@@ -31,7 +33,9 @@ to 1 and \code{transition} to 0. Two rows for one event with different
 }
 \value{
 A \code{simulab_survival_spec} base \code{data.frame} with one row per hazard
-segment.
+segment and the columns of \code{\link[=define_survival]{define_survival()}}: \code{event}, \code{formula},
+\code{scale}, \code{shape} and \code{transition}. Rows written by the column form and by
+the hazard-call form are ordered by \code{event} and then \code{transition}.
 }
 \description{
 Combine survival definitions into a specification

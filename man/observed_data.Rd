@@ -7,17 +7,29 @@
 observed_data(data, missingness, id = NULL)
 }
 \arguments{
-\item{data}{Complete base \code{data.frame}.}
+\item{data}{Complete base \code{data.frame}, or a \code{simulab_sim}, with as many rows
+as \code{missingness} and in the same row order.}
 
-\item{missingness}{A logical mask returned by \code{missingness_matrix()}.}
+\item{missingness}{A logical mask returned by \code{\link[=missingness_matrix]{missingness_matrix()}}, with
+one row per row of \code{data}. Its columns that also name columns of \code{data},
+other than those listed in \code{id}, are the targets, and each must be logical.}
 
-\item{id}{Identifier columns present in both inputs and never made missing.}
+\item{id}{Identifier columns the mask carries that are never made missing. A
+character vector, or \code{NULL} (the default). Name the identifier columns of
+the mask here, or they are treated as targets and rejected for not being
+logical.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} containing observed data.
+A \code{simulab_sim} base \code{data.frame} with the columns and rows of
+\code{data}, the flagged cells of the target variables replaced by \code{NA}. The
+component \code{missingness}, reached with
+\code{as.data.frame(x, what = "missingness")}, is the mask in long form, one row
+per observation and target variable, with columns \code{observation}, \code{variable}
+and the logical \code{missing}.
 }
 \description{
-Apply a missingness mask to complete data
+Sets every cell the mask flags to \code{NA}, leaving the complete data otherwise
+untouched, and keeps the mask alongside the result as a tidy component.
 }
 \examples{
 data <- data.frame(id = 1:100, outcome = stats::rnorm(100))

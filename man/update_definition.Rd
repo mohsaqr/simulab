@@ -14,7 +14,9 @@ update_definition(
 )
 }
 \arguments{
-\item{specification}{A \code{simulab_spec} object.}
+\item{specification}{A \code{simulab_spec} object in the \code{formula}/\code{variance}
+column form, as created by \code{\link[=define_variable]{define_variable()}}, \code{\link[=repeat_variables]{repeat_variables()}} or
+\code{\link[=read_definitions]{read_definitions()}}.}
 
 \item{variable}{Variable to update.}
 

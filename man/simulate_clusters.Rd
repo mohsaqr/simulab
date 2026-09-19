@@ -29,8 +29,11 @@ tidy data frame with columns \code{cluster}, \code{variable} and \code{sd}.}
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with true cluster membership and
-tidy center/scale tables.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id}, \code{cluster} (the true membership label) and one column per
+variable. One tidy table comes from \code{as.data.frame()}:
+\code{what = "parameters"} has one row per cluster-variable combination with
+columns \code{cluster}, \code{variable}, \code{center}, \code{sd} and \code{proportion}.
 }
 \description{
 Simulate Gaussian clusters

@@ -7,16 +7,25 @@
 calibrate_survival(time, survival)
 }
 \arguments{
-\item{time}{Increasing positive times.}
+\item{time}{Increasing positive times. A finite numeric vector of at least
+two strictly increasing values, the same length as \code{survival}.}
 
-\item{survival}{Decreasing survival probabilities.}
+\item{survival}{Survival probabilities at those times. A finite numeric
+vector strictly inside \verb{(0, 1)} and strictly decreasing.}
 }
 \value{
-A one-row base \code{data.frame} with calibrated \code{formula}, \code{shape},
-convergence code, and root mean squared error.
+A one-row base \code{data.frame} with the calibrated numeric \code{formula} and
+\code{shape}, the \code{optim()} \code{convergence} code (always \code{0}, since a
+non-converged fit raises an error), and \code{rmse}, the root mean squared
+residual \strong{on the log-time scale}.
 }
 \description{
-Calibrate a Weibull survival curve to target points
+Finds the \code{formula} and \code{shape} whose simstudy Weibull curve,
+\code{S(t) = exp(-exp(formula) * t^(1 / shape))} with \code{scale} fixed at 1, passes
+as closely as possible through the supplied points. The fit is a
+least-squares fit of \code{log(time)} on \code{log(-log(survival))}, run with
+\code{L-BFGS-B}, and the returned \code{formula} and \code{shape} can be handed straight to
+\code{\link[=define_survival]{define_survival()}} or \code{\link[=survival_curve]{survival_curve()}}.
 }
 \examples{
 calibrate_survival(time = c(50, 100, 150), survival = c(0.9, 0.7, 0.4))

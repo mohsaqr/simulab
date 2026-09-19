@@ -9,13 +9,22 @@ compare_networks(x, y, threshold = 0)
 \arguments{
 \item{x, y}{Supported network representations.}
 
-\item{threshold}{Absolute weight threshold for edge presence.}
+\item{threshold}{Absolute weight threshold for edge presence: a dyad counts
+as an edge when \code{abs(weight) > threshold}.}
 }
 \value{
-A one-row base \code{data.frame} with weight and edge-overlap metrics.
+A one-row base \code{data.frame} with columns \code{pearson}, \code{cosine}, \code{mae},
+\code{rmse}, \code{jaccard}, \code{edges_x}, and \code{edges_y}. \code{pearson} and \code{cosine} are
+\code{NA} when either network's aligned weights have no variance or are all
+zero.
 }
 \description{
 Compare two weighted networks
+}
+\details{
+The two networks are aligned on the union of the dyads that carry an
+edge in either network; dyads absent from both are excluded, so every
+metric is conditional on that union rather than on all possible dyads.
 }
 \examples{
 a <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 1)

@@ -22,9 +22,12 @@ global_name_regions <- function() {
 
 #' List the global-name catalogue
 #'
-#' @param regions Region names or `"all"`.
+#' @param regions Region names from [global_name_regions()], or `"all"`, the
+#'   default, for every region.
 #'
-#' @return A tidy base `data.frame` with region and name columns.
+#' @return A tidy base `data.frame` with one row per region/name pair and
+#'   columns `region` and `name`. A name shared by two regions appears once per
+#'   region.
 #' @export
 #'
 #' @examples
@@ -53,11 +56,14 @@ global_names <- function(regions = "all") {
 
 #' Sample globally diverse names
 #'
-#' @param n Number of unique names.
+#' @param n Number of unique names to draw, at most the number of distinct names
+#'   the chosen regions hold.
 #' @param regions Regions passed to `global_names()`.
 #' @param seed Optional seed.
 #'
-#' @return A tidy base `data.frame` with order, region, and name.
+#' @return A tidy base `data.frame` with one row per sampled name and columns
+#'   `order`, `region` and `name`. A name belonging to more than one region
+#'   carries them joined by `";"`.
 #' @export
 #'
 #' @examples
@@ -83,7 +89,9 @@ sample_global_names <- function(n, regions = "all", seed = NULL) {
 
 #' List built-in simulation scenarios
 #'
-#' @return A base `data.frame` with scenario, family, and description.
+#' @return A base `data.frame` with one row per scenario and columns `scenario`,
+#'   `family` and `description`. Every `scenario` is accepted by
+#'   [run_simulation_scenario()].
 #' @export
 #'
 #' @examples
@@ -108,10 +116,11 @@ simulation_scenarios <- function() {
 
 #' Run a built-in simulation scenario
 #'
-#' @param scenario Scenario from `simulation_scenarios()`.
+#' @param scenario A single scenario name from [simulation_scenarios()].
 #' @param seed Optional seed.
 #'
-#' @return A `simulab_sim` result.
+#' @return The `simulab_sim` base `data.frame` returned by the simulator the
+#'   scenario calls, whose columns depend on the scenario's family.
 #' @export
 #'
 #' @examples

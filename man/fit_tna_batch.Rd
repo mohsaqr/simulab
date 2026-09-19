@@ -7,12 +7,18 @@
 fit_tna_batch(inputs, ...)
 }
 \arguments{
-\item{inputs}{Named list of sequence data frames.}
+\item{inputs}{List of sequence data frames, with at least one element.
+Element names label the datasets; when \code{inputs} is unnamed the labels
+\code{"Dataset 1"}, \code{"Dataset 2"}, ... are used instead.}
 
-\item{...}{Arguments passed to \code{fit_tna()}.}
+\item{...}{Arguments passed to \code{\link[=fit_tna]{fit_tna()}}.}
 }
 \value{
-A tidy edge-list \code{simulab_sim} with dataset/model metadata.
+A \code{simulab_sim} edge list with one row per dataset and transition: a
+leading \code{dataset} column followed by the columns \code{\link[=fit_tna]{fit_tna()}} returns
+(\code{from}, \code{to}, \code{weight}, and \code{group} when a grouped fit is requested). The
+\code{model_info} component holds one row per dataset describing the fitted
+model.
 }
 \description{
 Fit TNA models to multiple datasets

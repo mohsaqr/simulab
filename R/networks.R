@@ -4,7 +4,8 @@
 #' @param transition Optional transition matrix. When `NULL`, a random matrix
 #'   is generated.
 #' @param chain_length Maximum sequence length.
-#' @param initial Initial probabilities or a fixed starting state.
+#' @param initial Initial probabilities or a fixed starting state. When `NULL`
+#'   and `transition` is supplied, every sequence starts in the first state.
 #' @param states State labels.
 #' @param state_categories Optional learning-state categories used to name an
 #'   automatically generated state space.
@@ -22,9 +23,12 @@
 #' @param unlikely_threshold Maximum probability considered unlikely.
 #' @param seed Optional random seed.
 #'
-#' @return A long-form `simulab_sim` base `data.frame`. Wide sequences,
-#'   transition probabilities, initial probabilities, and settings are tidy
-#'   components.
+#' @return A long-form `simulab_sim` base `data.frame` with columns `id`,
+#'   `period`, and `state`, one row per observed sequence position.
+#'   `as.data.frame(x, what = )` also returns `transitions` (`from`, `to`,
+#'   `probability`, row-stochastic in `from`), `initial_probabilities`
+#'   (`state`, `probability`), `wide` (one row per sequence, columns `id`,
+#'   `S1`, `S2`, ...), and a one-row `settings` table.
 #' @export
 #'
 #' @examples
@@ -186,7 +190,7 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
         seq_len(as.integer(chain_length) - 1L), init = start, accumulate = TRUE
       ), use.names = FALSE)
       removed <- if (missing_tail[2L] == 0L) 0L else
-        sample(seq.int(missing_tail[1L], missing_tail[2L]), 1L)
+        .sample_integer_range(missing_tail, 1L)
       observed <- if (removed == 0L) values else utils::head(values, -removed)
       data.frame(id = id_value, period = seq_along(observed), state = observed,
                  stringsAsFactors = FALSE, row.names = NULL)
@@ -220,14 +224,19 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
 #' @param transitions List of transition matrices, or a tidy data frame with
 #'   columns `cluster`, `from`, `to` and `probability`.
 #' @param chain_length Sequence length.
-#' @param proportions Cluster proportions.
-#' @param initial Optional common initial probabilities.
+#' @param proportions Cluster proportions. When `NULL`, clusters are equally
+#'   likely.
+#' @param initial Optional common initial probabilities, shared by every
+#'   cluster. When `NULL`, every sequence starts in the first state.
 #' @param labels Optional sequence-cluster labels.
-#' @param states Optional state labels.
+#' @param states Optional state labels. When the matrices carry no dimnames and
+#'   `states` is `NULL`, states are labelled by their row index.
 #' @param seed Optional random seed.
 #'
-#' @return A long-form `simulab_sim` base `data.frame` with true sequence
-#'   cluster and tidy transition parameters.
+#' @return A long-form `simulab_sim` base `data.frame` with columns `id`,
+#'   `period`, `state`, and the true `sequence_cluster`, one row per sequence
+#'   position. A `transitions` table (`sequence_cluster`, `from`, `to`,
+#'   `probability`) is available through `as.data.frame()`.
 #' @export
 #'
 #' @examples
@@ -311,9 +320,13 @@ simulate_sequence_clusters <- function(n, transitions, chain_length,
 #'
 #' @param data Long-form sequence data.
 #' @param id,period,state Column names.
-#' @param normalize Return row-conditional transition proportions.
+#' @param normalize Return row-conditional transition proportions. When
+#'   `FALSE`, the `probability` column is kept but filled with `NA`.
 #'
-#' @return A tidy base `data.frame` with `from`, `to`, count, and probability.
+#' @return A tidy base `data.frame` with one row per observed `from`/`to` pair
+#'   and columns `from`, `to`, `count`, and `probability`. Pairs never observed
+#'   are absent rather than zero, so `probability` sums to one within each
+#'   `from` state when `normalize` is `TRUE`.
 #' @export
 #'
 #' @examples
@@ -354,17 +367,24 @@ summarize_transitions <- function(data, id = "id", period = "period",
 
 #' Simulate a network from common graph models
 #'
-#' @param nodes Number of nodes or node labels.
-#' @param model Graph model.
+#' @param nodes Number of nodes or node labels. A single number produces the
+#'   integer labels `1:nodes`.
+#' @param model Graph model. Every model except `bernoulli` requires the
+#'   suggested `igraph` package.
 #' @param probability Bernoulli edge probability, node matrix, or type matrix.
 #'   A matrix may instead be given as a tidy data frame with columns `from`,
-#'   `to` and `probability`.
-#' @param edges Exact edge count for the fixed-edge Bernoulli model.
-#' @param directed Generate directed edges.
+#'   `to` and `probability`. Used by the `bernoulli` model only; the `block`
+#'   model uses `within_probability` and `between_probability` instead.
+#' @param edges Exact edge count for the fixed-edge Bernoulli model, capped at
+#'   the number of admissible dyads.
+#' @param directed Generate directed edges. Ignored by the `small_world` and
+#'   `geometric` models, which are always undirected; the `directed` column of
+#'   the `settings` table reports what was actually generated.
 #' @param loops Permit self-loops.
 #' @param weight Edge-weight distribution.
 #' @param weight_mean,weight_sd,weight_range Weight parameters.
-#' @param node_type Optional type label for each node.
+#' @param node_type Optional type label for each node. With more than one type
+#'   it also supplies the block membership used by the `block` model.
 #' @param edge_classes Optional number or labels of edge classes.
 #' @param class_probabilities Optional edge-class probabilities.
 #' @param attachment,power Preferential-attachment parameters.
@@ -375,8 +395,13 @@ summarize_transitions <- function(data, id = "id", period = "period",
 #' @param forward_probability,backward_probability Forest-fire parameters.
 #' @param seed Optional random seed.
 #'
-#' @return A tidy edge-list `simulab_sim`; nodes, adjacency, and generation
-#'   settings are components. Use `as_igraph()` for native graph workflows.
+#' @return A tidy edge-list `simulab_sim` base `data.frame` with one row per
+#'   edge and columns `from`, `to`, `weight` (plus `edge_class` when
+#'   `edge_classes` is supplied). `as.data.frame(x, what = )` also returns
+#'   `nodes` (`node`, `type`), `adjacency` (a long `row`/`column`/`weight`
+#'   table covering all `nodes^2` ordered pairs, symmetric when the generated
+#'   graph is undirected), and a one-row `settings` table. Use `as_igraph()`
+#'   for native graph workflows.
 #' @export
 #'
 #' @examples
@@ -387,8 +412,10 @@ summarize_transitions <- function(data, id = "id", period = "period",
 #' components(result)
 #'
 #' # Other generators: barabasi_albert, small_world, block, regular,
-#' # geometric and forest_fire.
-#' head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
+#' # geometric and forest_fire. These require the suggested igraph package.
+#' if (requireNamespace("igraph", quietly = TRUE)) {
+#'   head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
+#' }
 simulate_network <- function(nodes,
                              model = c("bernoulli", "barabasi_albert", "small_world",
                                        "block", "regular", "geometric", "forest_fire"),

@@ -44,8 +44,12 @@ used without leaking RNG state.}
 \item{...}{Advanced sequence arguments passed to \code{simulate_sequences()}.}
 }
 \value{
-Long-form grouped sequences with group-specific transitions and wide
-sequences as components.
+A long-form \code{simulab_sim} base \code{data.frame} with one row per actor
+sequence position and columns \code{group}, \code{id}, \code{period}, and \code{state}. Actor
+identifiers are made unique across groups as \verb{G<group>_A<actor>}.
+\code{as.data.frame(x, what = )} also returns \code{transitions} (\code{group}, \code{from},
+\code{to}, \code{probability}), \code{wide} (one row per actor: \code{id}, \code{S1}, \code{S2}, ...,
+\code{group}), and \code{groups} (\code{group}, \code{actors}).
 }
 \description{
 Simulate grouped actor sequences

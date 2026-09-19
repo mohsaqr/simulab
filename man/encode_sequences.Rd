@@ -20,8 +20,10 @@ encode_sequences(
 \item{prefix}{Generated state-column prefix.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with identifiers and one column per
-state.
+A \code{simulab_sim} base \code{data.frame} with one row per input row: every
+input column except \code{state}, followed by one 0/1 indicator column per
+observed state. A \code{mapping} table (\code{state}, \code{column}) is available through
+\code{as.data.frame()}.
 }
 \description{
 One-hot encode long-form sequence states

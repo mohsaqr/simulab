@@ -7,7 +7,9 @@
 #' @param id Identifier variable in the result.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with jointly resampled rows.
+#' @return A `simulab_sim` base `data.frame` with `n` rows of jointly resampled
+#'   values, the identifier column first. `as.data.frame(x, what = "provenance")`
+#'   gives the source row each synthetic row was drawn from.
 #' @export
 #'
 #' @examples
@@ -59,10 +61,14 @@ simulate_synthetic <- function(data, n = nrow(data), variables = NULL,
 #'
 #' @param data Destination base `data.frame`.
 #' @param source Source base `data.frame`.
-#' @param variables Variables to resample.
+#' @param variables Variables to resample. `NULL`, the default, resamples every
+#'   variable in `source`.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with resampled variables added.
+#' @return A `simulab_sim` base `data.frame` with the resampled variables added,
+#'   one source row drawn per row of `data`.
+#'   `as.data.frame(x, what = "provenance")` gives the source row each
+#'   destination row was drawn from.
 #' @export
 #'
 #' @examples
@@ -142,15 +148,19 @@ augment_synthetic <- function(data, source, variables = NULL, seed = NULL) {
 #' Simulate from an empirical kernel density
 #'
 #' @param n Number of observations.
-#' @param values Numeric source values.
+#' @param values Numeric source values, of which at least two must be present
+#'   and distinct. Missing values are dropped before the density is estimated.
 #' @param variable Output variable name.
 #' @param use_limits Constrain draws to the observed range.
-#' @param keep_missing Preserve the source missing-data proportion.
+#' @param keep_missing Draw missing values at the source's missing-data rate, so
+#'   the proportion is reproduced in expectation rather than exactly.
 #' @param id Identifier variable name.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with one generated density value
-#'   per observation.
+#' @return A `simulab_sim` base `data.frame` with `n` rows and columns `id` and
+#'   `variable`, one generated density value per row.
+#'   `as.data.frame(x, what = "source")` gives a one-row summary of the source
+#'   values.
 #' @export
 #'
 #' @examples
@@ -204,9 +214,11 @@ simulate_density <- function(n, values, variable = "value", use_limits = FALSE,
 #' Add an empirical-density variable to existing data
 #'
 #' @param data Destination base `data.frame`.
-#' @param values Numeric source values.
+#' @param values Numeric source values, of which at least two must be present
+#'   and distinct.
 #' @param variable Name of the new variable.
-#' @param use_limits,keep_missing,seed Density-simulation arguments.
+#' @param use_limits,keep_missing,seed Density-simulation arguments, as in
+#'   [simulate_density()].
 #'
 #' @return A `simulab_sim` base `data.frame` with the density variable added.
 #' @export

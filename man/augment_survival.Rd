@@ -13,22 +13,37 @@ augment_survival(
 )
 }
 \arguments{
-\item{data}{Baseline base \code{data.frame}.}
+\item{data}{Baseline base \code{data.frame}, or a \code{simulab_sim}, with at least one
+row. Its columns are the covariates the formulas may refer to, and none of
+them may already carry an event name.}
 
-\item{specification}{Definitions from \code{define_survivals()}.}
+\item{specification}{Definitions from \code{\link[=define_survivals]{define_survivals()}}, a
+\code{simulab_survival_spec} object.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default) to
+leave the stream untouched.}
 
-\item{digits}{Optional number of decimal places.}
+\item{digits}{Optional number of decimal places the event times are rounded
+to. A single non-negative whole number, or \code{NULL} (the default) for
+unrounded times.}
 
-\item{envir}{Formula evaluation environment.}
+\item{envir}{Environment the formulas are evaluated in after the data
+columns. Defaults to the caller's environment.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with one event-time variable per
-process.
+A \code{simulab_sim} base \code{data.frame} with the columns of \code{data} followed
+by one numeric event-time column per process, named by its \code{event}, and one
+row per input row. The component \code{survival_definitions}, reached with
+\code{as.data.frame(x, what = "survival_definitions")}, is the specification as
+a plain \code{data.frame}.
 }
 \description{
-Add one or more survival processes to data
+Draws one latent event time per process for every row of \code{data}, from the
+Weibull hazard of \code{\link[=define_survival]{define_survival()}}. The times are uncensored: censoring
+and competing-risk coding are applied afterwards, for example with
+\code{\link[=combine_competing_risks]{combine_competing_risks()}}. An event with several rows in \code{specification}
+has a piecewise hazard, whose \code{scale} and \code{shape} must stay constant across
+its segments.
 }
 \examples{
 data <- data.frame(id = 1:100, treatment = rep(0:1, each = 50))

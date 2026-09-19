@@ -1,19 +1,42 @@
 #' Simulate a two-level Gaussian model
 #'
-#' @param clusters Number of clusters.
-#' @param cluster_size Units per cluster, scalar or vector.
-#' @param intercept Fixed intercept.
-#' @param slopes Named fixed-effect slopes.
-#' @param predictor_means,predictor_sds Predictor parameters.
-#' @param random_intercept_sd Random-intercept standard deviation.
+#' Draws a random intercept (and optionally a random slope) per cluster, draws
+#' the predictors independently for every unit, and forms the outcome as the
+#' fixed part plus the cluster random effects plus normal residual noise.
+#'
+#' @param clusters Number of clusters. A single whole number of at least 2.
+#' @param cluster_size Units per cluster: a single whole number recycled
+#'   across clusters, or one whole number per cluster, so clusters may be
+#'   unbalanced.
+#' @param intercept Fixed intercept. A single number, defaulting to `0`.
+#' @param slopes Named fixed-effect slopes; the names become the predictor
+#'   columns of the returned data. Defaults to `numeric(0)`, an
+#'   intercept-only model with no predictor columns.
+#' @param predictor_means,predictor_sds Mean and standard deviation of each
+#'   predictor, a scalar recycled across predictors (the defaults, `0` and
+#'   `1`) or one value per entry of `slopes`. Predictors are drawn
+#'   independently at the unit level, not at the cluster level, so they carry
+#'   no between-cluster variance by construction.
+#' @param random_intercept_sd Random-intercept standard deviation. A single
+#'   non-negative number, defaulting to `1`.
 #' @param random_slope_sd Random-slope standard deviation for the first
-#'   predictor.
+#'   predictor only; the remaining predictors have fixed slopes. A single
+#'   non-negative number, defaulting to `0` (no random slope).
 #' @param random_effect_correlation Correlation between random intercept and
-#'   slope.
-#' @param residual_sd Residual standard deviation.
+#'   slope. A single number in `[-1, 1]`, defaulting to `0`.
+#' @param residual_sd Residual standard deviation. A single positive number,
+#'   defaulting to `1`.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with fixed/random parameter tables.
+#' @return A `simulab_sim` base `data.frame` with one row per unit
+#'   (`sum(cluster_size)` rows) and columns `id`, `cluster`, one column per
+#'   name of `slopes`, and `outcome`. Components: `fixed_effects` (one row per
+#'   fixed term, columns `term` and `coefficient`), `variance_components` (one
+#'   row for each of `random_intercept`, `random_slope` and `residual`,
+#'   columns `component` and `variance` -- the *squared* standard deviations
+#'   supplied as arguments), and `random_effects` (one row per cluster,
+#'   columns `cluster`, `random_intercept` and `random_slope`; the
+#'   `random_slope` column is present but zero when `random_slope_sd = 0`).
 #' @export
 #'
 #' @examples
@@ -134,17 +157,39 @@ simulate_multilevel <- function(clusters, cluster_size, intercept = 0,
 
 #' Simulate longitudinal growth trajectories
 #'
-#' @param n Number of units.
-#' @param times Measurement occasions.
-#' @param intercept,slope,quadratic Fixed growth coefficients.
-#' @param random_sd Standard deviations for random intercept, slope, and
-#'   optional quadratic term.
-#' @param random_correlation Correlation matrix for random effects, or a tidy
-#'   data frame with columns `row`, `column` and `correlation`.
-#' @param residual_sd Residual standard deviation.
+#' Draws per-unit random growth coefficients, then forms the outcome at each
+#' measurement occasion as
+#' `(intercept + b0) + (slope + b1) * time + (quadratic + b2) * time^2` plus
+#' normal residual noise, where `b2` is present only when `random_sd` has
+#' three elements. Every unit is observed at every occasion (balanced design).
+#'
+#' @param n Number of units. A single whole number of at least 2.
+#' @param times Measurement occasions: a finite numeric vector of at least two
+#'   unique values, used verbatim as the `time` predictor (so `0:4` puts the
+#'   intercept at the first occasion).
+#' @param intercept,slope,quadratic Fixed growth coefficients, each a single
+#'   number; they default to `0`, `1` and `0`.
+#' @param random_sd Standard deviations for the random intercept, slope, and
+#'   optional quadratic term. A non-negative numeric vector of length 2 (the
+#'   default, `c(1, 0.25)`) or 3.
+#' @param random_correlation Correlation matrix for the random effects,
+#'   matching the length of `random_sd`, or a tidy data frame with columns
+#'   `row`, `column` and `correlation`. `NULL` (the default) makes the random
+#'   effects uncorrelated.
+#' @param residual_sd Residual standard deviation. A single positive number,
+#'   defaulting to `1`.
 #' @param seed Optional random seed.
 #'
-#' @return A long-form `simulab_sim` base `data.frame`.
+#' @return A long-form `simulab_sim` base `data.frame` with one row per
+#'   unit-occasion (`n * length(times)` rows) and columns `id`, `time` and
+#'   `outcome`. Rows are ordered by occasion first and unit second. A
+#'   `parameters` component holds one row for each of `intercept`, `slope`,
+#'   `quadratic` and `residual_sd`, with columns `term` and `value` (note that
+#'   `residual_sd` is a standard deviation, and that the random-effect
+#'   standard deviations are not repeated there). A `random_effects` component
+#'   holds one row per unit with columns `id`, `intercept`, `slope` and, when
+#'   `random_sd` has three elements, `quadratic`, giving each unit's deviation
+#'   from the fixed coefficients.
 #' @export
 #'
 #' @examples
@@ -220,25 +265,55 @@ simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
 
 #' Simulate a multivariate longitudinal VAR process
 #'
-#' @param n Number of units.
-#' @param occasions Number of occasions.
+#' Draws a person mean for each unit from `between_covariance` around
+#' `grand_means`, then runs a first-order vector autoregression on the
+#' deviations from that person mean:
+#' `y_t = mu + intercept + transition %*% (y_{t-1} - mu) + e_t`, with `e_t`
+#' drawn from `innovation_covariance`. The first `burn_in` occasions are
+#' discarded so the retained occasions are near stationarity.
+#'
+#' @param n Number of units. A single positive whole number.
+#' @param occasions Number of occasions retained per unit. A single whole
+#'   number of at least 2.
 #' @param transition Lag-one coefficients as a square matrix, or as a tidy
-#'   data frame with columns `from`, `to` and `coefficient`.
-#' @param intercept Variable intercepts.
+#'   data frame with columns `from`, `to` and `coefficient` (`from` supplies
+#'   the matrix row and `to` the column). Entry `[i, j]` multiplies variable
+#'   `j` at the previous occasion when forming variable `i` at the current
+#'   occasion, so rows index the *receiving* variable and columns the
+#'   *predicting* variable. The spectral radius must be below one.
+#' @param intercept Variable intercepts, a scalar recycled across variables
+#'   (the default, `0`) or one value per variable. The intercept is added to
+#'   the deviation from the person mean at every occasion, so a non-zero
+#'   intercept shifts the stationary mean to
+#'   `person_mean + solve(diag(p) - transition) %*% intercept` and the
+#'   `person_means` component is then no longer the realised process mean.
 #' @param innovation_covariance Innovation covariance matrix, or a tidy data
-#'   frame with columns `row`, `column` and `covariance`.
+#'   frame with columns `row`, `column` and `covariance`. Must be symmetric
+#'   and positive semidefinite. `NULL` (the default) uses the identity.
 #' @param initial_covariance Initial-state covariance matrix, or a tidy data
-#'   frame with columns `row`, `column` and `covariance`.
+#'   frame with columns `row`, `column` and `covariance`. `NULL` (the default)
+#'   reuses `innovation_covariance`.
 #' @param between_covariance Between-unit covariance of person means, or a
-#'   tidy data frame with columns `row`, `column` and `covariance`.
-#' @param grand_means Population means.
-#' @param beeps_per_day Optional number of occasions per day. Temporal carryover
-#'   resets at each day boundary.
-#' @param burn_in Warm-up occasions discarded before output.
+#'   tidy data frame with columns `row`, `column` and `covariance`. `NULL`
+#'   (the default) is a zero matrix, giving every unit the same person mean,
+#'   `grand_means`.
+#' @param grand_means Population means, a scalar recycled across variables
+#'   (the default, `0`) or one value per variable.
+#' @param beeps_per_day Optional number of occasions per day; `occasions` must
+#'   be divisible by it. Adds `day` and `beep` columns to the returned data.
+#'   Temporal carryover resets at each day boundary.
+#' @param burn_in Warm-up occasions generated and then discarded before
+#'   output. A single non-negative whole number, defaulting to `50`.
 #' @param seed Optional random seed.
 #'
-#' @return A long-form `simulab_sim` base `data.frame`; wide observations and
-#'   transition/covariance tables are available as components.
+#' @return A long-form `simulab_sim` base `data.frame` with one row per
+#'   unit-occasion (`n * occasions` rows) and columns `id`, `occasion` and one
+#'   per variable, plus `day` and `beep` when `beeps_per_day` is supplied.
+#'   Components: `wide` (one row per unit, one `<variable>.<occasion>` column
+#'   per measurement), `transition`, `innovation_covariance` and
+#'   `between_covariance` (tidy matrix tables with columns `row`, `column` and
+#'   `coefficient` or `covariance`), and `person_means` (one row per unit with
+#'   columns `id` and one per variable).
 #' @export
 #'
 #' @examples
@@ -257,8 +332,19 @@ simulate_longitudinal <- function(n, occasions, transition, intercept = 0,
                                   between_covariance = NULL, grand_means = 0,
                                   beeps_per_day = NULL, burn_in = 50L,
                                   seed = NULL) {
-  transition <- .tidy_to_matrix(transition, "transition", "from", "to",
-                                "coefficient")
+  ## `from` is the driving variable at t-1 and `to` the driven variable at t.
+  ## The recursion below is `transition %*% (previous - unit_mean)`, so the ROW
+  ## indexes the driven variable: `to` supplies rows and `from` supplies
+  ## columns, not the other way round. Both axes are forced onto one shared
+  ## level set so the matrix stays square and its rows and columns agree even
+  ## when the table lists the pairs in an unusual order.
+  if (is.data.frame(transition)) {
+    .require_columns(transition, c("from", "to", "coefficient"), "transition")
+    variables <- unique(c(as.character(transition$to), as.character(transition$from)))
+    transition <- .tidy_to_matrix(transition, "transition", "to", "from",
+                                  "coefficient", row_levels = variables,
+                                  column_levels = variables)
+  }
   innovation_covariance <- .tidy_to_symmetric(
     innovation_covariance, "innovation_covariance", "row", "column", "covariance"
   )

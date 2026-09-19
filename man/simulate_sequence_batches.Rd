@@ -7,18 +7,26 @@
 simulate_sequence_batches(repetitions, ..., seed = NULL)
 }
 \arguments{
-\item{repetitions}{Number of datasets.}
+\item{repetitions}{Number of datasets. A single positive whole number.}
 
-\item{...}{Arguments passed to \code{simulate_sequences()}.}
+\item{...}{Arguments passed to \code{\link[=simulate_sequences]{simulate_sequences()}}.}
 
-\item{seed}{Optional base seed. Each dataset uses a deterministic offset.}
+\item{seed}{Optional base seed. A single number, or \code{NULL} (the default).
+Dataset \code{i} uses \code{seed + i - 1}.}
 }
 \value{
-A combined long-form \code{simulab_sim} with dataset identifiers and
-dataset-specific transition parameters.
+A \code{simulab_sim} base \code{data.frame} in long form, one row per dataset,
+sequence and position, with the column \code{dataset} followed by the columns
+\code{\link[=simulate_sequences]{simulate_sequences()}} returns (\code{id}, \code{period} and \code{state}). Components:
+\code{transitions}, the generating transition probabilities, one row per dataset
+and from/to pair with columns \code{dataset}, \code{from}, \code{to} and \code{probability};
+and \code{initial_probabilities}, one row per dataset and state with columns
+\code{dataset}, \code{state} and \code{probability}.
 }
 \description{
-Simulate repeated sequence datasets
+Calls \code{\link[=simulate_sequences]{simulate_sequences()}} \code{repetitions} times and stacks the results, so
+each dataset is drawn from its own transition system rather than from a
+shared one.
 }
 \examples{
 result <- simulate_sequence_batches(

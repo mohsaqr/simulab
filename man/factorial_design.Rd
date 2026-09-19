@@ -12,20 +12,31 @@ factorial_design(
 )
 }
 \arguments{
-\item{factors}{Named integer vector giving the number of levels per factor.}
+\item{factors}{Named numeric vector of whole numbers giving the number of
+levels per factor, each at least 2. The names become the design columns.}
 
-\item{replications}{Number of replications per factor combination.}
+\item{replications}{Number of replications per factor combination. A single
+positive whole number, defaulting to \code{1}.}
 
-\item{coding}{Numeric coding for factor levels.}
+\item{coding}{Numeric coding of the levels, one value per factor per row, one
+of \code{"dummy"} (the default), which codes the levels \code{0} to \code{levels - 1},
+\code{"effect"}, which codes a two-level factor \code{-1} and \code{1} and codes a factor
+with more levels exactly as \code{"dummy"} does, or \code{"level"}, which keeps the
+level numbers \code{1} to \code{levels}.}
 
-\item{id}{Identifier-column name.}
+\item{id}{Identifier-column name, numbering the rows. A single non-empty
+string, defaulting to \code{"id"}.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per replicated factor
-combination.
+combination (\code{replications * prod(factors)} rows), the identifier column
+first and then one coded column per factor. The component \code{factors},
+reached with \code{as.data.frame(x, what = "factors")}, holds one row per factor
+with columns \code{factor}, the integer \code{levels} and \code{coding}.
 }
 \description{
-Create a full factorial design
+Crosses every level of every factor, repeats each combination \code{replications}
+times, and returns one numeric column per factor holding its coded level.
 }
 \examples{
 factorial_design(factors = c(dose = 3L, timing = 2L), replications = 2)

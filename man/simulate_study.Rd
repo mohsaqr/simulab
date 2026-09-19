@@ -24,11 +24,14 @@ simulate_study(
 \item{seed}{Optional random seed. The caller's random-number state is
 restored on exit.}
 
-\item{envir}{Environment used to resolve functions and external values in
-formulas.}
+\item{envir}{Environment used to resolve functions and external values named
+by a \code{formula}/\code{variance} specification. It is not consulted by the
+distribution-call form, whose parameters must be expressions over variables
+defined earlier in the same specification.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame}. Use
+A \code{simulab_sim} base \code{data.frame} with \code{n} rows: the identifier
+column followed by one column per variable. Use
 \code{as.data.frame(x, what = "definitions")} for the generating definitions.
 }
 \description{

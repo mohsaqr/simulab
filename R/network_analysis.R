@@ -30,9 +30,14 @@
 #' Convert tidy network data to an igraph object
 #'
 #' @param x A simulab network, tidy edge list, matrix, or native TNA model.
-#' @param directed Whether the resulting graph is directed.
+#' @param directed Whether the resulting graph is directed. It is not inferred
+#'   from `x`, so a network generated with `directed = FALSE` must be converted
+#'   with `directed = FALSE` as well.
 #'
-#' @return A native `igraph` object.
+#' @return A native `igraph` object carrying a `weight` edge attribute. When `x`
+#'   is a `simulab_sim` with a `nodes` component, that node set supplies the
+#'   vertices, so isolates are preserved; otherwise the vertices are the nodes
+#'   appearing in the edge list.
 #' @export
 #'
 #' @examples
@@ -63,14 +68,22 @@ as_igraph <- function(x, directed = TRUE) {
 #'
 #' @param network A supported network representation.
 #' @param measures Centrality measures.
-#' @param directed Treat edges as directed.
+#' @param directed Treat edges as directed. This governs the graph conversion
+#'   and the `betweenness`, `eigenvector`, and `pagerank` measures only;
+#'   `degree`, `strength`, and `closeness` always combine incoming and outgoing
+#'   ties. `betweenness` and `closeness` use `1 / |weight|` as the edge
+#'   distance.
 #'
-#' @return A tidy base `data.frame` with one node/measure/value row.
+#' @return A tidy base `data.frame` with one row per node and measure and
+#'   columns `node`, `measure`, and `value`, stacked measure after measure.
+#'   Requires the suggested `igraph` package.
 #' @export
 #'
 #' @examples
 #' network <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 1)
-#' head(network_centrality(network, measures = c("degree", "strength")))
+#' if (requireNamespace("igraph", quietly = TRUE)) {
+#'   head(network_centrality(network, measures = c("degree", "strength")))
+#' }
 network_centrality <- function(network,
                                measures = c("degree", "strength", "betweenness",
                                             "closeness", "eigenvector", "pagerank"),
@@ -115,9 +128,17 @@ network_centrality <- function(network,
 #' Compare two weighted networks
 #'
 #' @param x,y Supported network representations.
-#' @param threshold Absolute weight threshold for edge presence.
+#' @param threshold Absolute weight threshold for edge presence: a dyad counts
+#'   as an edge when `abs(weight) > threshold`.
 #'
-#' @return A one-row base `data.frame` with weight and edge-overlap metrics.
+#' @details The two networks are aligned on the union of the dyads that carry an
+#'   edge in either network; dyads absent from both are excluded, so every
+#'   metric is conditional on that union rather than on all possible dyads.
+#'
+#' @return A one-row base `data.frame` with columns `pearson`, `cosine`, `mae`,
+#'   `rmse`, `jaccard`, `edges_x`, and `edges_y`. `pearson` and `cosine` are
+#'   `NA` when either network's aligned weights have no variance or are all
+#'   zero.
 #' @export
 #'
 #' @examples
@@ -156,13 +177,19 @@ compare_networks <- function(x, y, threshold = 0) {
 #' @param method Correlation method.
 #' @param directed Treat networks as directed.
 #'
-#' @return A tidy base `data.frame` with one comparison per measure.
+#' @return A tidy base `data.frame` with one row per measure and columns
+#'   `measure`, `method`, `correlation`, `mae`, and `nodes`. Nodes present in
+#'   only one network contribute a centrality of zero to the other.
+#'   `correlation` is `NA` when either set of centralities has no variance.
+#'   Requires the suggested `igraph` package.
 #' @export
 #'
 #' @examples
 #' a <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 1)
 #' b <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 2)
-#' compare_centralities(a, b, measures = "degree")
+#' if (requireNamespace("igraph", quietly = TRUE)) {
+#'   compare_centralities(a, b, measures = "degree")
+#' }
 compare_centralities <- function(x, y, measures = c("degree", "betweenness", "closeness"),
                                  method = c("pearson", "spearman", "kendall"),
                                  directed = TRUE) {
@@ -187,9 +214,16 @@ compare_centralities <- function(x, y, measures = c("degree", "betweenness", "cl
 #' Evaluate edge recovery against a known network
 #'
 #' @param truth,estimate Supported network representations.
-#' @param threshold Absolute threshold defining a recovered edge.
+#' @param threshold Absolute threshold defining a recovered edge: a dyad counts
+#'   as present when `abs(weight) > threshold`.
 #'
-#' @return A tidy edge-level `simulab_sim` with recovery metrics as a component.
+#' @return A tidy `simulab_sim` base `data.frame` with one row per dyad in the
+#'   union of the two edge sets -- dyads absent from both networks are not
+#'   represented, so true negatives are not counted -- and columns `from`, `to`,
+#'   `truth_weight`, `estimate_weight`, `truth_present`, `estimate_present`,
+#'   `recovered`, `false_positive`, and `false_negative`. A one-row `summary`
+#'   table (`precision`, `recall`, `f1`, `true_positive`, `false_positive`,
+#'   `false_negative`) is available through `as.data.frame()`.
 #' @export
 #'
 #' @examples
@@ -225,11 +259,20 @@ evaluate_edge_recovery <- function(truth, estimate, threshold = 0) {
 
 #' Summarize multiple networks
 #'
-#' @param networks Named list of supported networks.
-#' @param threshold Edge-presence threshold.
-#' @param directed Treat networks as directed.
+#' @param networks Named list of supported networks. Unnamed elements are
+#'   labelled `Network 1`, `Network 2`, and so on.
+#' @param threshold Edge-presence threshold, applied as
+#'   `abs(weight) > threshold`. It affects the `edges` and `mean_weight`
+#'   columns only; `density` and `components` are computed from every edge in
+#'   the network, thresholded or not.
+#' @param directed Treat networks as directed. `density` is the directed edge
+#'   density when `TRUE`; `components` always counts weakly connected
+#'   components.
 #'
-#' @return A tidy base `data.frame` with one summary row per network.
+#' @return A tidy base `data.frame` with one row per network and columns
+#'   `network`, `nodes`, `edges`, `density`, `mean_weight`, and `components`.
+#'   `mean_weight` is `NA` when no edge passes the threshold. Requires the
+#'   suggested `igraph` package.
 #' @export
 #'
 #' @examples
@@ -237,7 +280,9 @@ evaluate_edge_recovery <- function(truth, estimate, threshold = 0) {
 #'   first = simulate_network(nodes = 25, model = "bernoulli", probability = 0.1, seed = 1),
 #'   second = simulate_network(nodes = 25, model = "bernoulli", probability = 0.2, seed = 2)
 #' )
-#' summarize_networks(networks)
+#' if (requireNamespace("igraph", quietly = TRUE)) {
+#'   summarize_networks(networks)
+#' }
 summarize_networks <- function(networks, threshold = 0, directed = TRUE) {
   stopifnot(
     "`networks` must be a list, with at least one element" =

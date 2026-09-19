@@ -12,20 +12,28 @@ simulate_tna_batches(
 )
 }
 \arguments{
-\item{repetitions}{Number of fitted networks.}
+\item{repetitions}{Number of fitted networks. A single positive whole number.}
 
-\item{model}{TNA estimator.}
+\item{model}{TNA estimator, one of \code{"tna"} (the default), \code{"ftna"}, \code{"ctna"}
+or \code{"atna"}.}
 
-\item{...}{Arguments passed to \code{simulate_sequences()}.}
+\item{...}{Arguments passed to \code{\link[=simulate_sequences]{simulate_sequences()}}.}
 
-\item{seed}{Optional base seed. Each dataset uses a deterministic offset.}
+\item{seed}{Optional base seed. A single number, or \code{NULL} (the default).
+Dataset \code{i} uses \code{seed + i - 1}.}
 }
 \value{
-A tidy fitted-edge \code{simulab_sim} with network identifiers; generated
-sequences and true transitions are available as components.
+A \code{simulab_sim} base \code{data.frame} of fitted edges, one row per
+network and from/to pair, with columns \code{network}, \code{from}, \code{to} and
+\code{weight}. Components: \code{sequences}, the generated sequences in long form
+with columns \code{dataset}, \code{id}, \code{period} and \code{state}; \code{true_transitions}, the
+generating probabilities with columns \code{dataset}, \code{from}, \code{to} and
+\code{probability}; and \code{model_info}, one row per network describing the fit.
 }
 \description{
-Simulate and fit repeated TNA networks
+Generates \code{repetitions} sequence datasets with \code{\link[=simulate_sequence_batches]{simulate_sequence_batches()}}
+and fits one transition network to each with \code{\link[=fit_tna]{fit_tna()}}, so the estimated
+networks can be held against the transition systems that generated them.
 }
 \examples{
 if (requireNamespace("tna", quietly = TRUE)) {

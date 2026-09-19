@@ -26,6 +26,29 @@
 }
 
 
+## Draw `n` whole numbers uniformly from the inclusive range `limits`.
+##
+## sample() cannot be used directly here. Given a length-one numeric it treats
+## the value as an upper bound and samples 1:value, so a degenerate range such
+## as c(8, 8) silently yields lengths in 1:8 instead of eight. Indexing into
+## sample.int() removes that special case while drawing the same variates as
+## sample(seq.int(lo, hi), n, replace = TRUE) whenever lo < hi, so seeded
+## output is unchanged wherever the range was already non-degenerate.
+.sample_integer_range <- function(limits, n) {
+  stopifnot(
+    "`limits` must be a numeric vector of length 2, low then high" =
+      is.numeric(limits) && length(limits) == 2L && all(is.finite(limits)) &&
+        limits[1L] <= limits[2L],
+    "`n` must be a single non-negative whole number" =
+      is.numeric(n) && length(n) == 1L && is.finite(n) && n >= 0 &&
+        n == as.integer(n)
+  )
+  low <- as.integer(limits[1L])
+  width <- as.integer(limits[2L]) - low + 1L
+  low + sample.int(width, as.integer(n), replace = TRUE) - 1L
+}
+
+
 ## Solve f(x) = 0 on `interval`, refusing to return an unconverged root.
 ##
 ## stats::uniroot() returns `$root` whether or not the search succeeded, so

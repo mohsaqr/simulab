@@ -34,17 +34,23 @@ simulate_network(
 )
 }
 \arguments{
-\item{nodes}{Number of nodes or node labels.}
+\item{nodes}{Number of nodes or node labels. A single number produces the
+integer labels \code{1:nodes}.}
 
-\item{model}{Graph model.}
+\item{model}{Graph model. Every model except \code{bernoulli} requires the
+suggested \code{igraph} package.}
 
 \item{probability}{Bernoulli edge probability, node matrix, or type matrix.
 A matrix may instead be given as a tidy data frame with columns \code{from},
-\code{to} and \code{probability}.}
+\code{to} and \code{probability}. Used by the \code{bernoulli} model only; the \code{block}
+model uses \code{within_probability} and \code{between_probability} instead.}
 
-\item{edges}{Exact edge count for the fixed-edge Bernoulli model.}
+\item{edges}{Exact edge count for the fixed-edge Bernoulli model, capped at
+the number of admissible dyads.}
 
-\item{directed}{Generate directed edges.}
+\item{directed}{Generate directed edges. Ignored by the \code{small_world} and
+\code{geometric} models, which are always undirected; the \code{directed} column of
+the \code{settings} table reports what was actually generated.}
 
 \item{loops}{Permit self-loops.}
 
@@ -52,7 +58,8 @@ A matrix may instead be given as a tidy data frame with columns \code{from},
 
 \item{weight_mean, weight_sd, weight_range}{Weight parameters.}
 
-\item{node_type}{Optional type label for each node.}
+\item{node_type}{Optional type label for each node. With more than one type
+it also supplies the block membership used by the \code{block} model.}
 
 \item{edge_classes}{Optional number or labels of edge classes.}
 
@@ -73,8 +80,13 @@ A matrix may instead be given as a tidy data frame with columns \code{from},
 \item{seed}{Optional random seed.}
 }
 \value{
-A tidy edge-list \code{simulab_sim}; nodes, adjacency, and generation
-settings are components. Use \code{as_igraph()} for native graph workflows.
+A tidy edge-list \code{simulab_sim} base \code{data.frame} with one row per
+edge and columns \code{from}, \code{to}, \code{weight} (plus \code{edge_class} when
+\code{edge_classes} is supplied). \code{as.data.frame(x, what = )} also returns
+\code{nodes} (\code{node}, \code{type}), \code{adjacency} (a long \code{row}/\code{column}/\code{weight}
+table covering all \code{nodes^2} ordered pairs, symmetric when the generated
+graph is undirected), and a one-row \code{settings} table. Use \code{as_igraph()}
+for native graph workflows.
 }
 \description{
 Simulate a network from common graph models
@@ -87,6 +99,8 @@ head(result)
 components(result)
 
 # Other generators: barabasi_albert, small_world, block, regular,
-# geometric and forest_fire.
-head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
+# geometric and forest_fire. These require the suggested igraph package.
+if (requireNamespace("igraph", quietly = TRUE)) {
+  head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
+}
 }

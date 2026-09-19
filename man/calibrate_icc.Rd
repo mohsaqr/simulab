@@ -27,8 +27,14 @@ calibrate_icc(
 \item{dispersion}{Gamma or negative-binomial dispersion.}
 }
 \value{
-A base \code{data.frame} with one row per target ICC and the required
-random-effect variance.
+A base \code{data.frame} with one row per target ICC and columns \code{icc},
+\code{distribution} and \code{random_effect_variance}. Except for the \code{normal}
+\code{total_variance} case, which returns \code{icc * total_variance}, the variance
+is \code{icc / (1 - icc)} times a residual variance on the linear-predictor
+scale: \code{within_variance} for \code{normal}, the logistic latent variance
+\code{pi^2 / 3} for \code{binary}, \code{log(1 + 1 / mean)} for \code{poisson},
+\code{trigamma(1 / dispersion)} for \code{gamma}, and
+\code{trigamma(1 / (1 / mean + dispersion))} for \code{negative_binomial}.
 }
 \description{
 Calibrate random-effect variance for a target ICC

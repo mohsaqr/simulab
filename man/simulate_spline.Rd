@@ -29,15 +29,21 @@ simulate_spline(
 
 \item{degree}{Polynomial degree.}
 
-\item{output_range}{Optional output range.}
+\item{output_range}{Optional numeric pair. The spline value \code{v} is rescaled
+to \code{output_range[1] + v * diff(output_range)}, which maps \verb{[0, 1]} onto the
+pair. Values outside \verb{[0, 1]} are rescaled the same way, not clipped.}
 
-\item{noise_variance}{Non-negative Gaussian noise variance.}
+\item{noise_variance}{Non-negative Gaussian noise variance; the noise added
+to each value has standard deviation \code{sqrt(noise_variance)}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with the spline variable and a tidy
-basis table.
+A \code{simulab_sim} base \code{data.frame} holding \code{data} with the spline
+variable added. \code{as.data.frame(x, what = "basis")} gives the tidy basis
+table, one row per observation/basis combination, and
+\code{as.data.frame(x, what = "parameters")} gives one row per basis
+coefficient.
 }
 \description{
 Add a spline-generated variable

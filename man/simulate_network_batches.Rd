@@ -7,17 +7,22 @@
 simulate_network_batches(repetitions, ..., seed = NULL)
 }
 \arguments{
-\item{repetitions}{Number of networks.}
+\item{repetitions}{Number of networks. A single positive whole number.}
 
-\item{...}{Arguments passed to \code{simulate_network()}.}
+\item{...}{Arguments passed to \code{\link[=simulate_network]{simulate_network()}}.}
 
-\item{seed}{Optional base seed. Each network uses a deterministic offset.}
+\item{seed}{Optional base seed. A single number, or \code{NULL} (the default).
+Network \code{i} uses \code{seed + i - 1}.}
 }
 \value{
-A combined tidy edge-list \code{simulab_sim} with network identifiers.
+A \code{simulab_sim} base \code{data.frame} edge list, one row per network and
+edge, with the column \code{network} followed by the columns
+\code{\link[=simulate_network]{simulate_network()}} returns (\code{from}, \code{to} and \code{weight}). The component
+\code{settings}, reached with \code{as.data.frame(x, what = "settings")}, holds one
+row per network with its generator arguments and realized edge count.
 }
 \description{
-Simulate repeated networks
+Calls \code{\link[=simulate_network]{simulate_network()}} \code{repetitions} times and stacks the edge lists.
 }
 \examples{
 result <- simulate_network_batches(

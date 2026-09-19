@@ -1,6 +1,6 @@
 Package: simulab
 Title: Unified Simulation of Statistical and Study Data
-Version: 0.4.1
+Version: 0.4.3
 Authors@R: person("Mohammed", "Saqr", email = "saqr@saqr.me", role = c("aut", "cre"))
 Author: Mohammed Saqr [aut, cre]
 Maintainer: Mohammed Saqr <saqr@saqr.me>

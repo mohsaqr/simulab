@@ -41,8 +41,13 @@ simulate_multiplex_network(
 \item{seed}{Optional base seed; layers use deterministic offsets.}
 }
 \value{
-A tidy layered edge-list \code{simulab_sim} with \code{layer}, \code{from}, \code{to},
-and \code{weight}; nodes, layers, adjacency, and settings are components.
+A tidy layered edge-list \code{simulab_sim} base \code{data.frame} with one row
+per edge and columns \code{layer}, \code{from}, \code{to}, and \code{weight}. Every layer is
+drawn independently over the same node set.
+\code{as.data.frame(x, what = )} also returns \code{nodes} (\code{node}, \code{type}),
+\code{layers} (\code{layer}, \code{probability}), \code{adjacency} (a long
+\code{layer}/\code{row}/\code{column}/\code{weight} table over all ordered node pairs in every
+layer), and a one-row \code{settings} table.
 }
 \description{
 Simulate a multiplex network

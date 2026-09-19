@@ -15,8 +15,14 @@ define_variable(
 \arguments{
 \item{name}{Variable name.}
 
-\item{formula}{Numeric value, expression string, or one-sided formula that
-defines the distribution mean or probability.}
+\item{formula}{Numeric value, expression string, or one-sided formula giving
+the distribution's primary argument. For most families that is the mean or
+probability, but \code{"uniform"} and \code{"uniform_integer"} take
+\code{"minimum;maximum"}, \code{"categorical"} takes semicolon-separated category
+probabilities, \code{"mixture"} takes \code{"value | probability + ..."},
+\code{"treatment"} takes semicolon-separated allocation ratios,
+\code{"cluster_size"} takes the total to be split, and \code{"custom"} takes the name
+of a generator function.}
 
 \item{variance}{Variance, dispersion, precision, trial count, category
 labels, or distribution-specific secondary parameter.}

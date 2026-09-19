@@ -1,19 +1,56 @@
 #' Simulate item-response data
 #'
-#' @param n Number of respondents.
-#' @param discrimination Positive item discriminations.
-#' @param difficulty Item difficulties. A vector gives dichotomous items; a
-#'   matrix gives ordered thresholds by item.
+#' Draws latent abilities from a standard multivariate normal (mean zero, unit
+#' variance, correlation `ability_correlation`), projects them onto each item
+#' through `dimensions`, and samples responses from a logistic item-response
+#' model.
+#'
+#' @details
+#' For the dichotomous models the probability of a correct response is
+#' `guessing + (1 - guessing) * plogis(discrimination * (theta - difficulty))`,
+#' so `difficulty` is on the ability scale (the point of inflection), not an
+#' intercept. `"rasch"` fixes all discriminations at one and `"2pl"` sets
+#' `guessing` to zero; only `"3pl"` uses `guessing`.
+#'
+#' For `model = "graded"` the cumulative category probabilities are
+#' `plogis(discrimination * (theta - threshold))` for each threshold of an
+#' item, and the category probabilities are their successive differences, so
+#' the thresholds are also on the ability scale.
+#'
+#' @param n Number of respondents. A single whole number of at least 2.
+#' @param discrimination Positive item discriminations, a scalar recycled
+#'   across items (the default, `1`) or one value per item. Must equal one for
+#'   `model = "rasch"`.
+#' @param difficulty Item difficulties, on the same scale as the latent
+#'   ability. A numeric vector, one difficulty per item, for the dichotomous
+#'   models. `model = "graded"` instead requires an item-by-threshold matrix
+#'   (or a tidy data frame with columns `item`, `dimension` and `difficulty`)
+#'   whose thresholds increase within each item.
 #' @param dimensions Item-by-dimension loading weights, or a tidy data frame
-#'   with columns `item`, `dimension` and `loading`. `NULL` uses one
-#'   dimension.
+#'   with columns `item`, `dimension` and `loading`. `NULL` (the default) uses
+#'   one dimension. Each row is rescaled to unit length before use, so only
+#'   the relative weights within an item matter, not their scale. Row and
+#'   column names, when present, name the items and the ability columns.
 #' @param ability_correlation Latent ability correlation matrix, or a tidy
-#'   data frame with columns `row`, `column` and `correlation`.
-#' @param model Logistic model: Rasch, 2PL, 3PL, or graded response.
-#' @param guessing Lower-asymptote guessing parameters for 3PL items.
+#'   data frame with columns `row`, `column` and `correlation`. `NULL` (the
+#'   default) makes the abilities uncorrelated.
+#' @param model Logistic model: `"2pl"` (the default), `"rasch"`, `"3pl"`, or
+#'   `"graded"`.
+#' @param guessing Lower-asymptote guessing parameters in `[0, 1)`, a scalar
+#'   recycled across items (the default, `0.2`) or one value per item. It is
+#'   silently reset to zero unless `model = "3pl"`.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with responses and true parameters.
+#' @return A `simulab_sim` base `data.frame` with one row per respondent and
+#'   columns `id` and one integer column per item, coded `0`/`1` for the
+#'   dichotomous models and `0` to the number of thresholds for
+#'   `model = "graded"`. An `abilities` component holds one row per respondent
+#'   with columns `id` and one true ability per dimension. A `parameters`
+#'   component holds one row per item for the dichotomous models, with columns
+#'   `item`, `parameter` (`"difficulty"`), `category` (`NA`), `value`,
+#'   `discrimination` and `guessing`; for `model = "graded"` it holds one row
+#'   per item-by-threshold combination, with `parameter` equal to
+#'   `"threshold"`, `category` the threshold index, and no `guessing` column.
 #' @export
 #'
 #' @examples
@@ -98,6 +135,14 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
   if (model == "graded" && !is.matrix(difficulty)) {
     stop("Graded items require an item-by-threshold difficulty matrix.", call. = FALSE)
   }
+  ## Without this the matrix reaches `sweep()` as an over-long `STATS`, which
+  ## warns rather than stops and yields a malformed parameter table.
+  if (model != "graded" && is.matrix(difficulty)) {
+    stop(sprintf(
+      "An item-by-threshold difficulty matrix requires model = \"graded\"; model is \"%s\", which takes one difficulty per item.",
+      model
+    ), call. = FALSE)
+  }
   if (is.matrix(difficulty) &&
       any(apply(difficulty, 1L, function(values) is.unsorted(values, strictly = TRUE)))) {
     stop("Graded thresholds must increase within item.", call. = FALSE)
@@ -151,18 +196,36 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
 
 #' Simulate a hidden Markov model
 #'
-#' @param n Number of sequences.
+#' Draws an initial hidden state for each sequence from `initial`, evolves it
+#' with `transition` for `chain_length` occasions, and emits one observed
+#' category per occasion from `emission`.
+#'
+#' @param n Number of sequences. A single positive whole number.
 #' @param transition Hidden-state transition matrix, or a tidy data frame with
-#'   columns `from`, `to` and `probability`.
-#' @param chain_length Sequence length.
+#'   columns `from`, `to` and `probability`. Square, with rows indexing the
+#'   current state and columns the next state; every row must sum to one.
+#' @param chain_length Sequence length. A single positive whole number; every
+#'   sequence has the same length.
 #' @param emission Hidden-state-by-observed-category probability matrix, or a
 #'   tidy data frame with columns `state`, `observation` and `probability`.
-#' @param initial Initial hidden-state probabilities.
-#' @param state_labels,observation_labels Optional labels.
+#'   Rows index the hidden states and must sum to one; columns index the
+#'   observed categories.
+#' @param initial Initial hidden-state probabilities, one per hidden state,
+#'   summing to one. `NULL` (the default) starts every sequence in the first
+#'   hidden state with probability one; supply a vector for a random start.
+#' @param state_labels,observation_labels Optional labels, one unique value
+#'   per hidden state and per observed category. They default to
+#'   `"State 1"`, `"State 2"`, ... and `"Observation 1"`, `"Observation 2"`,
+#'   ...
 #' @param seed Optional random seed.
 #'
-#' @return A long-form `simulab_sim` base `data.frame` with observed and true
-#'   hidden states, plus tidy parameter tables.
+#' @return A long-form `simulab_sim` base `data.frame` with one row per
+#'   sequence-occasion (`n * chain_length` rows) and columns `id`, `occasion`,
+#'   `state` (the true hidden state label) and `observation` (the emitted
+#'   category label). Components `transitions` (columns `from`, `to`,
+#'   `probability`), `emissions` (columns `state`, `observation`,
+#'   `probability`) and `initial_probabilities` (columns `state`,
+#'   `probability`) hold the generating parameters in tidy form.
 #' @export
 #'
 #' @examples

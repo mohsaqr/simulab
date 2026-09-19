@@ -19,12 +19,17 @@ augment_correlated(
 \arguments{
 \item{data}{Base \code{data.frame}.}
 
-\item{specification}{New variable definitions.}
+\item{specification}{New variable definitions, in the \code{formula}/\code{variance}
+column form built by \code{\link[=define_variable]{define_variable()}}. Unlike \code{\link[=simulate_copula]{simulate_copula()}},
+\code{augment_correlated()} does not accept the distribution-call form, and
+one row of \code{specification} is one new variable. None of the named
+variables may already exist in \code{data}.}
 
 \item{rho, tau, structure, correlation}{Copula correlation arguments.
 \code{structure} follows the same resolution rule as \code{\link[=simulate_copula]{simulate_copula()}}:
 leaving it unset selects \code{"exchangeable"} when a non-zero \code{rho} or \code{tau}
-is given.}
+is given. \code{tau} is converted to the latent Pearson correlation
+\code{sin(pi * tau / 2)}.}
 
 \item{group}{Optional grouping variable. With grouping, one definition is
 generated as correlated observations within each group.}
@@ -34,7 +39,14 @@ generated as correlated observations within each group.}
 \item{envir}{Formula evaluation environment.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with the correlated variables.
+A \code{simulab_sim} base \code{data.frame} holding every column of \code{data}
+plus one column per new variable. Two tidy tables come from
+\code{as.data.frame()}: \code{what = "definitions"} restates the specification, and
+\code{what = "latent_correlation"} describes the latent Gaussian correlation.
+Without \code{group} that table has one row per correlation-matrix cell, with
+columns \code{row}, \code{column} and \code{correlation}; with \code{group} the correlation is
+across the observations inside each group, so the table instead has one
+row per group with columns \code{group}, \code{observations}, \code{rho} and \code{structure}.
 }
 \description{
 Add correlated variables to existing data

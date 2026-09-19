@@ -18,7 +18,9 @@ as a single value is recycled across every variable. \code{link} defaults to
 }
 \value{
 A \code{simulab_missing_spec} base \code{data.frame} with one row per target
-variable.
+variable, in the order given, and the columns of \code{\link[=define_missingness]{define_missingness()}}:
+\code{variable}, \code{formula}, \code{link}, \code{baseline} and \code{monotone}. Target variables
+must be unique.
 }
 \description{
 Combine missingness definitions into a specification

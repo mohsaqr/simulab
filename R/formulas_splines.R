@@ -74,9 +74,12 @@ mixture_formula <- function(variables, probabilities = NULL) {
 
 #' Construct a categorical probability formula
 #'
-#' @param probabilities Category probabilities.
-#' @param categories Number of equal-probability categories when probabilities
-#'   are not supplied.
+#' Supply exactly one of `probabilities` and `categories`; supplying both, or
+#' neither, is an error. Probabilities are normalised to sum to one.
+#'
+#' @param probabilities Category probabilities, at least two of them.
+#' @param categories Number of equal-probability categories, used instead of
+#'   `probabilities`.
 #'
 #' @return A one-row `simulab_formula` base `data.frame`.
 #' @export
@@ -227,12 +230,18 @@ spline_curves <- function(coefficients, knots = c(0.25, 0.5, 0.75),
 #' @param coefficients Spline coefficients.
 #' @param knots Quantile probabilities for interior knots.
 #' @param degree Polynomial degree.
-#' @param output_range Optional output range.
-#' @param noise_variance Non-negative Gaussian noise variance.
+#' @param output_range Optional numeric pair. The spline value `v` is rescaled
+#'   to `output_range[1] + v * diff(output_range)`, which maps `[0, 1]` onto the
+#'   pair. Values outside `[0, 1]` are rescaled the same way, not clipped.
+#' @param noise_variance Non-negative Gaussian noise variance; the noise added
+#'   to each value has standard deviation `sqrt(noise_variance)`.
 #' @param seed Optional random seed.
 #'
-#' @return A `simulab_sim` base `data.frame` with the spline variable and a tidy
-#'   basis table.
+#' @return A `simulab_sim` base `data.frame` holding `data` with the spline
+#'   variable added. `as.data.frame(x, what = "basis")` gives the tidy basis
+#'   table, one row per observation/basis combination, and
+#'   `as.data.frame(x, what = "parameters")` gives one row per basis
+#'   coefficient.
 #' @export
 #'
 #' @examples

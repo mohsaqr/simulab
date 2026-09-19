@@ -7,16 +7,23 @@
 apply_batch(inputs, fun, ..., id = "batch_id")
 }
 \arguments{
-\item{inputs}{List of data frames or simulation results.}
+\item{inputs}{List with at least one element, commonly data frames or
+simulation results. Element names label the batches; when \code{inputs} is
+unnamed the positions \code{"1"}, \code{"2"}, ... are used instead.}
 
-\item{fun}{Function returning a data frame.}
+\item{fun}{Function applied to each element. It must return a base
+\code{data.frame}, and every call must return the same columns, otherwise the
+run is an error.}
 
 \item{...}{Arguments passed to \code{fun}.}
 
-\item{id}{Name of the batch identifier.}
+\item{id}{Single string naming the batch-label column, default
+\code{"batch_id"}.}
 }
 \value{
-A combined base \code{data.frame} with one batch identifier per output.
+A base \code{data.frame} stacking the \code{fun} outputs by row, with the
+batch label in a leading column named by \code{id}, so one row per row of each
+output.
 }
 \description{
 Apply a function across simulation results

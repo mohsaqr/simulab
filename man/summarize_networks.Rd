@@ -7,14 +7,23 @@
 summarize_networks(networks, threshold = 0, directed = TRUE)
 }
 \arguments{
-\item{networks}{Named list of supported networks.}
+\item{networks}{Named list of supported networks. Unnamed elements are
+labelled \verb{Network 1}, \verb{Network 2}, and so on.}
 
-\item{threshold}{Edge-presence threshold.}
+\item{threshold}{Edge-presence threshold, applied as
+\code{abs(weight) > threshold}. It affects the \code{edges} and \code{mean_weight}
+columns only; \code{density} and \code{components} are computed from every edge in
+the network, thresholded or not.}
 
-\item{directed}{Treat networks as directed.}
+\item{directed}{Treat networks as directed. \code{density} is the directed edge
+density when \code{TRUE}; \code{components} always counts weakly connected
+components.}
 }
 \value{
-A tidy base \code{data.frame} with one summary row per network.
+A tidy base \code{data.frame} with one row per network and columns
+\code{network}, \code{nodes}, \code{edges}, \code{density}, \code{mean_weight}, and \code{components}.
+\code{mean_weight} is \code{NA} when no edge passes the threshold. Requires the
+suggested \code{igraph} package.
 }
 \description{
 Summarize multiple networks
@@ -24,5 +33,7 @@ networks <- list(
   first = simulate_network(nodes = 25, model = "bernoulli", probability = 0.1, seed = 1),
   second = simulate_network(nodes = 25, model = "bernoulli", probability = 0.2, seed = 2)
 )
-summarize_networks(networks)
+if (requireNamespace("igraph", quietly = TRUE)) {
+  summarize_networks(networks)
+}
 }

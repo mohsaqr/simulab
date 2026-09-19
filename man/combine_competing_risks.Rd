@@ -15,26 +15,44 @@ combine_competing_risks(
 )
 }
 \arguments{
-\item{data}{Base \code{data.frame} containing event-time variables.}
+\item{data}{Base \code{data.frame}, or a \code{simulab_sim}, containing the event-time
+variables, with at least one row.}
 
-\item{events}{Event-time variable names.}
+\item{events}{Event-time variable names. A character vector of at least two
+names, all present in \code{data}, holding complete numeric times.}
 
-\item{censor}{Optional censoring-event variable.}
+\item{censor}{Optional name of the one entry of \code{events} that represents
+censoring rather than an event. A single string, or \code{NULL} (the default)
+when every process is an event.}
 
-\item{time}{Name of the observed-time variable.}
+\item{time}{Name of the observed-time variable. A single string, defaulting
+to \code{"time"}.}
 
-\item{event}{Name of the integer event-code variable.}
+\item{event}{Name of the integer event-code variable. A single string,
+defaulting to \code{"event"}. The code is \code{0} for the process named in \code{censor}
+and \verb{1, 2, ...} for the other entries of \code{events}, in their given order.}
 
-\item{type}{Name of the event-type variable.}
+\item{type}{Name of the character event-type variable, holding the winning
+process name. A single string, defaulting to \code{"event_type"}.}
 
-\item{keep_events}{Retain the component event-time variables.}
+\item{keep_events}{Retain the component event-time variables. A single flag,
+defaulting to \code{FALSE}, which drops them.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with observed time, event code,
-and event type.
+A \code{simulab_sim} base \code{data.frame} with one row per input row: the
+columns of \code{data} (without the entries of \code{events} unless \code{keep_events} is
+\code{TRUE}) followed by \code{time}, \code{event} and \code{type} under the names given by
+those arguments. The component \code{events}, reached with
+\code{as.data.frame(x, what = "events")}, is the codebook, one row per process
+with columns \code{event_type}, \code{event_code} and the logical \code{censoring}.
 }
 \description{
-Combine competing event times
+Reduces several latent event times to the one observed first: the observed
+time is their row-wise minimum and the event code says which process won.
+Naming one of them in \code{censor} turns that process into censoring, so its code
+is \code{0} and the remaining processes are coded \verb{1, 2, ...} in the order they
+appear in \code{events}. Without \code{censor} every row is an event and no code is
+\code{0}. Ties are broken in favour of the earlier entry of \code{events}.
 }
 \examples{
 data <- data.frame(id = 1:100, treatment = rep(0:1, each = 50))

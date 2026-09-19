@@ -19,13 +19,24 @@ simulate_correlation(
 \item{n}{Number of observations.}
 
 \item{means, sds, rho, structure, correlation, variable_names, seed}{Arguments passed
-to \code{simulate_correlated()}.}
+to \code{\link[=simulate_correlated]{simulate_correlated()}}. Unlike that function, \code{means} defaults to \code{0}.
+One variable is generated per element of \code{means}; \code{sds} must be a single
+value, which is recycled, or one value per mean.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame}.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+an \code{id} column followed by one column per variable. The \code{parameters},
+\code{correlation} and \code{covariance} components hold the requested means and
+standard deviations and the tidy correlation and covariance matrices; use
+\code{components()} to list them.
 }
 \description{
-Simulate a correlation design
+A thin wrapper around \code{\link[=simulate_correlated]{simulate_correlated()}} that supplies defaults for
+\code{means} and \code{sds}, so \code{simulate_correlation(n)} generates a single standard
+normal variable. \code{structure} is forwarded only when it is supplied, which
+keeps \code{\link[=simulate_correlated]{simulate_correlated()}}'s own default resolution intact: \code{"custom"}
+when \code{correlation} is given, \code{"exchangeable"} when a non-zero \code{rho} is
+given, and \code{"independent"} otherwise.
 }
 \examples{
 result <- simulate_correlation(n = 200, means = c(0, 0), sds = c(1, 1), rho = 0.6,

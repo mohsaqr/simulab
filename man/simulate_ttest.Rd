@@ -31,7 +31,12 @@ simulate_ttest(
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per observation and
-tidy group/effect parameter tables.
+columns \code{id}, \code{group} and \code{outcome} (renamed by \code{outcome}). Two tidy tables
+come from \code{as.data.frame()}: \code{what = "parameters"} has one row per group
+with columns \code{group}, \code{n}, \code{mean} and \code{sd}; \code{what = "effects"} has a single
+row with columns \code{contrast}, \code{mean_difference}, \code{pooled_sd} and \code{cohens_d},
+the population Cohen's d formed from the sample-size-weighted pooled
+standard deviation.
 }
 \description{
 Simulate a two-group design

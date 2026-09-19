@@ -47,17 +47,22 @@ used without leaking RNG state.}
 \item{...}{Advanced sequence arguments.}
 }
 \value{
-Grouped long-form sequences with true transitions, fitted edges,
-model metadata, and a native grouped model accessible through
-\code{as_tna_model()}.
+A long-form \code{simulab_sim} base \code{data.frame} of grouped sequences with
+columns \code{group}, \code{id}, \code{period}, and \code{state}.
+\code{as.data.frame(x, what = )} also returns \code{true_transitions} (the
+generating probabilities), \code{estimated_edges} (the fitted TNA weights),
+\code{model_info}, \code{wide}, and \code{groups}. The native \code{group_tna} model is
+accessible through \code{as_tna_model()}. Requires the suggested \code{tna} package.
 }
 \description{
 Simulate sequences and fit a grouped TNA model
 }
 \examples{
-result <- simulate_group_tna(
-  groups = 2, actors = 20, chain_length = 12, n_states = 3, seed = 1
-)
-head(result)
-components(result)
+if (requireNamespace("tna", quietly = TRUE)) {
+  result <- simulate_group_tna(
+    groups = 2, actors = 20, chain_length = 12, n_states = 3, seed = 1
+  )
+  head(result)
+  components(result)
+}
 }

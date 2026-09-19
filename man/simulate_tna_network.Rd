@@ -24,13 +24,20 @@ simulate_tna_network(
 \item{within_probability, between_probability}{Edge probabilities within and
 between node groups.}
 
-\item{loops}{Permit self transitions.}
+\item{loops}{Permit self transitions when drawing the underlying edges. A
+node left with no outgoing edge is nevertheless given a self transition of
+probability one, so self-loops can appear even when \code{loops} is \code{FALSE}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A tidy non-zero transition edge list with node, group, adjacency, and
-full transition tables as components.
+A tidy \code{simulab_sim} base \code{data.frame} holding the non-zero
+transitions only, one row per edge, with columns \code{from}, \code{to}, and
+\code{probability}. \code{as.data.frame(x, what = )} also returns \code{nodes}
+(\code{node}, \code{group}), \code{adjacency} (the long \code{row}/\code{column}/\code{weight} table of
+the underlying directed Bernoulli graph), and \code{transitions} (the full
+\code{nodes^2}-row transition table including zeros). The transition matrix is
+row-stochastic: every \code{from} node's probabilities sum to one.
 }
 \description{
 Simulate a grouped TNA transition network

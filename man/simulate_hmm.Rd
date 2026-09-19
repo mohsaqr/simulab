@@ -16,28 +16,44 @@ simulate_hmm(
 )
 }
 \arguments{
-\item{n}{Number of sequences.}
+\item{n}{Number of sequences. A single positive whole number.}
 
 \item{transition}{Hidden-state transition matrix, or a tidy data frame with
-columns \code{from}, \code{to} and \code{probability}.}
+columns \code{from}, \code{to} and \code{probability}. Square, with rows indexing the
+current state and columns the next state; every row must sum to one.}
 
-\item{chain_length}{Sequence length.}
+\item{chain_length}{Sequence length. A single positive whole number; every
+sequence has the same length.}
 
 \item{emission}{Hidden-state-by-observed-category probability matrix, or a
-tidy data frame with columns \code{state}, \code{observation} and \code{probability}.}
+tidy data frame with columns \code{state}, \code{observation} and \code{probability}.
+Rows index the hidden states and must sum to one; columns index the
+observed categories.}
 
-\item{initial}{Initial hidden-state probabilities.}
+\item{initial}{Initial hidden-state probabilities, one per hidden state,
+summing to one. \code{NULL} (the default) starts every sequence in the first
+hidden state with probability one; supply a vector for a random start.}
 
-\item{state_labels, observation_labels}{Optional labels.}
+\item{state_labels, observation_labels}{Optional labels, one unique value
+per hidden state and per observed category. They default to
+\code{"State 1"}, \code{"State 2"}, ... and \code{"Observation 1"}, \code{"Observation 2"},
+...}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A long-form \code{simulab_sim} base \code{data.frame} with observed and true
-hidden states, plus tidy parameter tables.
+A long-form \code{simulab_sim} base \code{data.frame} with one row per
+sequence-occasion (\code{n * chain_length} rows) and columns \code{id}, \code{occasion},
+\code{state} (the true hidden state label) and \code{observation} (the emitted
+category label). Components \code{transitions} (columns \code{from}, \code{to},
+\code{probability}), \code{emissions} (columns \code{state}, \code{observation},
+\code{probability}) and \code{initial_probabilities} (columns \code{state},
+\code{probability}) hold the generating parameters in tidy form.
 }
 \description{
-Simulate a hidden Markov model
+Draws an initial hidden state for each sequence from \code{initial}, evolves it
+with \code{transition} for \code{chain_length} occasions, and emits one observed
+category per occasion from \code{emission}.
 }
 \examples{
 result <- simulate_hmm(

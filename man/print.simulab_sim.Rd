@@ -15,7 +15,9 @@
 \code{x}, invisibly.
 }
 \description{
-Print a simulation result
+Prints a one-line header giving the simulation type and the full dimensions,
+then at most the first 10 rows of the primary data, then a count of the rows
+not shown.
 }
 \examples{
 result <- simulate_ttest(n_a = 30, n_b = 30, mean_a = 0, mean_b = 0.5, seed = 1)

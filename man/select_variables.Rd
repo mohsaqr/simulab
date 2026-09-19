@@ -7,14 +7,18 @@
 select_variables(data, keep = NULL, drop = NULL)
 }
 \arguments{
-\item{data}{Base \code{data.frame}.}
+\item{data}{Base \code{data.frame}, or a \code{simulab_sim}.}
 
-\item{keep}{Variables to retain.}
+\item{keep}{Variables to retain, in the order given. A character vector of
+column names, or \code{NULL} (the default).}
 
-\item{drop}{Variables to remove.}
+\item{drop}{Variables to remove, the others keeping their order. A character
+vector of column names, or \code{NULL} (the default). Only one of \code{keep} and
+\code{drop} may be given.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with the requested variables.
+A \code{simulab_sim} base \code{data.frame} with every row of \code{data} and the
+requested variables.
 }
 \description{
 Select or remove study variables

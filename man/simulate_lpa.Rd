@@ -15,29 +15,43 @@ simulate_lpa(
 )
 }
 \arguments{
-\item{n}{Number of observations.}
+\item{n}{Number of observations. A single whole number of at least 2.}
 
-\item{means}{Profile-by-variable mean matrix, or a tidy data frame with
-columns \code{profile}, \code{variable} and \code{mean}.}
+\item{means}{Profile-by-variable mean matrix (one row per profile, one
+column per indicator, at least 2 rows), or a tidy data frame with columns
+\code{profile}, \code{variable} and \code{mean}. Column names become the indicator
+columns of the returned data; row names are ignored, profile names come
+from \code{labels}.}
 
-\item{sds}{Scalar, per-variable vector, profile-by-variable matrix, or a
-tidy data frame with columns \code{profile}, \code{variable} and \code{sd}.}
+\item{sds}{Scalar (the default, \code{1}), per-variable vector,
+profile-by-variable matrix, or a tidy data frame with columns \code{profile},
+\code{variable} and \code{sd}. All values must be positive.}
 
-\item{proportions}{Profile proportions.}
+\item{proportions}{Profile proportions, one positive value per profile;
+they are rescaled to sum to one. \code{NULL} (the default) makes every profile
+equally likely.}
 
 \item{correlations}{Optional list of within-profile correlation matrices,
-or a tidy data frame with columns \code{profile}, \code{row}, \code{column} and
-\code{correlation}.}
+one per profile, or a tidy data frame with columns \code{profile}, \code{row},
+\code{column} and \code{correlation}. \code{NULL} (the default) makes the indicators
+uncorrelated within every profile.}
 
-\item{labels}{Optional profile labels.}
+\item{labels}{Optional profile labels, one unique value per profile.
+Defaults to \code{"Profile 1"}, \code{"Profile 2"} and so on.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with true profile and parameters.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id}, \code{profile} (the true profile label) and one numeric column
+per indicator. A \code{parameters} component holds one row per
+profile-by-variable combination with columns \code{profile}, \code{variable},
+\code{mean}, \code{sd} and \code{proportion}.
 }
 \description{
-Simulate a latent profile model
+Draws each observation from a multivariate normal mixture: a profile is
+sampled from \code{proportions}, then the indicators are drawn from that
+profile's means, standard deviations and within-profile correlation matrix.
 }
 \examples{
 # `means` is one row per profile and one column per indicator.

@@ -84,7 +84,7 @@ print(result)
 #> ... 70 more rows
 ```
 
-Results are ordinary data frames, so no accessor is needed to analyse them.
+Results are ordinary data frames, so no accessor is needed to analyze them.
 The `what` argument exists to reach the generating parameters, which are the
 part a simulation study needs and a plain data frame cannot carry.
 
@@ -117,9 +117,11 @@ and `simulate_group_sequences()` takes a `group` column.
 of its categorical predictors as one table with `variable`, `level`, `effect`
 and `probability` columns, in place of three parallel lists.
 
-30 of the package's 35 matrix, array and list arguments accept long-form
-input. The remaining five are named lists of data frames, where a list is the
-correct shape.
+Every matrix, array and matrix-list argument in the package accepts the
+equivalent long-form data frame, routed through one set of converters in
+`R/tidy_input.R`; `tests/testthat/test-tidy-input.R` asserts that the two
+spellings produce identical output. The exceptions are the named lists of data
+frames, where a list is the correct shape.
 
 A table that omits cells raises `simulab_incomplete_tidy_input`; one missing
 a required column raises `simulab_bad_tidy_input`.
@@ -144,10 +146,12 @@ identical(before, after)
 #> [1] TRUE
 ```
 
-The behaviour is implemented by saving `.Random.seed`, calling `set.seed()`,
+The behavior is implemented by saving `.Random.seed`, calling `set.seed()`,
 generating the data, and restoring the saved state on exit. Sixty-four
-exported functions accept a `seed` argument. Both properties were checked
-directly on 33 simulators spanning every family.
+exported functions accept a `seed` argument. Both properties are checked on
+every one of the 42 dispatchable verbs in `tests/testthat/test-seed-contract.R`,
+which reads its case list from the simulator registry so a verb added without a
+case fails the suite rather than escaping the sweep.
 
 ## Declarative studies
 
@@ -353,27 +357,38 @@ them.
 
 ## Simulator catalogue
 
-`list_simulators()` returns the canonical simulators as a data frame with
-columns `simulator`, `family` and `primary_shape`. `simulate_data()` dispatches
-on the `simulator` name and passes its remaining arguments through.
+`list_simulators()` returns every public simulation and generation verb from a
+single registry. Its columns are `simulator`, `function_name`, `kind`, `family`,
+`primary_shape` and `dispatchable`. `simulate_data()` uses that same registry,
+dispatches on the `simulator` name and passes its remaining arguments through.
+This makes catalogue and dispatcher drift testable. All entries except the
+`data` dispatcher itself are directly dispatchable.
 
 | Family | Simulators |
 |---|---|
-| general | `study`, `correlation`, `copula`, `ordinal` |
+| general | `study`, `correlation`, `correlated`, `copula`, `ordinal`; workflow: `scenarios`; dispatcher: `data` |
 | statistical | `ttest`, `anova`, `regression`, `clusters`, `prediction` |
 | latent | `lpa`, `lca`, `factors` |
 | measurement | `irt` |
 | longitudinal | `multilevel`, `growth`, `longitudinal` |
-| sequence | `markov`, `sequence_clusters`, `hmm`, `group_sequences`, `group_tna`, `event_log` |
+| sequence | `markov`, `sequences`, `sequence_clusters`, `hmm`, `group_sequences`, `group_tna`, `event_log`; generator: `transition_system`; workflows: `until_event`, `sequence_batches`, `tna_batches` |
 | survival | `survival`, `proportional_survival` |
 | empirical | `synthetic`, `density` |
 | functional | `spline` |
-| network | `network`, `edge_list`, `temporal_network`, `network_matrix`, `bipartite_network`, `multiplex_network`, `tna_network` |
+| network | `network`, `edge_list`, `temporal_network`, `network_matrix`, `bipartite_network`, `multiplex_network`, `tna_network`; workflow: `network_batches` |
 
 The `primary_shape` column records the layout of the observation table. Most
 simulators return one row per unit. Sequence simulators return one row per unit
 per position. Network simulators return one row per edge, except
 `network_matrix`, which returns one row per matrix cell.
+
+Use `kind`, `family` or `dispatchable` to narrow discovery:
+
+```r
+list_simulators(kind = "workflow")
+list_simulators(family = "network")
+list_simulators(dispatchable = TRUE)
+```
 
 ## What each simulator exposes as truth
 
@@ -500,7 +515,7 @@ missing at later periods.
 of groups or their labels, optional `strata`, and optional allocation `ratios`.
 With `balanced = TRUE` the allocation is exactly balanced within each stratum.
 
-`observe_treatment()` generates a non-randomised exposure from covariates. It
+`observe_treatment()` generates a non-randomized exposure from covariates. It
 takes probability formulas and a link, and returns the input with an exposure
 variable appended.
 
@@ -528,12 +543,12 @@ to an observed time, an integer event code, and an event type.
 `simulate_proportional_survival()` generates times from a proportional-hazards
 model directly. It takes named covariate coefficients, a baseline of
 `"weibull"`, `"exponential"` or `"gompertz"`, a shape, and a target censoring
-proportion. The censoring rate is solved for rather than fixed, so the realised
+proportion. The censoring rate is solved for rather than fixed, so the realized
 proportion matches the request.
 
 `calibrate_survival()` goes the other way. It takes observed times and survival
 probabilities and returns the Weibull formula and shape that reproduce them,
-with the optimiser's convergence code and the root mean squared error in the
+with the optimizer's convergence code and the root mean squared error in the
 result.
 
 ## Latent variable and measurement models
@@ -562,7 +577,7 @@ ability dimensions are available through `dimensions` and
 `simulate_multilevel()` draws data from a random-intercept and random-slope
 model. It takes a number of clusters, a cluster size, a fixed intercept, named
 fixed `slopes`, and standard deviations for the random intercept, the random
-slope and the residual. The realised intraclass correlation matches the value
+slope and the residual. The realized intraclass correlation matches the value
 implied by the variance components.
 
 `simulate_growth()` draws latent growth curves. It takes measurement `times`, a
@@ -598,7 +613,7 @@ matrices and records the generating cluster.
 
 `summarize_transitions()` counts observed transitions in long-form sequence
 data. It returns one row per ordered state pair with a count and, when
-`normalize = TRUE`, a row-normalised probability.
+`normalize = TRUE`, a row-normalized probability.
 
 `fit_tna()` estimates a transition network from sequence data using the `tna`
 package. It takes sequence data and a `model` of `"tna"`, `"ftna"`, `"ctna"` or
@@ -611,8 +626,8 @@ built on the same estimators. `evaluate_tna_estimation()` repeatedly generates
 sequences from a known transition system and reports how well each estimator
 recovers it.
 
-`learning_states()` and `sample_learning_states()` supply labelled state spaces
-in eight categories, including metacognitive, cognitive, behavioural, social,
+`learning_states()` and `sample_learning_states()` supply labeled state spaces
+in eight categories, including metacognitive, cognitive, behavioral, social,
 motivational, affective, group-regulation and learning-management-system
 states. `simulate_event_log()` generates educational event logs with groups,
 actors, courses, timestamps and achievement levels.
@@ -754,11 +769,11 @@ explicit bridge to native `tna` objects.
 
 ## Package status
 
-Version 0.4.0 is the first release under the simulab name. The version
-continues the line of Saqrlab (0.4.1), which has never been on CRAN. The
-package is a CRAN release candidate and a new submission.
+Version 0.4.1 is intended to be the first CRAN release under the simulab name.
+It follows the 0.4.0 release candidate and continues the version line of
+Saqrlab, which has never been on CRAN. The package is a new submission.
 
-The test suite contains 612 assertions across 26 files and covers 89.9% of
+The test suite contains 670 assertions across 28 files and covers 90.8% of
 package lines, measured with `covr`. With every suggested package installed
 there are no skips. Tests include statistical calibration checks, seeded
 regression checks, recovery checks for transition networks and grouped models,
@@ -771,9 +786,9 @@ produced.
 
 All 123 exported functions carry runnable examples, which `R CMD check`
 executes. `R CMD check --as-cran` reports one note, the standard note for a
-first submission, on R 4.5.2 under macOS on arm64. GitHub Actions runs the
-same check on macOS, Windows and Ubuntu across R release, devel and
-oldrel-1.
+first submission, on R 4.5.2 under macOS on arm64. GitHub Actions is configured
+to run checks on macOS, Windows and Ubuntu across R release, devel and
+oldrel-1, plus a manual-enabled Ubuntu check.
 
 ## Function reference
 
@@ -850,4 +865,4 @@ MIT. See `LICENSE`.
 ## Citation
 
 Saqr, M. (2026). simulab: Unified Simulation of Statistical and Study Data.
-R package version 0.4.0. https://github.com/mohsaqr/simulab
+R package version 0.4.1. https://github.com/mohsaqr/simulab

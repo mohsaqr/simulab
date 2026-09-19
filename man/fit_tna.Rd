@@ -30,9 +30,16 @@ group through the corresponding grouped TNA estimator.}
 \item{...}{Additional arguments passed to the estimator in \code{tna}.}
 }
 \value{
-A tidy edge-list \code{simulab_sim}. Initial probabilities and model
-metadata are components; use \code{as_tna_model()} when a native model object is
-required by \code{tna} plotting or inference functions.
+A tidy edge-list \code{simulab_sim} base \code{data.frame} with one row per
+ordered state pair and columns \code{from}, \code{to}, and \code{weight}, prefixed by a
+\code{group} column when \code{group} is supplied. For \code{model = "tna"} the weights
+are the estimated transition probabilities and sum to one within each
+\code{from} state; the other estimators return their own (not row-stochastic)
+weights. \code{as.data.frame(x, what = )} also returns
+\code{initial_probabilities} (\code{state}, \code{probability}) and \code{model_info}
+(\code{model}, \code{grouped}, \code{group}, \code{observations}, \code{sequence_positions}).
+Use \code{as_tna_model()} when a native model object is required by \code{tna}
+plotting or inference functions.
 }
 \description{
 Fit a temporal network analysis model

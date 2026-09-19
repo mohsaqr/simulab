@@ -35,11 +35,14 @@ simulate_event_log(
 
 \item{achievement_levels}{Achievement labels.}
 
-\item{achievement_probabilities}{Achievement probabilities.}
+\item{achievement_probabilities}{Achievement probabilities, one per level and
+summing to one. When \code{NULL}, the levels are equally likely.}
 
-\item{start_time}{Initial timestamp.}
+\item{start_time}{Initial timestamp. Every actor's first event is placed at
+this time.}
 
-\item{interval_range}{Minimum and maximum seconds between events.}
+\item{interval_range}{Minimum and maximum seconds between an actor's
+consecutive events, drawn uniformly.}
 
 \item{transitions}{Common matrix, one matrix per group, or \code{NULL}.}
 
@@ -50,8 +53,13 @@ simulate_event_log(
 \item{...}{Advanced options passed to \code{simulate_group_sequences()}.}
 }
 \value{
-A long-form \code{simulab_sim} event log with wide, one-hot, transition,
-actor, and group tables as components.
+A long-form \code{simulab_sim} base \code{data.frame} with one row per actor
+event and columns \code{group}, \code{id}, \code{course}, \code{achievement}, \code{period},
+\code{state}, and \code{timestamp}. \code{as.data.frame(x, what = )} also returns
+\code{transitions} (\code{group}, \code{from}, \code{to}, \code{probability}), \code{actors}
+(\code{group}, \code{id}, \code{course}, \code{achievement}), \code{groups} (\code{group}, \code{actors}),
+\code{wide} (one row per actor, columns \code{id}, \code{S1}, ..., plus actor metadata),
+and \code{one_hot} (the event log with \code{state} replaced by indicator columns).
 }
 \description{
 Simulate grouped educational event logs

@@ -19,33 +19,51 @@ evaluate_tna_estimation(
 )
 }
 \arguments{
-\item{repetitions}{Number of simulation replications.}
+\item{repetitions}{Number of simulation replications. A single positive whole
+number, defaulting to \code{100}.}
 
-\item{n}{Number of sequences per replication.}
+\item{n}{Number of sequences per replication. A single whole number of at
+least 2, defaulting to \code{200}.}
 
-\item{chain_length}{Sequence length.}
+\item{chain_length}{Sequence length. A single whole number of at least 2,
+defaulting to \code{25}.}
 
-\item{n_states}{Number of states.}
+\item{n_states}{Number of states. A single whole number of at least 2,
+defaulting to \code{6}.}
 
-\item{models}{TNA estimators to evaluate.}
+\item{models}{TNA estimators to evaluate. A character vector of at least one
+of \code{"tna"}, \code{"ftna"}, \code{"ctna"} and \code{"atna"}, all four by default.}
 
-\item{concentration, diagonal_concentration}{Transition-system parameters.}
+\item{concentration, diagonal_concentration}{Transition-system parameters
+passed to \code{\link[=generate_transition_system]{generate_transition_system()}}, defaulting to \code{1} and \code{0}.}
 
 \item{missing_tail}{Trailing missing positions passed to
-\code{simulate_sequences()}.}
+\code{\link[=simulate_sequences]{simulate_sequences()}}, defaulting to \code{c(0L, 5L)}.}
 
-\item{threshold}{Edge-presence threshold for recovery metrics.}
+\item{threshold}{Absolute weight threshold above which an edge counts as
+present, in both the agreement and the recovery metrics. A single
+non-negative number, defaulting to \code{0}.}
 
-\item{seed}{Optional base seed.}
+\item{seed}{Optional base seed. A single number, or \code{NULL} (the default).
+Replication \code{i} draws its transition system with \code{seed + i - 1} and its
+sequences with that offset plus \code{100000}.}
 
-\item{...}{Arguments passed to \code{fit_tna()}.}
+\item{...}{Arguments passed to \code{\link[=fit_tna]{fit_tna()}}.}
 }
 \value{
-A tidy \code{simulab_sim} of replication/model agreement metrics, with
-generated truth and estimated edges as components.
+A \code{simulab_sim} base \code{data.frame} with one row per replication and
+model, holding \code{iteration}, \code{model}, the \code{\link[=compare_networks]{compare_networks()}} agreement
+metrics and the \code{\link[=evaluate_edge_recovery]{evaluate_edge_recovery()}} summary. Components: \code{truth},
+the generating probabilities with columns \code{iteration}, \code{from}, \code{to} and
+\code{weight}; and \code{estimated_edges}, the row-normalized fitted edges with
+columns \code{iteration}, \code{model}, \code{from}, \code{to} and \code{weight}.
 }
 \description{
-Evaluate TNA estimation against generated truth
+Draws a transition system per replication, simulates sequences from it, fits
+each estimator in \code{models}, and scores the fitted edges against the
+generating probabilities. Fitted weights are row-normalized before the
+comparison, so estimators on different weight scales are all read as
+transition probabilities.
 }
 \examples{
 if (requireNamespace("tna", quietly = TRUE)) {

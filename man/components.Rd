@@ -10,8 +10,10 @@ components(x)
 \item{x}{A \code{simulab_sim} object.}
 }
 \value{
-A base \code{data.frame} with one row per available table and columns
-\code{table}, \code{rows}, and \code{columns}.
+A base \code{data.frame} with one row per available table and the columns
+\code{table} (the name to pass as \code{what} to \code{as.data.frame()}), \code{rows} and
+\code{columns}. The first row is always the primary \code{"data"} table; a result
+that carries no extra tables returns that single row.
 }
 \description{
 List the tidy tables available from a simulation

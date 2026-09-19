@@ -27,9 +27,9 @@ simulate_correlated(
 \item{structure}{Correlation structure: one of \code{"independent"},
 \code{"exchangeable"}, \code{"ar1"}, or \code{"custom"}. If left unset it is chosen from
 the other arguments: \code{"custom"} when \code{correlation} is supplied,
-\code{"exchangeable"} when a non-zero \code{rho} (or \code{tau}) is supplied, and
-\code{"independent"} otherwise. Passing \code{"independent"} together with a
-non-zero \code{rho} is a contradiction and raises an error.}
+\code{"exchangeable"} when a non-zero \code{rho} is supplied, and \code{"independent"}
+otherwise. Passing \code{"independent"} together with a non-zero \code{rho} is a
+contradiction and raises a \code{simulab_contradictory_structure} error.}
 
 \item{correlation}{A custom correlation matrix or tidy table returned by
 \code{correlation_structure()}.}
@@ -39,9 +39,14 @@ non-zero \code{rho} is a contradiction and raises an error.}
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame}. The requested correlation and
-covariance structures are available through \code{as.data.frame()} using
-\code{what = "correlation"} or \code{what = "covariance"}.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id} and one column per variable. Three tidy tables come from
+\code{as.data.frame()}: \code{what = "parameters"} has one row per variable with
+columns \code{variable}, \code{mean} and \code{sd}; \code{what = "correlation"} and
+\code{what = "covariance"} each have one row per matrix cell with columns
+\code{row}, \code{column} and \code{correlation} or \code{covariance}. The covariance is the
+correlation matrix scaled by \code{sds} on both sides, so \code{sds} are standard
+deviations rather than variances.
 }
 \description{
 Simulate correlated Gaussian variables

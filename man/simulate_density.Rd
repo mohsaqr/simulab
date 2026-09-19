@@ -17,21 +17,25 @@ simulate_density(
 \arguments{
 \item{n}{Number of observations.}
 
-\item{values}{Numeric source values.}
+\item{values}{Numeric source values, of which at least two must be present
+and distinct. Missing values are dropped before the density is estimated.}
 
 \item{variable}{Output variable name.}
 
 \item{use_limits}{Constrain draws to the observed range.}
 
-\item{keep_missing}{Preserve the source missing-data proportion.}
+\item{keep_missing}{Draw missing values at the source's missing-data rate, so
+the proportion is reproduced in expectation rather than exactly.}
 
 \item{id}{Identifier variable name.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with one generated density value
-per observation.
+A \code{simulab_sim} base \code{data.frame} with \code{n} rows and columns \code{id} and
+\code{variable}, one generated density value per row.
+\code{as.data.frame(x, what = "source")} gives a one-row summary of the source
+values.
 }
 \description{
 Simulate from an empirical kernel density

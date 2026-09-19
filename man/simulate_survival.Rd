@@ -22,12 +22,16 @@ either the \code{hazard()} call form or the column form.}
 
 \item{covariates}{Optional baseline base \code{data.frame} with \code{n} rows.}
 
-\item{id}{Identifier name used when covariates are omitted.}
+\item{id}{Identifier name used when covariates are omitted. Defaults to
+\code{"id"} and is ignored when \code{covariates} is supplied.}
 
-\item{seed, digits, envir}{Arguments passed to \code{augment_survival()}.}
+\item{seed, digits, envir}{Arguments passed to \code{\link[=augment_survival]{augment_survival()}}.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame}.
+A \code{simulab_sim} base \code{data.frame} with one row per simulated
+subject: the identifier (or the supplied covariates) followed by one
+column per event defined in \code{specification}. The \code{survival_definitions}
+component holds the specification that generated it.
 }
 \description{
 Simulate baseline data with survival outcomes

@@ -16,11 +16,13 @@ augment_density(
 \arguments{
 \item{data}{Destination base \code{data.frame}.}
 
-\item{values}{Numeric source values.}
+\item{values}{Numeric source values, of which at least two must be present
+and distinct.}
 
 \item{variable}{Name of the new variable.}
 
-\item{use_limits, keep_missing, seed}{Density-simulation arguments.}
+\item{use_limits, keep_missing, seed}{Density-simulation arguments, as in
+\code{\link[=simulate_density]{simulate_density()}}.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with the density variable added.

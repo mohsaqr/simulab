@@ -12,11 +12,13 @@
 \item{...}{Reserved for future methods.}
 }
 \value{
-A base \code{data.frame} with one row per variable and columns describing
-storage class, missingness, uniqueness, and numeric summaries.
+A base \code{data.frame} with one row per column of the primary data and
+the columns \code{variable}, \code{class}, \code{observations}, \code{missing}, \code{unique},
+\code{mean}, \code{sd}, \code{minimum} and \code{maximum}. The last four are \code{NA} for
+non-numeric columns.
 }
 \description{
-Summarize simulated variables
+Summarizes the primary data only; the other components are not included.
 }
 \examples{
 result <- simulate_ttest(n_a = 30, n_b = 30, mean_a = 0, mean_b = 0.5, seed = 1)

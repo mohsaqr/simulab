@@ -158,11 +158,20 @@
 #' @param n Number of observations.
 #' @param specification Variable definitions from [define_variables()]. In the
 #'   distribution-call form every marginal must carry a quantile function;
-#'   `list_distributions(copula = TRUE)` reports which do. In the
-#'   `formula`/`variance` column form the marginal is stated as a mean and a
-#'   dispersion.
-#' @param rho Optional latent Pearson correlation.
-#' @param tau Optional Kendall correlation, overriding `rho`.
+#'   `list_distributions(copula = TRUE)` reports which do. The
+#'   `formula`/`variance` column form covers twelve marginals: `formula` is
+#'   the mean (through `link`) and `variance` carries the second parameter,
+#'   which is a variance for `normal`, a precision for `beta`, a dispersion
+#'   for `gamma` and `negative_binomial`, and a size for `binomial`. It is
+#'   unused by `binary`, `exponential`, `poisson` and `no_zero_poisson`; for
+#'   `uniform` and `uniform_integer` `formula` instead carries both limits,
+#'   and for `categorical` `formula` carries the category probabilities and
+#'   `variance` their labels. A marginal outside those twelve raises
+#'   `simulab_no_quantile`; state it as a distribution call instead.
+#' @param rho Optional latent Pearson correlation, zero by default.
+#' @param tau Optional Kendall correlation, overriding `rho`. It is converted
+#'   to the latent Pearson correlation `sin(pi * tau / 2)`, so a continuous
+#'   margin pair attains Kendall's tau of `tau`.
 #' @param structure Correlation structure: one of `"independent"`,
 #'   `"exchangeable"`, `"ar1"`, or `"custom"`. If left unset it is chosen from
 #'   the other arguments: `"custom"` when `correlation` is supplied,
@@ -174,8 +183,14 @@
 #' @param seed Optional random seed.
 #' @param envir Formula evaluation environment.
 #'
-#' @return A `simulab_sim` base `data.frame` with one row per observation and a
-#'   tidy latent-correlation table.
+#' @return A `simulab_sim` base `data.frame` with one row per observation and
+#'   columns `id` (renamed by `id`) and one column per variable. Two tidy
+#'   tables come from `as.data.frame()`: `what = "definitions"` restates the
+#'   specification, and `what = "latent_correlation"` has one row per
+#'   correlation-matrix cell with columns `row`, `column` and `correlation`.
+#'   That matrix is the correlation of the latent Gaussian variables, not of
+#'   the generated margins, which are pulled apart by their own quantile
+#'   transforms.
 #' @export
 #'
 #' @section Conditions:
@@ -277,17 +292,29 @@ simulate_copula <- function(n, specification, rho = 0, tau = NULL,
 #' Add correlated variables to existing data
 #'
 #' @param data Base `data.frame`.
-#' @param specification New variable definitions.
+#' @param specification New variable definitions, in the `formula`/`variance`
+#'   column form built by [define_variable()]. Unlike [simulate_copula()],
+#'   `augment_correlated()` does not accept the distribution-call form, and
+#'   one row of `specification` is one new variable. None of the named
+#'   variables may already exist in `data`.
 #' @param rho,tau,structure,correlation Copula correlation arguments.
 #'   `structure` follows the same resolution rule as [simulate_copula()]:
 #'   leaving it unset selects `"exchangeable"` when a non-zero `rho` or `tau`
-#'   is given.
+#'   is given. `tau` is converted to the latent Pearson correlation
+#'   `sin(pi * tau / 2)`.
 #' @param group Optional grouping variable. With grouping, one definition is
 #'   generated as correlated observations within each group.
 #' @param seed Optional random seed.
 #' @param envir Formula evaluation environment.
 #'
-#' @return A `simulab_sim` base `data.frame` with the correlated variables.
+#' @return A `simulab_sim` base `data.frame` holding every column of `data`
+#'   plus one column per new variable. Two tidy tables come from
+#'   `as.data.frame()`: `what = "definitions"` restates the specification, and
+#'   `what = "latent_correlation"` describes the latent Gaussian correlation.
+#'   Without `group` that table has one row per correlation-matrix cell, with
+#'   columns `row`, `column` and `correlation`; with `group` the correlation is
+#'   across the observations inside each group, so the table instead has one
+#'   row per group with columns `group`, `observations`, `rho` and `structure`.
 #' @export
 #'
 #' @examples

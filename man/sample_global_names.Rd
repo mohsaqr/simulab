@@ -7,14 +7,17 @@
 sample_global_names(n, regions = "all", seed = NULL)
 }
 \arguments{
-\item{n}{Number of unique names.}
+\item{n}{Number of unique names to draw, at most the number of distinct names
+the chosen regions hold.}
 
 \item{regions}{Regions passed to \code{global_names()}.}
 
 \item{seed}{Optional seed.}
 }
 \value{
-A tidy base \code{data.frame} with order, region, and name.
+A tidy base \code{data.frame} with one row per sampled name and columns
+\code{order}, \code{region} and \code{name}. A name belonging to more than one region
+carries them joined by \code{";"}.
 }
 \description{
 Sample globally diverse names

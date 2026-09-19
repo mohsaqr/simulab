@@ -18,36 +18,58 @@ simulate_prediction(
 )
 }
 \arguments{
-\item{n}{Sample size.}
+\item{n}{Sample size. A single whole number of at least 2.}
 
-\item{coefficients}{Named continuous-predictor coefficients with optional
-\code{(Intercept)}.}
+\item{coefficients}{Named numeric vector of continuous-predictor
+coefficients, with an optional \code{(Intercept)} entry that defaults to \code{0}
+when absent. The remaining names become the continuous predictor columns.}
 
 \item{categorical_levels}{Named list of levels for categorical predictors,
 or a tidy data frame with columns \code{variable} and \code{level}. Optional
 \code{effect} and \code{probability} columns in that table supply
 \code{categorical_effects} and \code{category_probabilities}, so one table replaces
-all three arguments.}
+all three arguments. Defaults to \code{NULL}, no categorical predictor.}
 
 \item{categorical_effects}{Named list of level effects matching
-\code{categorical_levels}.}
+\code{categorical_levels} by name and length, one number per level, added to the
+outcome for the level a unit is assigned. Required whenever
+\code{categorical_levels} is given.}
 
-\item{category_probabilities}{Optional named list of sampling probabilities.}
+\item{category_probabilities}{Optional named list of sampling probabilities,
+one non-negative value per level summing to one within each predictor.
+Defaults to \code{NULL}, equal probabilities across a predictor's levels.}
 
-\item{predictor_means, predictor_sds}{Continuous-predictor parameters.}
+\item{predictor_means, predictor_sds}{Mean and standard deviation of each
+normally distributed continuous predictor, a scalar recycled across them
+(the defaults, \code{0} and \code{1}) or one value per continuous coefficient.}
 
-\item{error_sd}{Residual standard deviation.}
+\item{error_sd}{Residual standard deviation. A single positive number,
+defaulting to \code{1}.}
 
-\item{outcome}{Outcome-column name.}
+\item{outcome}{Outcome-column name. A single non-empty string, defaulting to
+\code{"outcome"}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with coefficient, categorical
-effect, and population R-squared tables.
+When \code{categorical_levels} is \code{NULL}, whatever \code{\link[=simulate_regression]{simulate_regression()}}
+returns. Otherwise a \code{simulab_sim} base \code{data.frame} with one row per unit
+and columns \code{id}, one column per continuous coefficient name, one character
+column per categorical predictor, and the outcome named by \code{outcome}.
+Components: \code{coefficients} (one row per fixed term, columns \code{term} and
+\code{coefficient}, always including \code{(Intercept)}), \code{categorical_effects} (one
+row per predictor level, columns \code{variable}, \code{level}, \code{effect} and
+\code{probability}), and \code{effects} (one row, columns \code{signal_variance},
+\code{residual_variance} and \code{r_squared}). \code{signal_variance} is the \emph{realized}
+variance of the simulated linear predictor, so \code{r_squared} is the realized
+proportion of outcome variance it explains, not a population value.
 }
 \description{
-Simulate a prediction design with continuous and categorical predictors
+Draws the continuous predictors independently from normal distributions and
+each categorical predictor by sampling its levels with replacement, then
+forms the outcome as the intercept plus the continuous linear predictor plus
+the level effects plus normal residual noise. With no categorical predictor
+the call is simply \code{\link[=simulate_regression]{simulate_regression()}}.
 }
 \examples{
 result <- simulate_prediction(

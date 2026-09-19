@@ -7,17 +7,23 @@
 sample_learning_states(n, categories = "all", seed = NULL)
 }
 \arguments{
-\item{n}{Number of unique states.}
+\item{n}{Number of unique states to draw. A single positive whole number,
+at most the number of distinct states in the selected categories.}
 
-\item{categories}{Categories passed to \code{learning_states()}.}
+\item{categories}{Categories passed to \code{\link[=learning_states]{learning_states()}}, defaulting to
+\code{"all"}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A tidy base \code{data.frame} with selection order, category, and state.
+A tidy base \code{data.frame} with \code{n} rows, one per sampled state, and
+columns \code{order} (the selection order, \code{1:n}), \code{category} and \code{state}. A
+state belonging to several categories gets all of them in \code{category},
+joined by \code{";"}.
 }
 \description{
-Sample learning states reproducibly
+Samples without replacement from the distinct states of the selected
+categories, so the result never repeats a state.
 }
 \examples{
 sample_learning_states(n = 6, categories = "cognitive", seed = 1)

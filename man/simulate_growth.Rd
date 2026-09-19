@@ -17,27 +17,47 @@ simulate_growth(
 )
 }
 \arguments{
-\item{n}{Number of units.}
+\item{n}{Number of units. A single whole number of at least 2.}
 
-\item{times}{Measurement occasions.}
+\item{times}{Measurement occasions: a finite numeric vector of at least two
+unique values, used verbatim as the \code{time} predictor (so \code{0:4} puts the
+intercept at the first occasion).}
 
-\item{intercept, slope, quadratic}{Fixed growth coefficients.}
+\item{intercept, slope, quadratic}{Fixed growth coefficients, each a single
+number; they default to \code{0}, \code{1} and \code{0}.}
 
-\item{random_sd}{Standard deviations for random intercept, slope, and
-optional quadratic term.}
+\item{random_sd}{Standard deviations for the random intercept, slope, and
+optional quadratic term. A non-negative numeric vector of length 2 (the
+default, \code{c(1, 0.25)}) or 3.}
 
-\item{random_correlation}{Correlation matrix for random effects, or a tidy
-data frame with columns \code{row}, \code{column} and \code{correlation}.}
+\item{random_correlation}{Correlation matrix for the random effects,
+matching the length of \code{random_sd}, or a tidy data frame with columns
+\code{row}, \code{column} and \code{correlation}. \code{NULL} (the default) makes the random
+effects uncorrelated.}
 
-\item{residual_sd}{Residual standard deviation.}
+\item{residual_sd}{Residual standard deviation. A single positive number,
+defaulting to \code{1}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A long-form \code{simulab_sim} base \code{data.frame}.
+A long-form \code{simulab_sim} base \code{data.frame} with one row per
+unit-occasion (\code{n * length(times)} rows) and columns \code{id}, \code{time} and
+\code{outcome}. Rows are ordered by occasion first and unit second. A
+\code{parameters} component holds one row for each of \code{intercept}, \code{slope},
+\code{quadratic} and \code{residual_sd}, with columns \code{term} and \code{value} (note that
+\code{residual_sd} is a standard deviation, and that the random-effect
+standard deviations are not repeated there). A \code{random_effects} component
+holds one row per unit with columns \code{id}, \code{intercept}, \code{slope} and, when
+\code{random_sd} has three elements, \code{quadratic}, giving each unit's deviation
+from the fixed coefficients.
 }
 \description{
-Simulate longitudinal growth trajectories
+Draws per-unit random growth coefficients, then forms the outcome at each
+measurement occasion as
+\code{(intercept + b0) + (slope + b1) * time + (quadratic + b2) * time^2} plus
+normal residual noise, where \code{b2} is present only when \code{random_sd} has
+three elements. Every unit is observed at every occasion (balanced design).
 }
 \examples{
 result <- simulate_growth(

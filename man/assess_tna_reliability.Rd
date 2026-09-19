@@ -18,26 +18,36 @@ assess_tna_reliability(
 )
 }
 \arguments{
-\item{data}{Sequence data accepted by \code{fit_tna()}.}
+\item{data}{Sequence data accepted by \code{\link[=fit_tna]{fit_tna()}}, with at least 4 rows.}
 
-\item{model}{TNA estimator.}
+\item{model}{TNA estimator, one of \code{"tna"} (the default), \code{"ftna"}, \code{"ctna"}
+or \code{"atna"}.}
 
-\item{iterations}{Number of random split halves.}
+\item{iterations}{Number of random split halves. A single whole number of at
+least 2, defaulting to \code{100}.}
 
-\item{split}{Fraction assigned to the first half.}
+\item{split}{Fraction of the sequences assigned to the first half, rounded
+down. A single number strictly between 0 and 1, defaulting to \code{0.5}. Each
+half must end up with at least two sequences.}
 
-\item{format, id, period, state}{Input-format arguments.}
+\item{format, id, period, state}{Input-format arguments passed on when the
+sequences are prepared: \code{format} is one of \code{"auto"} (the default), \code{"long"}
+or \code{"wide"}, and the other three name the identifier, period and state
+columns of long input.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional seed. A single number, or \code{NULL} (the default).}
 
-\item{...}{Arguments passed to \code{fit_tna()}.}
+\item{...}{Arguments passed to \code{\link[=fit_tna]{fit_tna()}}.}
 }
 \value{
-A tidy base \code{data.frame} with one row of network agreement metrics
-per split.
+A plain base \code{data.frame}, not a \code{simulab_sim}, with one row per
+split, holding \code{iteration}, \code{model} and the \code{\link[=compare_networks]{compare_networks()}} agreement
+metrics for the two halves.
 }
 \description{
-Assess split-half TNA reliability
+Splits the sequences at random into two halves, fits the same estimator to
+each, and compares the two networks. Repeating that over \code{iterations}
+independent splits shows how stable an estimate this much data supports.
 }
 \examples{
 data <- simulate_sequences(n = 40, n_states = 3, chain_length = 12, seed = 1)

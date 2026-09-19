@@ -86,9 +86,16 @@
 #'   group through the corresponding grouped TNA estimator.
 #' @param ... Additional arguments passed to the estimator in `tna`.
 #'
-#' @return A tidy edge-list `simulab_sim`. Initial probabilities and model
-#'   metadata are components; use `as_tna_model()` when a native model object is
-#'   required by `tna` plotting or inference functions.
+#' @return A tidy edge-list `simulab_sim` base `data.frame` with one row per
+#'   ordered state pair and columns `from`, `to`, and `weight`, prefixed by a
+#'   `group` column when `group` is supplied. For `model = "tna"` the weights
+#'   are the estimated transition probabilities and sum to one within each
+#'   `from` state; the other estimators return their own (not row-stochastic)
+#'   weights. `as.data.frame(x, what = )` also returns
+#'   `initial_probabilities` (`state`, `probability`) and `model_info`
+#'   (`model`, `grouped`, `group`, `observations`, `sequence_positions`).
+#'   Use `as_tna_model()` when a native model object is required by `tna`
+#'   plotting or inference functions.
 #' @export
 #'
 #' @examples
@@ -148,7 +155,9 @@ fit_tna <- function(data, model = c("tna", "ftna", "ctna", "atna"),
 #' @param group Optional group name for a grouped model. When omitted, the
 #'   complete native grouped model is returned.
 #'
-#' @return A native `tna` or `group_tna` model object.
+#' @return A native `tna` or `group_tna` model object. For a
+#'   `compare_tna_models()` result the stored models are returned as a list
+#'   named by model type instead.
 #' @export
 #'
 #' @examples
@@ -179,7 +188,12 @@ as_tna_model <- function(x, group = NULL) {
 #' @param format,id,period,state,group Input arguments passed to `fit_tna()`.
 #' @param ... Estimator arguments.
 #'
-#' @return A tidy edge-list `simulab_sim` with one row per model/group/edge.
+#' @return A tidy edge-list `simulab_sim` base `data.frame` with one row per
+#'   model/group/edge and columns `model`, `from`, `to`, and `weight`
+#'   (with `group` inserted when `group` is supplied). A stacked `model_info`
+#'   table, one row per fitted model and group, is available through
+#'   `as.data.frame()`. The fitted native models are stored as a named list and
+#'   returned by `as_tna_model()`.
 #' @export
 #'
 #' @examples
@@ -230,8 +244,12 @@ compare_tna_models <- function(data, models = c("tna", "ftna", "ctna", "atna"),
 #'   used without leaking RNG state.
 #' @param ... Advanced sequence arguments passed to `simulate_sequences()`.
 #'
-#' @return Long-form grouped sequences with group-specific transitions and wide
-#'   sequences as components.
+#' @return A long-form `simulab_sim` base `data.frame` with one row per actor
+#'   sequence position and columns `group`, `id`, `period`, and `state`. Actor
+#'   identifiers are made unique across groups as `G<group>_A<actor>`.
+#'   `as.data.frame(x, what = )` also returns `transitions` (`group`, `from`,
+#'   `to`, `probability`), `wide` (one row per actor: `id`, `S1`, `S2`, ...,
+#'   `group`), and `groups` (`group`, `actors`).
 #' @export
 #'
 #' @examples
@@ -321,17 +339,22 @@ simulate_group_sequences <- function(groups, actors, transitions = NULL,
 #' @inheritParams simulate_group_sequences
 #' @param ... Advanced sequence arguments.
 #'
-#' @return Grouped long-form sequences with true transitions, fitted edges,
-#'   model metadata, and a native grouped model accessible through
-#'   `as_tna_model()`.
+#' @return A long-form `simulab_sim` base `data.frame` of grouped sequences with
+#'   columns `group`, `id`, `period`, and `state`.
+#'   `as.data.frame(x, what = )` also returns `true_transitions` (the
+#'   generating probabilities), `estimated_edges` (the fitted TNA weights),
+#'   `model_info`, `wide`, and `groups`. The native `group_tna` model is
+#'   accessible through `as_tna_model()`. Requires the suggested `tna` package.
 #' @export
 #'
 #' @examples
-#' result <- simulate_group_tna(
-#'   groups = 2, actors = 20, chain_length = 12, n_states = 3, seed = 1
-#' )
-#' head(result)
-#' components(result)
+#' if (requireNamespace("tna", quietly = TRUE)) {
+#'   result <- simulate_group_tna(
+#'     groups = 2, actors = 20, chain_length = 12, n_states = 3, seed = 1
+#'   )
+#'   head(result)
+#'   components(result)
+#' }
 simulate_group_tna <- function(groups, actors, transitions = NULL,
                                chain_length, initial = NULL,
                                group_names = NULL, states = NULL,
@@ -373,11 +396,18 @@ simulate_group_tna <- function(groups, actors, transitions = NULL,
 #' @param group_names Optional group names.
 #' @param within_probability,between_probability Edge probabilities within and
 #'   between node groups.
-#' @param loops Permit self transitions.
+#' @param loops Permit self transitions when drawing the underlying edges. A
+#'   node left with no outgoing edge is nevertheless given a self transition of
+#'   probability one, so self-loops can appear even when `loops` is `FALSE`.
 #' @param seed Optional random seed.
 #'
-#' @return A tidy non-zero transition edge list with node, group, adjacency, and
-#'   full transition tables as components.
+#' @return A tidy `simulab_sim` base `data.frame` holding the non-zero
+#'   transitions only, one row per edge, with columns `from`, `to`, and
+#'   `probability`. `as.data.frame(x, what = )` also returns `nodes`
+#'   (`node`, `group`), `adjacency` (the long `row`/`column`/`weight` table of
+#'   the underlying directed Bernoulli graph), and `transitions` (the full
+#'   `nodes^2`-row transition table including zeros). The transition matrix is
+#'   row-stochastic: every `from` node's probabilities sum to one.
 #' @export
 #'
 #' @examples

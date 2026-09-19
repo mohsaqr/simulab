@@ -39,7 +39,8 @@ selects a decay structure.}
 }
 \value{
 A base \code{data.frame} with one row per cluster and correlation-matrix
-cell.
+cell, and columns \code{row}, \code{column}, \code{correlation} and \code{cluster}. The \code{row}
+and \code{column} labels are of the form \verb{period_<p>_unit_<u>}.
 }
 \description{
 Create clustered-period correlation structures

@@ -27,17 +27,25 @@ simulate_network_matrix(
 
 \item{loops}{Permit non-zero diagonal entries.}
 
-\item{weighted}{Generate weighted adjacency/co-occurrence values.}
+\item{weighted}{Generate weighted adjacency/co-occurrence values. Ignored by
+the \code{frequency} and \code{transition} types, which are always weighted.}
 
 \item{weight_range}{Range for continuous weights.}
 
-\item{frequency_mean}{Mean positive count for frequency matrices.}
+\item{frequency_mean}{Mean positive count for frequency matrices; drawn as
+\code{1 + rpois(frequency_mean - 1)}, so entries are at least one.}
 
 \item{seed}{Optional seed.}
 }
 \value{
-A tidy full matrix table with \code{from}, \code{to}, and \code{value}; non-zero
-edges, nodes, and a wide matrix are components.
+A tidy \code{simulab_sim} base \code{data.frame} holding the complete matrix in
+long form: \code{nodes^2} rows with columns \code{from}, \code{to}, and \code{value}, zeros
+included. \code{as.data.frame(x, what = )} also returns \code{edges} (the non-zero
+rows only), \code{nodes} (\code{node}), \code{matrix} (the wide form: a \code{from} column
+followed by one column per node), and a one-row \code{settings} table whose
+\code{directed} field reports whether the generated matrix is asymmetric.
+The \code{transition} type is row-stochastic: every \code{from} state's \code{value}
+entries sum to one.
 }
 \description{
 Simulate a network matrix

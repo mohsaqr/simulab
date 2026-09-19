@@ -7,21 +7,37 @@
 define_survival(event, formula = 0, scale = 1, shape = 1, transition = 0)
 }
 \arguments{
-\item{event}{Name of the event-time variable.}
+\item{event}{Name of the event-time variable. A single non-empty string.}
 
-\item{formula}{Log-hazard formula.}
+\item{formula}{Linear predictor on the log scale, given as a number, a
+string, or an unquoted expression over the covariate columns (for example
+\code{"-8 + 0.5 * treatment"}). Defaults to \code{0}. It is stored as text and
+evaluated row by row against the data.}
 
-\item{scale}{Positive Weibull scale formula.}
+\item{scale}{Positive Weibull scale, as a number, a string, or an expression
+over the covariates. Defaults to \code{1}. It divides the cumulative hazard.}
 
-\item{shape}{Positive Weibull shape formula in the simstudy parameterization.}
+\item{shape}{Positive Weibull shape in the simstudy parameterization (the
+exponent applied to the transformed time, so the hazard is constant when
+\code{shape} is 1 and decreasing when \code{shape} is above 1). Defaults to \code{1}.}
 
-\item{transition}{Time at which this hazard specification begins.}
+\item{transition}{Time at which this hazard segment begins. A single finite
+non-negative number, defaulting to \code{0}. The first segment of an event must
+start at \code{0}.}
 }
 \value{
-A one-row \code{simulab_survival_spec} base \code{data.frame}.
+A one-row \code{simulab_survival_spec} base \code{data.frame} with columns
+\code{event}, \code{formula}, \code{scale} and \code{shape} (all character, the stored
+definition text) and the numeric column \code{transition}.
 }
 \description{
-Define a survival process
+Records one Weibull hazard segment for one event time. The simstudy
+parameterization is used throughout: an event time drawn from this segment
+has survival function \code{S(t) = exp(-exp(formula) * t^(1 / shape) / scale)}, so
+\code{shape} is the \emph{reciprocal} of the textbook Weibull shape, and
+\code{exp(formula)} multiplies the whole cumulative hazard. A coefficient inside
+\code{formula} is therefore a log hazard ratio, while \code{formula} itself equals the
+log hazard only when \code{shape} and \code{scale} are both 1.
 }
 \examples{
 define_survival("time", formula = -8, shape = 0.3)

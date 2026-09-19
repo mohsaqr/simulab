@@ -7,15 +7,19 @@
 augment_factorial(data, factors, coding = c("dummy", "effect", "level"))
 }
 \arguments{
-\item{data}{Input base \code{data.frame}.}
+\item{data}{Input base \code{data.frame}, with at least one row.}
 
-\item{factors}{Named integer vector giving factor levels.}
+\item{factors}{Named numeric vector of whole numbers giving the number of
+levels of each factor. Every entry must be at least 2.}
 
-\item{coding}{Factor coding passed to \code{factorial_design()}.}
+\item{coding}{Factor coding passed to \code{\link[=factorial_design]{factorial_design()}}: \code{"dummy"} (the
+default), \code{"effect"} or \code{"level"}.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} containing every row-condition
-combination.
+A \code{simulab_sim} base \code{data.frame} with one row per row of \code{data}
+crossed with every design condition, so \code{nrow(data) * prod(factors)} rows:
+the columns of \code{data} followed by one column per factor. The \code{design}
+component holds the distinct conditions, one row each.
 }
 \description{
 Add factorial conditions to existing rows

@@ -17,10 +17,14 @@ summarize_transitions(
 
 \item{id, period, state}{Column names.}
 
-\item{normalize}{Return row-conditional transition proportions.}
+\item{normalize}{Return row-conditional transition proportions. When
+\code{FALSE}, the \code{probability} column is kept but filled with \code{NA}.}
 }
 \value{
-A tidy base \code{data.frame} with \code{from}, \code{to}, count, and probability.
+A tidy base \code{data.frame} with one row per observed \code{from}/\code{to} pair
+and columns \code{from}, \code{to}, \code{count}, and \code{probability}. Pairs never observed
+are absent rather than zero, so \code{probability} sums to one within each
+\code{from} state when \code{normalize} is \code{TRUE}.
 }
 \description{
 Count observed transitions in sequence data

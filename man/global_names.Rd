@@ -7,10 +7,13 @@
 global_names(regions = "all")
 }
 \arguments{
-\item{regions}{Region names or \code{"all"}.}
+\item{regions}{Region names from \code{\link[=global_name_regions]{global_name_regions()}}, or \code{"all"}, the
+default, for every region.}
 }
 \value{
-A tidy base \code{data.frame} with region and name columns.
+A tidy base \code{data.frame} with one row per region/name pair and
+columns \code{region} and \code{name}. A name shared by two regions appears once per
+region.
 }
 \description{
 List the global-name catalogue

@@ -15,28 +15,50 @@ simulate_factors(
 )
 }
 \arguments{
-\item{n}{Number of observations.}
+\item{n}{Number of observations. A single whole number of at least 2.}
 
-\item{loadings}{Variable-by-factor loading matrix, or a tidy data frame
-with columns \code{item}, \code{factor} and \code{loading}.}
+\item{loadings}{Variable-by-factor loading matrix (one row per indicator,
+one column per factor, at least 2 rows), or a tidy data frame with
+columns \code{item}, \code{factor} and \code{loading}. Row and column names, when
+present, name the indicators and the factors.}
 
-\item{uniquenesses}{Residual variances.}
+\item{uniquenesses}{Residual \emph{variances} (not standard deviations), a
+scalar recycled across indicators or one non-negative value per
+indicator. \code{NULL} (the default) uses \code{1 - rowSums(loadings^2)}, which
+gives every indicator unit total variance, so the loadings are then fully
+standardized. Loadings whose squared row sum exceeds one therefore raise
+an error rather than producing a Heywood case.}
 
 \item{factor_correlation}{Optional factor correlation matrix, or a tidy
-data frame with columns \code{row}, \code{column} and \code{correlation}.}
+data frame with columns \code{row}, \code{column} and \code{correlation}. \code{NULL} (the
+default) makes the factors orthogonal.}
 
-\item{intercepts}{Variable intercepts.}
+\item{intercepts}{Variable intercepts, a scalar recycled across indicators
+(the default, \code{0}) or one value per indicator.}
 
-\item{include_scores}{Include true factor scores in primary data.}
+\item{include_scores}{Single flag; when \code{TRUE} the true factor scores are
+appended to the primary data as one column per factor. Defaults to
+\code{FALSE}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with population covariance and
-parameter tables.
+A \code{simulab_sim} base \code{data.frame} with one row per observation and
+columns \code{id} and one per indicator, plus one column per factor when
+\code{include_scores = TRUE}. A \code{parameters} component holds one row per
+variable-by-factor combination with columns \code{variable}, \code{factor},
+\code{loading}, \code{uniqueness} and \code{intercept}; a \code{covariance} component holds
+the implied population covariance in tidy form, one row per variable
+pair, with columns \code{row}, \code{column} and \code{covariance}.
 }
 \description{
-Simulate a common-factor model
+Draws factor scores from a multivariate normal with unit variances and
+correlation \code{factor_correlation}, then forms each indicator as
+\code{intercept + loadings \%*\% scores + error}, where the error standard
+deviation is \code{sqrt(uniqueness)}. The implied population covariance is
+\code{loadings \%*\% factor_correlation \%*\% t(loadings) + diag(uniquenesses)}.
+Because the factors have unit variance, the loadings are on the
+standardized-factor metric.
 }
 \examples{
 # `loadings` is one row per item and one column per factor.

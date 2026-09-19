@@ -23,15 +23,18 @@ augment_markov(
 \item{transition, chain_length, states, trim_state}{Markov-chain arguments.}
 
 \item{initial}{Starting-state probabilities or the name of an input variable
-containing each row's starting state.}
+containing each row's starting state. When \code{NULL}, every chain starts in
+the first state.}
 
 \item{id, period, state}{Output variable names.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A long-form \code{simulab_sim} base \code{data.frame} combining input variables
-with one row per chain position.
+A long-form \code{simulab_sim} base \code{data.frame} combining the input
+variables with one row per chain position: \code{id}, \code{period}, \code{state},
+followed by the other input columns. A \code{transitions} table
+(\code{from}, \code{to}, \code{probability}) is available through \code{as.data.frame()}.
 }
 \description{
 Add a Markov chain to each input row

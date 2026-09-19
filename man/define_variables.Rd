@@ -30,8 +30,12 @@ as a single value is recycled across every variable. \code{variance} defaults
 to 0, \code{distribution} to \code{"normal"}, and \code{link} to \code{"identity"}.}
 }
 \value{
-A \code{simulab_spec} base \code{data.frame} with one row per variable and
-columns \code{variable}, \code{distribution}, \code{formula}, \code{variance} and \code{link}.
+A \code{simulab_spec} base \code{data.frame}, shaped by the form it was given.
+Distribution calls give one row per distribution parameter, with columns
+\code{variable}, \code{distribution}, \code{parameter} and \code{value}. The column form and
+the constructor form give one row per variable, with columns \code{variable},
+\code{distribution}, \code{formula}, \code{variance} and \code{link}. Both forms are accepted
+by \code{\link[=simulate_study]{simulate_study()}} and \code{\link[=augment_study]{augment_study()}}.
 }
 \description{
 Combine variable definitions into a specification

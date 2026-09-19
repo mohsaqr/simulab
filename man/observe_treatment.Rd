@@ -15,26 +15,44 @@ observe_treatment(
 )
 }
 \arguments{
-\item{data}{Base \code{data.frame}.}
+\item{data}{Base \code{data.frame}, or a \code{simulab_sim}, with at least one row.}
 
-\item{formulas}{Character vector of probability formulas. An implicit final
-group receives the remaining probability.}
+\item{formulas}{Character vector of at least one formula, each an expression
+over the columns of \code{data}. Under the identity link they are evaluated on
+the probability scale; under the logit link they are the log odds of that
+group relative to the implicit final group, that is a multinomial logit
+linear predictor. An implicit final group receives the remaining
+probability.}
 
-\item{link}{Identity or multinomial-logit link.}
+\item{link}{Scale the formulas are stated on, one of \code{"identity"} (the
+default) or \code{"logit"}, the multinomial-logit link.}
 
-\item{labels}{Optional group labels.}
+\item{labels}{Optional atomic vector of group labels, one per formula plus
+one for the implicit final group. Defaults to \code{NULL}: \code{c(1, 0)} for a
+single formula, so the modelled group is \code{1} and the implicit reference is
+\code{0}, and \code{1} to the number of groups otherwise, the implicit group last.}
 
-\item{name}{Name of the exposure variable.}
+\item{name}{Name of the exposure variable, which must not already exist in
+\code{data}. A single non-empty string, defaulting to \code{"treatment"}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
 
-\item{envir}{Formula evaluation environment.}
+\item{envir}{Environment the formulas are evaluated in after the data
+columns. Defaults to the caller's environment.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with the generated exposure group.
+A \code{simulab_sim} base \code{data.frame} with the columns of \code{data} followed
+by the exposure variable named by \code{name}, one row per input row. The
+component \code{probabilities}, reached with
+\code{as.data.frame(x, what = "probabilities")}, holds one row per observation
+and group, with columns \code{observation}, \code{group} and \code{probability}.
 }
 \description{
-Generate observational treatment or exposure groups
+Evaluates one formula per modelled group against every row of \code{data} and
+draws that row's exposure from the resulting probabilities, so the formulas
+are the propensity model. One group is always implicit: it is listed last and
+takes the remaining probability, which makes it the reference category of the
+logit link.
 }
 \examples{
 data <- data.frame(id = 1:100, severity = stats::rnorm(100))

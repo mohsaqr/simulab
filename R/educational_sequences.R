@@ -2,14 +2,19 @@
 #'
 #' @param n_states Number of states.
 #' @param states Optional state labels.
-#' @param concentration Dirichlet concentration for off-diagonal transitions.
-#' @param diagonal_concentration Optional additional self-transition
-#'   concentration.
-#' @param state_categories Optional learning-state categories.
+#' @param concentration Dirichlet concentration applied to every transition and
+#'   to the initial-state probabilities.
+#' @param diagonal_concentration Optional extra concentration added to the
+#'   self-transition (diagonal) entries only. The default `0` leaves
+#'   self-transitions no more likely than any other transition.
+#' @param state_categories Optional learning-state categories, used only when
+#'   `states` is `NULL`, to draw state labels with `sample_learning_states()`.
 #' @param seed Optional random seed.
 #'
-#' @return A tidy transition-edge `simulab_sim` with initial probabilities as a
-#'   component.
+#' @return A tidy transition-edge `simulab_sim` base `data.frame` with
+#'   `n_states^2` rows and columns `from`, `to`, and `probability`; every
+#'   `from` state's probabilities sum to one. An `initial_probabilities` table
+#'   (`state`, `probability`) is available through `as.data.frame()`.
 #' @export
 #'
 #' @examples
@@ -70,8 +75,10 @@ generate_transition_system <- function(n_states = 8L, states = NULL,
 #' @param id,period,state Column names.
 #' @param prefix Generated state-column prefix.
 #'
-#' @return A `simulab_sim` base `data.frame` with identifiers and one column per
-#'   state.
+#' @return A `simulab_sim` base `data.frame` with one row per input row: every
+#'   input column except `state`, followed by one 0/1 indicator column per
+#'   observed state. A `mapping` table (`state`, `column`) is available through
+#'   `as.data.frame()`.
 #' @export
 #'
 #' @examples
@@ -109,16 +116,24 @@ encode_sequences <- function(data, id = "id", period = "period", state = "state"
 #' @param states,n_states,state_categories State-space options.
 #' @param sequence_length Fixed length or minimum/maximum range.
 #' @param achievement_levels Achievement labels.
-#' @param achievement_probabilities Achievement probabilities.
-#' @param start_time Initial timestamp.
-#' @param interval_range Minimum and maximum seconds between events.
+#' @param achievement_probabilities Achievement probabilities, one per level and
+#'   summing to one. When `NULL`, the levels are equally likely.
+#' @param start_time Initial timestamp. Every actor's first event is placed at
+#'   this time.
+#' @param interval_range Minimum and maximum seconds between an actor's
+#'   consecutive events, drawn uniformly.
 #' @param transitions Common matrix, one matrix per group, or `NULL`.
 #' @param initial Initial probabilities.
 #' @param seed Optional random seed.
 #' @param ... Advanced options passed to `simulate_group_sequences()`.
 #'
-#' @return A long-form `simulab_sim` event log with wide, one-hot, transition,
-#'   actor, and group tables as components.
+#' @return A long-form `simulab_sim` base `data.frame` with one row per actor
+#'   event and columns `group`, `id`, `course`, `achievement`, `period`,
+#'   `state`, and `timestamp`. `as.data.frame(x, what = )` also returns
+#'   `transitions` (`group`, `from`, `to`, `probability`), `actors`
+#'   (`group`, `id`, `course`, `achievement`), `groups` (`group`, `actors`),
+#'   `wide` (one row per actor, columns `id`, `S1`, ..., plus actor metadata),
+#'   and `one_hot` (the event log with `state` replaced by indicator columns).
 #' @export
 #'
 #' @examples
@@ -188,8 +203,7 @@ simulate_event_log <- function(groups = 5L, actors = 10L, courses = 1L,
     course = sample(course_labels, length(actor_ids), replace = TRUE),
     achievement = sample(achievement_levels, length(actor_ids), replace = TRUE,
                          prob = achievement_probabilities),
-    retained_length = sample(seq.int(sequence_length[1L], sequence_length[2L]),
-                             length(actor_ids), replace = TRUE),
+    retained_length = .sample_integer_range(sequence_length, length(actor_ids)),
     stringsAsFactors = FALSE, row.names = NULL
   ))
   source <- merge(source, actor_table, by = "id", all.x = TRUE, sort = FALSE)

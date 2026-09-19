@@ -25,7 +25,9 @@ variable.}
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with jointly resampled rows.
+A \code{simulab_sim} base \code{data.frame} with \code{n} rows of jointly resampled
+values, the identifier column first. \code{as.data.frame(x, what = "provenance")}
+gives the source row each synthetic row was drawn from.
 }
 \description{
 Simulate row-bootstrap synthetic data

@@ -7,12 +7,15 @@
 simulate_data(type, ...)
 }
 \arguments{
-\item{type}{Simulator name from \code{list_simulators()}.}
+\item{type}{Dispatchable simulator name, taken from the \code{simulator} column
+of \code{\link[=list_simulators]{list_simulators()}}. An unknown name, or a name whose \code{dispatchable}
+entry is \code{FALSE}, is an error.}
 
-\item{...}{Arguments passed to the selected canonical simulation verb.}
+\item{...}{Arguments passed on to the selected canonical simulation verb.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame}.
+Whatever the selected verb returns, which for every dispatchable
+entry is a \code{simulab_sim} base \code{data.frame}.
 }
 \description{
 \code{simulate_data()} is a discoverable dispatcher. Direct verbs remain the

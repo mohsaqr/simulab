@@ -19,7 +19,11 @@ one-parameter family, whose variance its mean determines.}
 A base \code{data.frame} with one row per target and parameter, and
 columns \code{distribution}, \code{mean}, \code{variance}, \code{parameter} and \code{value}. The
 \code{parameter} names are those \code{\link[=list_distributions]{list_distributions()}} reports, so the result
-states a distribution call.
+states a distribution call. For a one-parameter family the reported
+\code{variance} is the one the solved parameters imply rather than a target.
+Called with no arguments the result is instead the catalogue: one row per
+invertible distribution, with columns \code{distribution}, \code{parameters} and
+\code{targets}.
 }
 \description{
 \code{calibrate_moments()} inverts the moments of a distribution into the
@@ -32,7 +36,9 @@ directly and turned into a distribution call. A one-parameter family takes
 Most inversions are closed form. For a scale family whose shape is fixed by
 the coefficient of variation alone -- Weibull, log-logistic, Frechet,
 Nakagami -- the shape is found by root finding and the scale then follows
-exactly. Some families cannot reach every pair: a Nakagami squared
+exactly. Two one-parameter families, \code{chi} and \code{zero_truncated_poisson},
+likewise invert their mean by root finding. Some families cannot reach
+every pair: a Nakagami squared
 coefficient of variation is at most \code{pi / 2 - 1}, a Lomax with a finite
 variance always has one above 1, and a beta variance is below
 \code{mean * (1 - mean)}. Those are refused rather than approximated.

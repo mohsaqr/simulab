@@ -9,10 +9,17 @@ evaluate_edge_recovery(truth, estimate, threshold = 0)
 \arguments{
 \item{truth, estimate}{Supported network representations.}
 
-\item{threshold}{Absolute threshold defining a recovered edge.}
+\item{threshold}{Absolute threshold defining a recovered edge: a dyad counts
+as present when \code{abs(weight) > threshold}.}
 }
 \value{
-A tidy edge-level \code{simulab_sim} with recovery metrics as a component.
+A tidy \code{simulab_sim} base \code{data.frame} with one row per dyad in the
+union of the two edge sets -- dyads absent from both networks are not
+represented, so true negatives are not counted -- and columns \code{from}, \code{to},
+\code{truth_weight}, \code{estimate_weight}, \code{truth_present}, \code{estimate_present},
+\code{recovered}, \code{false_positive}, and \code{false_negative}. A one-row \code{summary}
+table (\code{precision}, \code{recall}, \code{f1}, \code{true_positive}, \code{false_positive},
+\code{false_negative}) is available through \code{as.data.frame()}.
 }
 \description{
 Evaluate edge recovery against a known network

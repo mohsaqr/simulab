@@ -23,8 +23,14 @@
 #' Define one simulated variable
 #'
 #' @param name Variable name.
-#' @param formula Numeric value, expression string, or one-sided formula that
-#'   defines the distribution mean or probability.
+#' @param formula Numeric value, expression string, or one-sided formula giving
+#'   the distribution's primary argument. For most families that is the mean or
+#'   probability, but `"uniform"` and `"uniform_integer"` take
+#'   `"minimum;maximum"`, `"categorical"` takes semicolon-separated category
+#'   probabilities, `"mixture"` takes `"value | probability + ..."`,
+#'   `"treatment"` takes semicolon-separated allocation ratios,
+#'   `"cluster_size"` takes the total to be split, and `"custom"` takes the name
+#'   of a generator function.
 #' @param variance Variance, dispersion, precision, trial count, category
 #'   labels, or distribution-specific secondary parameter.
 #' @param distribution Distribution name.
@@ -113,8 +119,12 @@ define_variable <- function(name, formula, variance = 0,
 #'   as a single value is recycled across every variable. `variance` defaults
 #'   to 0, `distribution` to `"normal"`, and `link` to `"identity"`.
 #'
-#' @return A `simulab_spec` base `data.frame` with one row per variable and
-#'   columns `variable`, `distribution`, `formula`, `variance` and `link`.
+#' @return A `simulab_spec` base `data.frame`, shaped by the form it was given.
+#'   Distribution calls give one row per distribution parameter, with columns
+#'   `variable`, `distribution`, `parameter` and `value`. The column form and
+#'   the constructor form give one row per variable, with columns `variable`,
+#'   `distribution`, `formula`, `variance` and `link`. Both forms are accepted
+#'   by [simulate_study()] and [augment_study()].
 #' @export
 #'
 #' @examples
@@ -341,7 +351,9 @@ repeat_variables <- function(n, prefix, formula, variance = 0,
 
 #' Update one variable definition
 #'
-#' @param specification A `simulab_spec` object.
+#' @param specification A `simulab_spec` object in the `formula`/`variance`
+#'   column form, as created by [define_variable()], [repeat_variables()] or
+#'   [read_definitions()].
 #' @param variable Variable to update.
 #' @param formula,variance,distribution,link Replacement values. `NULL` keeps
 #'   the existing value.

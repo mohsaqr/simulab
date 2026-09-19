@@ -37,7 +37,8 @@ the next period.}
 
 \item{loops}{Permit self-loops.}
 
-\item{weight}{Edge-spell weight distribution.}
+\item{weight}{Edge-spell weight distribution. One weight is drawn per spell
+and held constant while the spell is active.}
 
 \item{weight_mean, weight_sd, weight_range}{Weight parameters.}
 
@@ -46,9 +47,15 @@ the next period.}
 \item{seed}{Optional seed.}
 }
 \value{
-A tidy spell-level \code{simulab_sim} with \code{from}, \code{to}, \code{onset},
-\code{terminus}, \code{weight}, and \code{censored}. Event and snapshot edge lists are
-available as components.
+A tidy spell-level \code{simulab_sim} base \code{data.frame} with one row per
+activity spell and columns \code{from}, \code{to}, \code{onset}, \code{terminus}, \code{weight},
+and \code{censored}. \code{terminus} is exclusive: the spell covers periods \code{onset}
+through \code{terminus - 1}, so a spell still active in the final period has
+\code{terminus == periods + 1} and \code{censored == TRUE}.
+\code{as.data.frame(x, what = )} also returns \code{events} (\code{from}, \code{to}, \code{time},
+\code{event} -- \code{"formation"} or \code{"dissolution"} -- and \code{weight}, ordered by
+time), \code{snapshots} (one row per active dyad per period: \code{period}, \code{from},
+\code{to}, \code{weight}), \code{nodes} (\code{node}, \code{type}), and a one-row \code{settings} table.
 }
 \description{
 Simulate a temporal network as edge-activity spells

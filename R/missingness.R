@@ -1,13 +1,28 @@
 #' Define missingness for one variable
 #'
-#' @param variable Variable that may be missing.
-#' @param formula Probability or log-odds formula.
-#' @param link Identity or logit link.
-#' @param baseline Apply one baseline missingness draw to every period for a
-#'   unit.
-#' @param monotone Once missing, remain missing at later periods.
+#' Records the rule that decides whether one variable is missing for a row. The
+#' rule is a formula evaluated row by row against the data, so missingness may
+#' depend on any column: on a fully observed covariate, which is MAR, or on the
+#' variable's own value, which is MNAR.
 #'
-#' @return A one-row `simulab_missing_spec` base `data.frame`.
+#' @param variable Variable that may be missing. A single non-empty string.
+#' @param formula Missingness formula, given as a number, a string, or an
+#'   unquoted expression over the data columns. It is read as a probability
+#'   under the identity link and as log odds under the logit link. It is stored
+#'   as text and evaluated row by row.
+#' @param link Scale the formula is stated on, one of `"identity"` (the default)
+#'   or `"logit"`.
+#' @param baseline Replace every period's draw for a unit with its first
+#'   period's draw, so the unit is either always or never missing. A single
+#'   flag, defaulting to `FALSE`. It needs `id` and `period` in
+#'   [missingness_matrix()].
+#' @param monotone Once missing, remain missing at every later period. A single
+#'   flag, defaulting to `FALSE`. It needs `id` and `period` in
+#'   [missingness_matrix()].
+#'
+#' @return A one-row `simulab_missing_spec` base `data.frame` with the character
+#'   columns `variable`, `formula` and `link` and the logical columns `baseline`
+#'   and `monotone`.
 #' @export
 #'
 #' @examples
@@ -55,7 +70,9 @@ define_missingness <- function(variable, formula,
 #'   `"identity"`, and `baseline` and `monotone` to `FALSE`.
 #'
 #' @return A `simulab_missing_spec` base `data.frame` with one row per target
-#'   variable.
+#'   variable, in the order given, and the columns of [define_missingness()]:
+#'   `variable`, `formula`, `link`, `baseline` and `monotone`. Target variables
+#'   must be unique.
 #' @export
 #'
 #' @examples
@@ -192,15 +209,31 @@ define_missingnesses <- function(...) {
 
 #' Generate a missingness mask
 #'
-#' @param data Complete base `data.frame`.
-#' @param specification Definitions from `define_missingnesses()`.
-#' @param id Optional unit identifier for longitudinal rules.
-#' @param period Optional period variable for longitudinal rules.
-#' @param seed Optional random seed.
-#' @param envir Formula evaluation environment.
+#' Draws, for every row of `data` and every variable in `specification`, whether
+#' that cell is missing, by comparing a uniform draw against the row's
+#' probability. The mask is returned rather than applied, so the complete data
+#' and the mask that hides part of it can both be kept; [observed_data()] joins
+#' them.
 #'
-#' @return A base `data.frame` containing identifier columns followed by one
-#'   logical missingness indicator per data variable.
+#' @param data Complete base `data.frame`, or a `simulab_sim`, with at least one
+#'   row. Every target variable of `specification` must be one of its columns.
+#' @param specification Definitions from [define_missingnesses()], a
+#'   `simulab_missing_spec` object.
+#' @param id Optional unit identifier. A single string naming a column of
+#'   `data`, or `NULL` (the default). It is required by the `baseline` and
+#'   `monotone` rules and is carried into the mask.
+#' @param period Optional period variable that orders a unit's rows. A single
+#'   string naming a column of `data`, or `NULL` (the default). It is required
+#'   by the `baseline` and `monotone` rules and is carried into the mask.
+#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param envir Environment the formulas are evaluated in after the data
+#'   columns. Defaults to the caller's environment.
+#'
+#' @return A base `data.frame` with one row per row of `data`, holding the `id`
+#'   and `period` columns when they are given, or a single `row` column
+#'   numbering the rows when neither is, followed by one logical column per
+#'   target variable of `specification`, named after that variable. Variables of
+#'   `data` that `specification` says nothing about get no column.
 #' @export
 #'
 #' @examples
@@ -265,11 +298,25 @@ missingness_matrix <- function(data, specification, id = NULL, period = NULL,
 
 #' Apply a missingness mask to complete data
 #'
-#' @param data Complete base `data.frame`.
-#' @param missingness A logical mask returned by `missingness_matrix()`.
-#' @param id Identifier columns present in both inputs and never made missing.
+#' Sets every cell the mask flags to `NA`, leaving the complete data otherwise
+#' untouched, and keeps the mask alongside the result as a tidy component.
 #'
-#' @return A `simulab_sim` base `data.frame` containing observed data.
+#' @param data Complete base `data.frame`, or a `simulab_sim`, with as many rows
+#'   as `missingness` and in the same row order.
+#' @param missingness A logical mask returned by [missingness_matrix()], with
+#'   one row per row of `data`. Its columns that also name columns of `data`,
+#'   other than those listed in `id`, are the targets, and each must be logical.
+#' @param id Identifier columns the mask carries that are never made missing. A
+#'   character vector, or `NULL` (the default). Name the identifier columns of
+#'   the mask here, or they are treated as targets and rejected for not being
+#'   logical.
+#'
+#' @return A `simulab_sim` base `data.frame` with the columns and rows of
+#'   `data`, the flagged cells of the target variables replaced by `NA`. The
+#'   component `missingness`, reached with
+#'   `as.data.frame(x, what = "missingness")`, is the mask in long form, one row
+#'   per observation and target variable, with columns `observation`, `variable`
+#'   and the logical `missing`.
 #' @export
 #'
 #' @examples
@@ -318,15 +365,42 @@ observed_data <- function(data, missingness, id = NULL) {
 
 #' Inject MCAR, MAR, or MNAR missingness
 #'
-#' @param data Complete base `data.frame`.
-#' @param mechanism Missingness mechanism.
-#' @param proportion Target missing fraction.
-#' @param variables Variables to make missing. `NULL` selects every variable.
-#' @param predictor Observed predictor for MAR missingness.
-#' @param seed Optional random seed.
+#' Blanks cells of `data` under one of the three standard mechanisms. `"MCAR"`
+#' gives every row the same probability `proportion`, so missingness depends on
+#' nothing. `"MAR"` makes it depend on the fully observed `predictor`, which is
+#' itself never made missing. `"MNAR"` makes each target variable's missingness
+#' depend on its own value, so the values that disappear are not a random sample
+#' of them. For MAR and MNAR the probability increases with the driving
+#' variable's rank: its ties-averaged rank mapped into `(0, 1)`, or `0.5` for a
+#' missing or constant driver, scaled by the multiplier that makes the mean
+#' probability equal `proportion`, and capped at 1. Each MAR target therefore
+#' shares one probability vector, while each MNAR target gets its own.
 #'
-#' @return A `simulab_sim` base `data.frame`. The cell-level missingness mask is
-#'   available with `as.data.frame(x, what = "missingness")`.
+#' @param data Complete base `data.frame`, or a `simulab_sim`, with at least one
+#'   row.
+#' @param mechanism Missingness mechanism, one of `"MCAR"` (the default),
+#'   `"MAR"` or `"MNAR"`.
+#' @param proportion Target missing fraction, the mean cell probability rather
+#'   than a realized count. A single number between 0 and 1, defaulting to
+#'   `0.1`; the realized fraction is random around it and is reported in the
+#'   `missingness_summary` component.
+#' @param variables Variables to make missing. A character vector of column
+#'   names, or `NULL` (the default), which selects every column of `data`,
+#'   identifiers included. Under `"MAR"` the `predictor` is removed from this
+#'   set.
+#' @param predictor Fully observed predictor that drives MAR missingness. A
+#'   single string naming a column of `data`, required when `mechanism` is
+#'   `"MAR"` and ignored otherwise. Defaults to `NULL`.
+#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#'
+#' @return A `simulab_sim` base `data.frame` with the columns and rows of
+#'   `data`, the drawn cells of the target variables replaced by `NA`.
+#'   Components: `missingness`, the cell-level mask reached with
+#'   `as.data.frame(x, what = "missingness")`, one row per observation and
+#'   target variable with columns `observation`, `variable`, `probability`,
+#'   the logical `missing` and `mechanism`; and `missingness_summary`, one row
+#'   per target variable with columns `variable`, `realized_proportion` and
+#'   `target_proportion`.
 #' @export
 #'
 #' @examples

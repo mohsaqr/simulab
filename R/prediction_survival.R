@@ -1,23 +1,47 @@
 #' Simulate a prediction design with continuous and categorical predictors
 #'
-#' @param n Sample size.
-#' @param coefficients Named continuous-predictor coefficients with optional
-#'   `(Intercept)`.
+#' Draws the continuous predictors independently from normal distributions and
+#' each categorical predictor by sampling its levels with replacement, then
+#' forms the outcome as the intercept plus the continuous linear predictor plus
+#' the level effects plus normal residual noise. With no categorical predictor
+#' the call is simply [simulate_regression()].
+#'
+#' @param n Sample size. A single whole number of at least 2.
+#' @param coefficients Named numeric vector of continuous-predictor
+#'   coefficients, with an optional `(Intercept)` entry that defaults to `0`
+#'   when absent. The remaining names become the continuous predictor columns.
 #' @param categorical_levels Named list of levels for categorical predictors,
 #'   or a tidy data frame with columns `variable` and `level`. Optional
 #'   `effect` and `probability` columns in that table supply
 #'   `categorical_effects` and `category_probabilities`, so one table replaces
-#'   all three arguments.
+#'   all three arguments. Defaults to `NULL`, no categorical predictor.
 #' @param categorical_effects Named list of level effects matching
-#'   `categorical_levels`.
-#' @param category_probabilities Optional named list of sampling probabilities.
-#' @param predictor_means,predictor_sds Continuous-predictor parameters.
-#' @param error_sd Residual standard deviation.
-#' @param outcome Outcome-column name.
-#' @param seed Optional random seed.
+#'   `categorical_levels` by name and length, one number per level, added to the
+#'   outcome for the level a unit is assigned. Required whenever
+#'   `categorical_levels` is given.
+#' @param category_probabilities Optional named list of sampling probabilities,
+#'   one non-negative value per level summing to one within each predictor.
+#'   Defaults to `NULL`, equal probabilities across a predictor's levels.
+#' @param predictor_means,predictor_sds Mean and standard deviation of each
+#'   normally distributed continuous predictor, a scalar recycled across them
+#'   (the defaults, `0` and `1`) or one value per continuous coefficient.
+#' @param error_sd Residual standard deviation. A single positive number,
+#'   defaulting to `1`.
+#' @param outcome Outcome-column name. A single non-empty string, defaulting to
+#'   `"outcome"`.
+#' @param seed Optional random seed. A single number, or `NULL` (the default).
 #'
-#' @return A `simulab_sim` base `data.frame` with coefficient, categorical
-#'   effect, and population R-squared tables.
+#' @return When `categorical_levels` is `NULL`, whatever [simulate_regression()]
+#'   returns. Otherwise a `simulab_sim` base `data.frame` with one row per unit
+#'   and columns `id`, one column per continuous coefficient name, one character
+#'   column per categorical predictor, and the outcome named by `outcome`.
+#'   Components: `coefficients` (one row per fixed term, columns `term` and
+#'   `coefficient`, always including `(Intercept)`), `categorical_effects` (one
+#'   row per predictor level, columns `variable`, `level`, `effect` and
+#'   `probability`), and `effects` (one row, columns `signal_variance`,
+#'   `residual_variance` and `r_squared`). `signal_variance` is the *realized*
+#'   variance of the simulated linear predictor, so `r_squared` is the realized
+#'   proportion of outcome variance it explains, not a population value.
 #' @export
 #'
 #' @examples
@@ -157,17 +181,47 @@ simulate_prediction <- function(n, coefficients,
 
 #' Simulate proportional-hazards survival data with calibrated censoring
 #'
-#' @param n Sample size.
-#' @param coefficients Covariate log-hazard coefficients.
-#' @param baseline Weibull, exponential, or Gompertz baseline.
-#' @param rate Positive baseline rate.
-#' @param shape Positive Weibull/Gompertz shape.
-#' @param censoring Target censoring fraction.
-#' @param covariate_distribution Normal or binary covariates.
-#' @param seed Optional random seed.
+#' Draws independent covariates, multiplies the baseline cumulative hazard by
+#' `exp(x %*% coefficients)`, and inverts it to an event time, so the model is
+#' proportional hazards and each coefficient is a log hazard ratio. The three
+#' baselines are, for a unit with linear predictor `eta`,
+#' Weibull `H(t) = rate * exp(eta) * t^shape`,
+#' exponential `H(t) = rate * exp(eta) * t`, and
+#' Gompertz `H(t) = rate * exp(eta) * (exp(shape * t) - 1) / shape`.
+#' Censoring is random, not administrative: an independent exponential censoring
+#' time is drawn for every unit, its rate solved so that the expected censored
+#' fraction equals `censoring`.
 #'
-#' @return A `simulab_sim` base `data.frame` with observed time, status,
-#'   covariates, and tidy parameters.
+#' @param n Sample size. A single whole number of at least 5.
+#' @param coefficients Covariate log-hazard coefficients, a numeric vector with
+#'   at least one element and one entry per covariate. Its names become the
+#'   covariate columns; unnamed vectors are named `X1`, `X2`, and so on.
+#' @param baseline Baseline hazard family, one of `"weibull"` (the default),
+#'   `"exponential"` or `"gompertz"`.
+#' @param rate Positive scale factor of the baseline cumulative hazard. A single
+#'   positive number, defaulting to `0.1`. It is the constant hazard when
+#'   `baseline` is `"exponential"`.
+#' @param shape Positive shape of the Weibull or Gompertz baseline, in the
+#'   textbook parameterization of the formulas above (so the hazard rises with
+#'   time when `shape` is above 1 for a Weibull baseline). A single positive
+#'   number, defaulting to `1`. It is ignored for an exponential baseline.
+#' @param censoring Target fraction of censored observations. A single number in
+#'   `[0, 1)`, defaulting to `0.3`. Exactly `0` turns censoring off and every
+#'   observation is then an event; the realized fraction is random around the
+#'   target otherwise.
+#' @param covariate_distribution Distribution the covariates are drawn from,
+#'   independently, one of `"normal"` (the default, standard normal) or
+#'   `"binary"` (Bernoulli with probability 0.5).
+#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#'
+#' @return A `simulab_sim` base `data.frame` with one row per unit and columns
+#'   `id`, `time` (the observed time, the smaller of the event and censoring
+#'   times), the integer `status` (**`1` for an event and `0` for a censored
+#'   observation**), and one covariate column per entry of `coefficients`.
+#'   Components: `parameters` (one row per term, columns `term` and `value`,
+#'   holding the coefficients followed by `baseline_rate`, `shape` and the
+#'   solved `censoring_rate`) and `diagnostics` (one row, columns
+#'   `target_censoring`, `realized_censoring` and `baseline`).
 #' @export
 #'
 #' @examples

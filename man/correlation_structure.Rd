@@ -21,9 +21,9 @@ structures.}
 \item{structure}{Correlation structure: one of \code{"independent"},
 \code{"exchangeable"}, \code{"ar1"}, or \code{"custom"}. If left unset it is chosen from
 the other arguments: \code{"custom"} when \code{correlation} is supplied,
-\code{"exchangeable"} when a non-zero \code{rho} (or \code{tau}) is supplied, and
-\code{"independent"} otherwise. Passing \code{"independent"} together with a
-non-zero \code{rho} is a contradiction and raises an error.}
+\code{"exchangeable"} when a non-zero \code{rho} is supplied, and \code{"independent"}
+otherwise. Passing \code{"independent"} together with a non-zero \code{rho} is a
+contradiction and raises a \code{simulab_contradictory_structure} error.}
 
 \item{correlation}{Custom correlation matrix.}
 

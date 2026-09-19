@@ -14,24 +14,38 @@ missingness_matrix(
 )
 }
 \arguments{
-\item{data}{Complete base \code{data.frame}.}
+\item{data}{Complete base \code{data.frame}, or a \code{simulab_sim}, with at least one
+row. Every target variable of \code{specification} must be one of its columns.}
 
-\item{specification}{Definitions from \code{define_missingnesses()}.}
+\item{specification}{Definitions from \code{\link[=define_missingnesses]{define_missingnesses()}}, a
+\code{simulab_missing_spec} object.}
 
-\item{id}{Optional unit identifier for longitudinal rules.}
+\item{id}{Optional unit identifier. A single string naming a column of
+\code{data}, or \code{NULL} (the default). It is required by the \code{baseline} and
+\code{monotone} rules and is carried into the mask.}
 
-\item{period}{Optional period variable for longitudinal rules.}
+\item{period}{Optional period variable that orders a unit's rows. A single
+string naming a column of \code{data}, or \code{NULL} (the default). It is required
+by the \code{baseline} and \code{monotone} rules and is carried into the mask.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
 
-\item{envir}{Formula evaluation environment.}
+\item{envir}{Environment the formulas are evaluated in after the data
+columns. Defaults to the caller's environment.}
 }
 \value{
-A base \code{data.frame} containing identifier columns followed by one
-logical missingness indicator per data variable.
+A base \code{data.frame} with one row per row of \code{data}, holding the \code{id}
+and \code{period} columns when they are given, or a single \code{row} column
+numbering the rows when neither is, followed by one logical column per
+target variable of \code{specification}, named after that variable. Variables of
+\code{data} that \code{specification} says nothing about get no column.
 }
 \description{
-Generate a missingness mask
+Draws, for every row of \code{data} and every variable in \code{specification}, whether
+that cell is missing, by comparing a uniform draw against the row's
+probability. The mask is returned rather than applied, so the complete data
+and the mask that hides part of it can both be kept; \code{\link[=observed_data]{observed_data()}} joins
+them.
 }
 \examples{
 data <- data.frame(id = 1:100, baseline = stats::rnorm(100), outcome = stats::rnorm(100))

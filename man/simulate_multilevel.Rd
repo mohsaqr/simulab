@@ -19,33 +19,54 @@ simulate_multilevel(
 )
 }
 \arguments{
-\item{clusters}{Number of clusters.}
+\item{clusters}{Number of clusters. A single whole number of at least 2.}
 
-\item{cluster_size}{Units per cluster, scalar or vector.}
+\item{cluster_size}{Units per cluster: a single whole number recycled
+across clusters, or one whole number per cluster, so clusters may be
+unbalanced.}
 
-\item{intercept}{Fixed intercept.}
+\item{intercept}{Fixed intercept. A single number, defaulting to \code{0}.}
 
-\item{slopes}{Named fixed-effect slopes.}
+\item{slopes}{Named fixed-effect slopes; the names become the predictor
+columns of the returned data. Defaults to \code{numeric(0)}, an
+intercept-only model with no predictor columns.}
 
-\item{predictor_means, predictor_sds}{Predictor parameters.}
+\item{predictor_means, predictor_sds}{Mean and standard deviation of each
+predictor, a scalar recycled across predictors (the defaults, \code{0} and
+\code{1}) or one value per entry of \code{slopes}. Predictors are drawn
+independently at the unit level, not at the cluster level, so they carry
+no between-cluster variance by construction.}
 
-\item{random_intercept_sd}{Random-intercept standard deviation.}
+\item{random_intercept_sd}{Random-intercept standard deviation. A single
+non-negative number, defaulting to \code{1}.}
 
 \item{random_slope_sd}{Random-slope standard deviation for the first
-predictor.}
+predictor only; the remaining predictors have fixed slopes. A single
+non-negative number, defaulting to \code{0} (no random slope).}
 
 \item{random_effect_correlation}{Correlation between random intercept and
-slope.}
+slope. A single number in \verb{[-1, 1]}, defaulting to \code{0}.}
 
-\item{residual_sd}{Residual standard deviation.}
+\item{residual_sd}{Residual standard deviation. A single positive number,
+defaulting to \code{1}.}
 
 \item{seed}{Optional random seed.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with fixed/random parameter tables.
+A \code{simulab_sim} base \code{data.frame} with one row per unit
+(\code{sum(cluster_size)} rows) and columns \code{id}, \code{cluster}, one column per
+name of \code{slopes}, and \code{outcome}. Components: \code{fixed_effects} (one row per
+fixed term, columns \code{term} and \code{coefficient}), \code{variance_components} (one
+row for each of \code{random_intercept}, \code{random_slope} and \code{residual},
+columns \code{component} and \code{variance} -- the \emph{squared} standard deviations
+supplied as arguments), and \code{random_effects} (one row per cluster,
+columns \code{cluster}, \code{random_intercept} and \code{random_slope}; the
+\code{random_slope} column is present but zero when \code{random_slope_sd = 0}).
 }
 \description{
-Simulate a two-level Gaussian model
+Draws a random intercept (and optionally a random slope) per cluster, draws
+the predictors independently for every unit, and forms the outcome as the
+fixed part plus the cluster random effects plus normal residual noise.
 }
 \examples{
 # `slopes` must be named; the names become the predictor columns.
