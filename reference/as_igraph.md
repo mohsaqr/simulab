@@ -16,11 +16,16 @@ as_igraph(x, directed = TRUE)
 
 - directed:
 
-  Whether the resulting graph is directed.
+  Whether the resulting graph is directed. It is not inferred from `x`,
+  so a network generated with `directed = FALSE` must be converted with
+  `directed = FALSE` as well.
 
 ## Value
 
-A native `igraph` object.
+A native `igraph` object carrying a `weight` edge attribute. When `x` is
+a `simulab_sim` with a `nodes` component, that node set supplies the
+vertices, so isolates are preserved; otherwise the vertices are the
+nodes appearing in the edge list.
 
 ## Examples
 
@@ -30,5 +35,4 @@ if (requireNamespace("igraph", quietly = TRUE)) {
   graph <- as_igraph(network)
   igraph::vcount(graph)
 }
-#> [1] 30
 ```

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,8 @@
 
 
 <dt id="arg-values">values<a class="anchor" aria-label="anchor" href="#arg-values"></a></dt>
-<dd><p>Numeric source values.</p></dd>
+<dd><p>Numeric source values, of which at least two must be present
+and distinct. Missing values are dropped before the density is estimated.</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
@@ -75,7 +76,8 @@
 
 
 <dt id="arg-keep-missing">keep_missing<a class="anchor" aria-label="anchor" href="#arg-keep-missing"></a></dt>
-<dd><p>Preserve the source missing-data proportion.</p></dd>
+<dd><p>Draw missing values at the source's missing-data rate, so
+the proportion is reproduced in expectation rather than exactly.</p></dd>
 
 
 <dt id="arg-id">id<a class="anchor" aria-label="anchor" href="#arg-id"></a></dt>
@@ -88,8 +90,10 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one generated density value
-per observation.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with <code>n</code> rows and columns <code>id</code> and
+<code>variable</code>, one generated density value per row.
+<code>as.data.frame(x, what = "source")</code> gives a one-row summary of the source
+values.</p>
     </div>
 
     <div class="section level2">

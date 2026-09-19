@@ -9,7 +9,7 @@ preferred interface because they provide explicit, documented arguments."></head
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,16 +54,19 @@ preferred interface because they provide explicit, documented arguments.</p>
 
 
 <dl><dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>Simulator name from <code><a href="list_simulators.html">list_simulators()</a></code>.</p></dd>
+<dd><p>Dispatchable simulator name, taken from the <code>simulator</code> column
+of <code><a href="list_simulators.html">list_simulators()</a></code>. An unknown name, or a name whose <code>dispatchable</code>
+entry is <code>FALSE</code>, is an error.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed to the selected canonical simulation verb.</p></dd>
+<dd><p>Arguments passed on to the selected canonical simulation verb.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code>.</p>
+    <p>Whatever the selected verb returns, which for every dispatchable
+entry is a <code>simulab_sim</code> base <code>data.frame</code>.</p>
     </div>
 
     <div class="section level2">

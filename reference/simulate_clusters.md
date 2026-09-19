@@ -45,8 +45,12 @@ simulate_clusters(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with true cluster membership and tidy
-center/scale tables.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id`, `cluster` (the true membership label) and one column per
+variable. One tidy table comes from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "parameters"` has one row per cluster-variable combination with
+columns `cluster`, `variable`, `center`, `sd` and `proportion`.
 
 ## Examples
 

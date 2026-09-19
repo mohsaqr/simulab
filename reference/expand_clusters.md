@@ -1,6 +1,7 @@
 # Expand cluster-level rows into unit-level rows
 
-Expand cluster-level rows into unit-level rows
+Repeats every cluster-level row once per unit it contains, so cluster
+attributes are copied down to the units, and numbers the units.
 
 ## Usage
 
@@ -12,28 +13,38 @@ expand_clusters(data, cluster, size, unit = "id", include_cluster_data = TRUE)
 
 - data:
 
-  Cluster-level base `data.frame`.
+  Cluster-level base `data.frame`, or a `simulab_sim`, with one row per
+  cluster and at least one row.
 
 - cluster:
 
-  Name of the cluster identifier.
+  Name of the cluster identifier. A single string naming a column of
+  `data`.
 
 - size:
 
-  Name of a cluster-size variable or a positive integer applied to every
-  cluster.
+  Units per cluster: the name of a cluster-size column of `data`, or a
+  single positive whole number applied to every cluster.
 
 - unit:
 
-  Name of the new unit identifier.
+  Name of the new unit identifier, numbered `1` to the total number of
+  units across all clusters rather than restarting within a cluster. A
+  single non-empty string, defaulting to `"id"`.
 
 - include_cluster_data:
 
-  Include all cluster-level columns.
+  Copy every cluster-level column down to the units. A single flag,
+  defaulting to `TRUE`. `FALSE` keeps only the cluster identifier.
 
 ## Value
 
-A `simulab_sim` base `data.frame` with one row per unit.
+A `simulab_sim` base `data.frame` with one row per unit, the unit
+identifier first and then the retained cluster-level columns. The
+component `clusters`, reached with
+`as.data.frame(x, what = "clusters")`, holds one row per input cluster
+with columns `cluster`, the identifier values under that fixed name
+whatever `cluster` was called, and the integer `size`.
 
 ## Examples
 

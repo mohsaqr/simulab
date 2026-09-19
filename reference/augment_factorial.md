@@ -12,21 +12,25 @@ augment_factorial(data, factors, coding = c("dummy", "effect", "level"))
 
 - data:
 
-  Input base `data.frame`.
+  Input base `data.frame`, with at least one row.
 
 - factors:
 
-  Named integer vector giving factor levels.
+  Named numeric vector of whole numbers giving the number of levels of
+  each factor. Every entry must be at least 2.
 
 - coding:
 
   Factor coding passed to
-  [`factorial_design()`](https://mohsaqr.github.io/simulab/reference/factorial_design.md).
+  [`factorial_design()`](https://mohsaqr.github.io/simulab/reference/factorial_design.md):
+  `"dummy"` (the default), `"effect"` or `"level"`.
 
 ## Value
 
-A `simulab_sim` base `data.frame` containing every row-condition
-combination.
+A `simulab_sim` base `data.frame` with one row per row of `data` crossed
+with every design condition, so `nrow(data) * prod(factors)` rows: the
+columns of `data` followed by one column per factor. The `design`
+component holds the distinct conditions, one row each.
 
 ## Examples
 

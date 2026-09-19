@@ -22,8 +22,14 @@ define_variable(
 
 - formula:
 
-  Numeric value, expression string, or one-sided formula that defines
-  the distribution mean or probability.
+  Numeric value, expression string, or one-sided formula giving the
+  distribution's primary argument. For most families that is the mean or
+  probability, but `"uniform"` and `"uniform_integer"` take
+  `"minimum;maximum"`, `"categorical"` takes semicolon-separated
+  category probabilities, `"mixture"` takes
+  `"value | probability + ..."`, `"treatment"` takes semicolon-separated
+  allocation ratios, `"cluster_size"` takes the total to be split, and
+  `"custom"` takes the name of a generator function.
 
 - variance:
 

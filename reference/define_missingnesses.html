@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,9 @@ as a single value is recycled across every variable. <code>link</code> defaults 
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>simulab_missing_spec</code> base <code>data.frame</code> with one row per target
-variable.</p>
+variable, in the order given, and the columns of <code><a href="define_missingness.html">define_missingness()</a></code>:
+<code>variable</code>, <code>formula</code>, <code>link</code>, <code>baseline</code> and <code>monotone</code>. Target variables
+must be unique.</p>
     </div>
 
     <div class="section level2">

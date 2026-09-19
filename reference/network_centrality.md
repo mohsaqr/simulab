@@ -25,22 +25,22 @@ network_centrality(
 
 - directed:
 
-  Treat edges as directed.
+  Treat edges as directed. This governs the graph conversion and the
+  `betweenness`, `eigenvector`, and `pagerank` measures only; `degree`,
+  `strength`, and `closeness` always combine incoming and outgoing ties.
+  `betweenness` and `closeness` use `1 / |weight|` as the edge distance.
 
 ## Value
 
-A tidy base `data.frame` with one node/measure/value row.
+A tidy base `data.frame` with one row per node and measure and columns
+`node`, `measure`, and `value`, stacked measure after measure. Requires
+the suggested `igraph` package.
 
 ## Examples
 
 ``` r
 network <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 1)
-head(network_centrality(network, measures = c("degree", "strength")))
-#>          node measure value
-#> degree.1    1  degree     4
-#> degree.2    2  degree     4
-#> degree.3    3  degree     6
-#> degree.4    4  degree     6
-#> degree.5    5  degree    11
-#> degree.6    6  degree     4
+if (requireNamespace("igraph", quietly = TRUE)) {
+  head(network_centrality(network, measures = c("degree", "strength")))
+}
 ```

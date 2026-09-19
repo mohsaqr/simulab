@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,20 +51,25 @@
 
 
 <dl><dt id="arg-x-y">x, y<a class="anchor" aria-label="anchor" href="#arg-x-y"></a></dt>
-<dd><p>Base data frames.</p></dd>
+<dd><p>Base data frames, or <code>simulab_sim</code> objects, to join.</p></dd>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
-<dd><p>Identifier variables shared by both inputs.</p></dd>
+<dd><p>Identifier variables shared by both inputs. A character vector of
+at least one name present in both.</p></dd>
 
 
 <dt id="arg-join">join<a class="anchor" aria-label="anchor" href="#arg-join"></a></dt>
-<dd><p>Join type.</p></dd>
+<dd><p>Join type, one of <code>"inner"</code> (the default), keeping only matched
+identifiers, <code>"full"</code>, keeping every row of both inputs, or <code>"left"</code>,
+keeping every row of <code>x</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> containing the merged data.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> containing the merged data, sorted
+by <code>by</code> as <code><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge()</a></code> leaves it, with unmatched cells filled with <code>NA</code> under
+the <code>"full"</code> and <code>"left"</code> joins.</p>
     </div>
 
     <div class="section level2">

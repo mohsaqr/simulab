@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,25 +64,26 @@
 
 
 <dt id="arg-directed">directed<a class="anchor" aria-label="anchor" href="#arg-directed"></a></dt>
-<dd><p>Treat edges as directed.</p></dd>
+<dd><p>Treat edges as directed. This governs the graph conversion
+and the <code>betweenness</code>, <code>eigenvector</code>, and <code>pagerank</code> measures only;
+<code>degree</code>, <code>strength</code>, and <code>closeness</code> always combine incoming and outgoing
+ties. <code>betweenness</code> and <code>closeness</code> use <code>1 / |weight|</code> as the edge
+distance.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy base <code>data.frame</code> with one node/measure/value row.</p>
+    <p>A tidy base <code>data.frame</code> with one row per node and measure and
+columns <code>node</code>, <code>measure</code>, and <code>value</code>, stacked measure after measure.
+Requires the suggested <code>igraph</code> package.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_network.html">simulate_network</a></span><span class="op">(</span>nodes <span class="op">=</span> <span class="fl">30</span>, model <span class="op">=</span> <span class="st">"bernoulli"</span>, probability <span class="op">=</span> <span class="fl">0.1</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">network_centrality</span><span class="op">(</span><span class="va">network</span>, measures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"degree"</span>, <span class="st">"strength"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          node measure value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> degree.1    1  degree     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> degree.2    2  degree     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> degree.3    3  degree     6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> degree.4    4  degree     6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> degree.5    5  degree    11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> degree.6    6  degree     4</span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"igraph"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">network_centrality</span><span class="op">(</span><span class="va">network</span>, measures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"degree"</span>, <span class="st">"strength"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

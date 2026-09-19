@@ -67,8 +67,12 @@ simulate_group_sequences(
 
 ## Value
 
-Long-form grouped sequences with group-specific transitions and wide
-sequences as components.
+A long-form `simulab_sim` base `data.frame` with one row per actor
+sequence position and columns `group`, `id`, `period`, and `state`.
+Actor identifiers are made unique across groups as `G<group>_A<actor>`.
+`as.data.frame(x, what = )` also returns `transitions` (`group`, `from`,
+`to`, `probability`), `wide` (one row per actor: `id`, `S1`, `S2`, ...,
+`group`), and `groups` (`group`, `actors`).
 
 ## Examples
 

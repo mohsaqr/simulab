@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,7 +81,8 @@
 
 
 <dt id="arg-weighted">weighted<a class="anchor" aria-label="anchor" href="#arg-weighted"></a></dt>
-<dd><p>Generate weighted adjacency/co-occurrence values.</p></dd>
+<dd><p>Generate weighted adjacency/co-occurrence values. Ignored by
+the <code>frequency</code> and <code>transition</code> types, which are always weighted.</p></dd>
 
 
 <dt id="arg-weight-range">weight_range<a class="anchor" aria-label="anchor" href="#arg-weight-range"></a></dt>
@@ -89,7 +90,8 @@
 
 
 <dt id="arg-frequency-mean">frequency_mean<a class="anchor" aria-label="anchor" href="#arg-frequency-mean"></a></dt>
-<dd><p>Mean positive count for frequency matrices.</p></dd>
+<dd><p>Mean positive count for frequency matrices; drawn as
+<code>1 + rpois(frequency_mean - 1)</code>, so entries are at least one.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -98,8 +100,14 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy full matrix table with <code>from</code>, <code>to</code>, and <code>value</code>; non-zero
-edges, nodes, and a wide matrix are components.</p>
+    <p>A tidy <code>simulab_sim</code> base <code>data.frame</code> holding the complete matrix in
+long form: <code>nodes^2</code> rows with columns <code>from</code>, <code>to</code>, and <code>value</code>, zeros
+included. <code>as.data.frame(x, what = )</code> also returns <code>edges</code> (the non-zero
+rows only), <code>nodes</code> (<code>node</code>), <code>matrix</code> (the wide form: a <code>from</code> column
+followed by one column per node), and a one-row <code>settings</code> table whose
+<code>directed</code> field reports whether the generated matrix is asymmetric.
+The <code>transition</code> type is row-stochastic: every <code>from</code> state's <code>value</code>
+entries sum to one.</p>
     </div>
 
     <div class="section level2">

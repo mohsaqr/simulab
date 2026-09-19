@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,12 +55,22 @@
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
-<dd><p>Absolute weight threshold for edge presence.</p></dd>
+<dd><p>Absolute weight threshold for edge presence: a dyad counts
+as an edge when <code>abs(weight) &gt; threshold</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A one-row base <code>data.frame</code> with weight and edge-overlap metrics.</p>
+    <p>A one-row base <code>data.frame</code> with columns <code>pearson</code>, <code>cosine</code>, <code>mae</code>,
+<code>rmse</code>, <code>jaccard</code>, <code>edges_x</code>, and <code>edges_y</code>. <code>pearson</code> and <code>cosine</code> are
+<code>NA</code> when either network's aligned weights have no variance or are all
+zero.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The two networks are aligned on the union of the dyads that carry an
+edge in either network; dyads absent from both are excluded, so every
+metric is conditional on that union rather than on all possible dyads.</p>
     </div>
 
     <div class="section level2">

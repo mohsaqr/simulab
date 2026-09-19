@@ -34,11 +34,12 @@ simulate_sequence_clusters(
 
 - proportions:
 
-  Cluster proportions.
+  Cluster proportions. When `NULL`, clusters are equally likely.
 
 - initial:
 
-  Optional common initial probabilities.
+  Optional common initial probabilities, shared by every cluster. When
+  `NULL`, every sequence starts in the first state.
 
 - labels:
 
@@ -46,7 +47,8 @@ simulate_sequence_clusters(
 
 - states:
 
-  Optional state labels.
+  Optional state labels. When the matrices carry no dimnames and
+  `states` is `NULL`, states are labelled by their row index.
 
 - seed:
 
@@ -54,8 +56,11 @@ simulate_sequence_clusters(
 
 ## Value
 
-A long-form `simulab_sim` base `data.frame` with true sequence cluster
-and tidy transition parameters.
+A long-form `simulab_sim` base `data.frame` with columns `id`, `period`,
+`state`, and the true `sequence_cluster`, one row per sequence position.
+A `transitions` table (`sequence_cluster`, `from`, `to`, `probability`)
+is available through
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 
 ## Examples
 

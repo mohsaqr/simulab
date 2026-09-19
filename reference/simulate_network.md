@@ -39,25 +39,31 @@ simulate_network(
 
 - nodes:
 
-  Number of nodes or node labels.
+  Number of nodes or node labels. A single number produces the integer
+  labels `1:nodes`.
 
 - model:
 
-  Graph model.
+  Graph model. Every model except `bernoulli` requires the suggested
+  `igraph` package.
 
 - probability:
 
   Bernoulli edge probability, node matrix, or type matrix. A matrix may
   instead be given as a tidy data frame with columns `from`, `to` and
-  `probability`.
+  `probability`. Used by the `bernoulli` model only; the `block` model
+  uses `within_probability` and `between_probability` instead.
 
 - edges:
 
-  Exact edge count for the fixed-edge Bernoulli model.
+  Exact edge count for the fixed-edge Bernoulli model, capped at the
+  number of admissible dyads.
 
 - directed:
 
-  Generate directed edges.
+  Generate directed edges. Ignored by the `small_world` and `geometric`
+  models, which are always undirected; the `directed` column of the
+  `settings` table reports what was actually generated.
 
 - loops:
 
@@ -73,7 +79,8 @@ simulate_network(
 
 - node_type:
 
-  Optional type label for each node.
+  Optional type label for each node. With more than one type it also
+  supplies the block membership used by the `block` model.
 
 - edge_classes:
 
@@ -113,8 +120,12 @@ simulate_network(
 
 ## Value
 
-A tidy edge-list `simulab_sim`; nodes, adjacency, and generation
-settings are components. Use
+A tidy edge-list `simulab_sim` base `data.frame` with one row per edge
+and columns `from`, `to`, `weight` (plus `edge_class` when
+`edge_classes` is supplied). `as.data.frame(x, what = )` also returns
+`nodes` (`node`, `type`), `adjacency` (a long `row`/`column`/`weight`
+table covering all `nodes^2` ordered pairs, symmetric when the generated
+graph is undirected), and a one-row `settings` table. Use
 [`as_igraph()`](https://mohsaqr.github.io/simulab/reference/as_igraph.md)
 for native graph workflows.
 
@@ -141,14 +152,8 @@ components(result)
 #> 4  settings    1       6
 
 # Other generators: barabasi_albert, small_world, block, regular,
-# geometric and forest_fire.
-head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
-#> <simulab_sim:network> 6 rows x 3 columns
-#>   from to weight
-#> 1    1  2      1
-#> 2    1  3      1
-#> 3    1 59      1
-#> 4    1 60      1
-#> 5    2  3      1
-#> 6    2  4      1
+# geometric and forest_fire. These require the suggested igraph package.
+if (requireNamespace("igraph", quietly = TRUE)) {
+  head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
+}
 ```

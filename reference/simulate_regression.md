@@ -49,8 +49,18 @@ simulate_regression(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with coefficient, predictor, and
-population R-squared tables.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id`, one column per predictor, and `outcome` (renamed by
+`outcome`). Three tidy tables come from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "coefficients"` has one row per term with columns `term` and
+`coefficient`, the intercept first; `what = "effects"` has a single row
+with columns `signal_variance` (the quadratic form of the slopes in the
+predictor covariance matrix), `residual_variance` (`error_sd^2`) and the
+population `r_squared`
+`signal_variance / (signal_variance + residual_variance)`;
+`what = "predictor_correlation"` has one row per correlation-matrix cell
+with columns `row`, `column` and `correlation`.
 
 ## Examples
 

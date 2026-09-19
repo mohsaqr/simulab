@@ -1,6 +1,8 @@
 # Build a replicated scenario grid
 
-Build a replicated scenario grid
+Crosses every combination of the supplied scenario values and repeats
+each combination `replications` times, giving the grid a simulation
+study is run over.
 
 ## Usage
 
@@ -12,19 +14,26 @@ scenario_grid(..., replications = 1L, id = "scenario_id")
 
 - ...:
 
-  Named vectors of scenario values.
+  Named vectors of scenario values, at least one, crossed with
+  [`expand.grid()`](https://rdrr.io/r/base/expand.grid.html). The names
+  become the value columns.
 
 - replications:
 
-  Replications per scenario combination.
+  Replications per scenario combination. A single positive whole number,
+  defaulting to `1`.
 
 - id:
 
-  Name of the scenario identifier.
+  Name of the scenario identifier, numbering the distinct combinations.
+  A single non-empty string, defaulting to `"scenario_id"`.
 
 ## Value
 
-A base `data.frame` with one row per scenario replication.
+A plain base `data.frame`, not a `simulab_sim`, with one row per
+scenario replication and columns: the scenario identifier named by `id`,
+the integer `replication` counting from 1 within each scenario, and one
+column per named argument.
 
 ## Examples
 

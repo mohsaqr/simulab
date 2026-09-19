@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,15 +51,18 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>A simulation result.</p></dd>
+<dd><p>A <code>simulab_sim</code> simulation result.</p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
-<dd><p>Destination <code>.csv</code> or <code>.rds</code> path.</p></dd>
+<dd><p>Destination path. The extension decides the format and must be
+<code>.csv</code> (written with <code><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">utils::write.csv()</a></code>, without row names) or <code>.rds</code>;
+any other extension is an error.</p></dd>
 
 
 <dt id="arg-what">what<a class="anchor" aria-label="anchor" href="#arg-what"></a></dt>
-<dd><p>Component name.</p></dd>
+<dd><p>Single string naming the component to write, default <code>"data"</code>.
+Use <code>components(x)</code> to list the choices.</p></dd>
 
 </dl></div>
     <div class="section level2">

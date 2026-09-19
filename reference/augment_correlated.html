@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,14 +65,19 @@
 
 
 <dt id="arg-specification">specification<a class="anchor" aria-label="anchor" href="#arg-specification"></a></dt>
-<dd><p>New variable definitions.</p></dd>
+<dd><p>New variable definitions, in the <code>formula</code>/<code>variance</code>
+column form built by <code><a href="define_variable.html">define_variable()</a></code>. Unlike <code><a href="simulate_copula.html">simulate_copula()</a></code>,
+<code>augment_correlated()</code> does not accept the distribution-call form, and
+one row of <code>specification</code> is one new variable. None of the named
+variables may already exist in <code>data</code>.</p></dd>
 
 
 <dt id="arg-rho-tau-structure-correlation">rho, tau, structure, correlation<a class="anchor" aria-label="anchor" href="#arg-rho-tau-structure-correlation"></a></dt>
 <dd><p>Copula correlation arguments.
 <code>structure</code> follows the same resolution rule as <code><a href="simulate_copula.html">simulate_copula()</a></code>:
 leaving it unset selects <code>"exchangeable"</code> when a non-zero <code>rho</code> or <code>tau</code>
-is given.</p></dd>
+is given. <code>tau</code> is converted to the latent Pearson correlation
+<code>sin(pi * tau / 2)</code>.</p></dd>
 
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
@@ -90,7 +95,14 @@ generated as correlated observations within each group.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> with the correlated variables.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> holding every column of <code>data</code>
+plus one column per new variable. Two tidy tables come from
+<code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>: <code>what = "definitions"</code> restates the specification, and
+<code>what = "latent_correlation"</code> describes the latent Gaussian correlation.
+Without <code>group</code> that table has one row per correlation-matrix cell, with
+columns <code>row</code>, <code>column</code> and <code>correlation</code>; with <code>group</code> the correlation is
+across the observations inside each group, so the table instead has one
+row per group with columns <code>group</code>, <code>observations</code>, <code>rho</code> and <code>structure</code>.</p>
     </div>
 
     <div class="section level2">

@@ -19,7 +19,12 @@ update_definition(
 
 - specification:
 
-  A `simulab_spec` object.
+  A `simulab_spec` object in the `formula`/`variance` column form, as
+  created by
+  [`define_variable()`](https://mohsaqr.github.io/simulab/reference/define_variable.md),
+  [`repeat_variables()`](https://mohsaqr.github.io/simulab/reference/repeat_variables.md)
+  or
+  [`read_definitions()`](https://mohsaqr.github.io/simulab/reference/read_definitions.md).
 
 - variable:
 

@@ -19,23 +19,37 @@ validate_recovery(
 
 - estimates:
 
-  Tidy estimates with term and estimate columns.
+  Tidy base `data.frame` with a term column and an estimate column.
 
 - truth:
 
-  Tidy truth with term and truth columns.
+  Tidy base `data.frame` with a term column and a true-value column.
 
-- term, estimate, true_value:
+- term:
 
-  Column names.
+  Name of the term column in both frames, default `"term"`. It is the
+  key the two frames are merged on.
+
+- estimate:
+
+  Name of the estimate column in `estimates`, default `"estimate"`.
+
+- true_value:
+
+  Name of the true-value column in `truth`, default `"truth"`.
 
 - tolerance:
 
-  Absolute error tolerance for successful recovery.
+  Single non-negative absolute-error tolerance for successful recovery,
+  default `0.1`.
 
 ## Value
 
-A base `data.frame` with bias, absolute/relative error, and recovery.
+A base `data.frame` with one row per term appearing in either frame (the
+merge keeps unmatched terms) and the columns `term`, `estimate`,
+`truth`, `bias` (estimate minus truth), `absolute_error`,
+`relative_error` (`NA` where truth is zero) and `recovered`, a logical
+that is `TRUE` when `absolute_error` is at most `tolerance`.
 
 ## Examples
 

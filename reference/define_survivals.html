@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,11 +54,13 @@
 <dd><p>One of three forms.</p>
 <p><strong>Hazard calls.</strong> <code>time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3)</code>
 names the event with the argument name and states its hazard as a call.
-<code>log_rate</code> is the log hazard and may be any expression over the covariates;
-<code>shape</code> and <code>scale</code> default to 1 and <code>from</code>, the time at which the segment
-begins, to 0. Arguments may be positional or named, and repeating the
-argument name gives one event several segments, which is a piecewise
-hazard.</p>
+<code>log_rate</code> is the linear predictor on the log scale, the <code>formula</code> of
+<code><a href="define_survival.html">define_survival()</a></code>, so a coefficient inside it is a log hazard ratio. It
+may be any expression over the covariates; <code>shape</code> and <code>scale</code> default to 1
+and <code>from</code>, the time at which the segment begins, to 0. Arguments may be
+positional, in the order <code>log_rate</code>, <code>shape</code>, <code>scale</code>, <code>from</code>, or named,
+and repeating the argument name gives one event several segments, which is
+a piecewise hazard.</p>
 <p><strong>Specification columns</strong> given as named vectors (<code>event</code>, <code>formula</code>,
 <code>scale</code>, <code>shape</code>, <code>transition</code>).</p>
 <p><strong>Objects</strong> created by <code><a href="define_survival.html">define_survival()</a></code>.</p>
@@ -72,7 +74,9 @@ to 1 and <code>transition</code> to 0. Two rows for one event with different
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>simulab_survival_spec</code> base <code>data.frame</code> with one row per hazard
-segment.</p>
+segment and the columns of <code><a href="define_survival.html">define_survival()</a></code>: <code>event</code>, <code>formula</code>,
+<code>scale</code>, <code>shape</code> and <code>transition</code>. Rows written by the column form and by
+the hazard-call form are ordered by <code>event</code> and then <code>transition</code>.</p>
     </div>
 
     <div class="section level2">

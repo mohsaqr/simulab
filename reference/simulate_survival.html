@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,8 @@ either the <code>hazard()</code> call form or the column form.</p></dd>
 
 
 <dt id="arg-id">id<a class="anchor" aria-label="anchor" href="#arg-id"></a></dt>
-<dd><p>Identifier name used when covariates are omitted.</p></dd>
+<dd><p>Identifier name used when covariates are omitted. Defaults to
+<code>"id"</code> and is ignored when <code>covariates</code> is supplied.</p></dd>
 
 
 <dt id="arg-seed-digits-envir">seed, digits, envir<a class="anchor" aria-label="anchor" href="#arg-seed-digits-envir"></a></dt>
@@ -81,7 +82,10 @@ either the <code>hazard()</code> call form or the column form.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code>.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one row per simulated
+subject: the identifier (or the supplied covariates) followed by one
+column per event defined in <code>specification</code>. The <code>survival_definitions</code>
+component holds the specification that generated it.</p>
     </div>
 
     <div class="section level2">

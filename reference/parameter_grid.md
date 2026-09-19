@@ -17,23 +17,32 @@ parameter_grid(
 
 - ...:
 
-  Named vectors or two-value numeric ranges.
+  Named vectors, one per parameter. Under `method = "grid"` every
+  element is a level of a full factorial crossing. Under the sampling
+  methods a length-2 numeric vector is read as a `c(minimum, maximum)`
+  range to draw from, and any other vector is sampled from with
+  replacement.
 
 - n:
 
-  Number of rows for random or Latin-hypercube designs.
+  Single positive whole number of rows to draw for the `"random"` and
+  `"latin_hypercube"` methods, default `10`. Ignored by `"grid"`, whose
+  row count is the product of the parameter lengths.
 
 - method:
 
-  Full grid, random sampling, or Latin hypercube.
+  One of `"grid"` (the default), `"random"`, or `"latin_hypercube"`.
 
 - seed:
 
-  Optional random seed.
+  Optional single random seed. It is applied for the sampling methods
+  only and is restored on exit.
 
 ## Value
 
-A base `data.frame` with one row per parameter combination.
+A base `data.frame` with one row per parameter combination, a leading
+`scenario_id` column numbering the rows, and then one column per
+parameter in the order given.
 
 ## Examples
 

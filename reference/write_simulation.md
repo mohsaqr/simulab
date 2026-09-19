@@ -12,15 +12,19 @@ write_simulation(x, file, what = "data")
 
 - x:
 
-  A simulation result.
+  A `simulab_sim` simulation result.
 
 - file:
 
-  Destination `.csv` or `.rds` path.
+  Destination path. The extension decides the format and must be `.csv`
+  (written with
+  [`utils::write.csv()`](https://rdrr.io/r/utils/write.table.html),
+  without row names) or `.rds`; any other extension is an error.
 
 - what:
 
-  Component name.
+  Single string naming the component to write, default `"data"`. Use
+  `components(x)` to list the choices.
 
 ## Value
 

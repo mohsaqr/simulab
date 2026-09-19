@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,9 @@
 
 
 <dl><dt id="arg-inputs">inputs<a class="anchor" aria-label="anchor" href="#arg-inputs"></a></dt>
-<dd><p>Named list of sequence data frames.</p></dd>
+<dd><p>List of sequence data frames, with at least one element.
+Element names label the datasets; when <code>inputs</code> is unnamed the labels
+<code>"Dataset 1"</code>, <code>"Dataset 2"</code>, ... are used instead.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -60,7 +62,11 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy edge-list <code>simulab_sim</code> with dataset/model metadata.</p>
+    <p>A <code>simulab_sim</code> edge list with one row per dataset and transition: a
+leading <code>dataset</code> column followed by the columns <code><a href="fit_tna.html">fit_tna()</a></code> returns
+(<code>from</code>, <code>to</code>, <code>weight</code>, and <code>group</code> when a grouped fit is requested). The
+<code>model_info</code> component holds one row per dataset describing the fitted
+model.</p>
     </div>
 
     <div class="section level2">
@@ -72,14 +78,6 @@
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"tna"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">fit_tna_batch</span><span class="op">(</span><span class="va">inputs</span>, model <span class="op">=</span> <span class="st">"tna"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:tna_batch&gt; 6 rows x 4 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         dataset    from      to    weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> first.1   first State 1 State 1 0.0600000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> first.2   first State 2 State 1 0.5500000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> first.3   first State 3 State 1 0.6285714</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> first.4   first State 1 State 2 0.4100000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> first.5   first State 2 State 2 0.3300000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> first.6   first State 3 State 2 0.3428571</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

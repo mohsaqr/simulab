@@ -29,9 +29,9 @@ correlation_structure(
   Correlation structure: one of `"independent"`, `"exchangeable"`,
   `"ar1"`, or `"custom"`. If left unset it is chosen from the other
   arguments: `"custom"` when `correlation` is supplied, `"exchangeable"`
-  when a non-zero `rho` (or `tau`) is supplied, and `"independent"`
-  otherwise. Passing `"independent"` together with a non-zero `rho` is a
-  contradiction and raises an error.
+  when a non-zero `rho` is supplied, and `"independent"` otherwise.
+  Passing `"independent"` together with a non-zero `rho` is a
+  contradiction and raises a `simulab_contradictory_structure` error.
 
 - correlation:
 

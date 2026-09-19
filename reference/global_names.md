@@ -12,11 +12,15 @@ global_names(regions = "all")
 
 - regions:
 
-  Region names or `"all"`.
+  Region names from
+  [`global_name_regions()`](https://mohsaqr.github.io/simulab/reference/global_name_regions.md),
+  or `"all"`, the default, for every region.
 
 ## Value
 
-A tidy base `data.frame` with region and name columns.
+A tidy base `data.frame` with one row per region/name pair and columns
+`region` and `name`. A name shared by two regions appears once per
+region.
 
 ## Examples
 

@@ -16,11 +16,19 @@ evaluate_edge_recovery(truth, estimate, threshold = 0)
 
 - threshold:
 
-  Absolute threshold defining a recovered edge.
+  Absolute threshold defining a recovered edge: a dyad counts as present
+  when `abs(weight) > threshold`.
 
 ## Value
 
-A tidy edge-level `simulab_sim` with recovery metrics as a component.
+A tidy `simulab_sim` base `data.frame` with one row per dyad in the
+union of the two edge sets – dyads absent from both networks are not
+represented, so true negatives are not counted – and columns `from`,
+`to`, `truth_weight`, `estimate_weight`, `truth_present`,
+`estimate_present`, `recovered`, `false_positive`, and `false_negative`.
+A one-row `summary` table (`precision`, `recall`, `f1`, `true_positive`,
+`false_positive`, `false_negative`) is available through
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 
 ## Examples
 

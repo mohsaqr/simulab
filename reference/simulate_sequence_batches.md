@@ -1,6 +1,9 @@
 # Simulate repeated sequence datasets
 
-Simulate repeated sequence datasets
+Calls
+[`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md)
+`repetitions` times and stacks the results, so each dataset is drawn
+from its own transition system rather than from a shared one.
 
 ## Usage
 
@@ -12,7 +15,7 @@ simulate_sequence_batches(repetitions, ..., seed = NULL)
 
 - repetitions:
 
-  Number of datasets.
+  Number of datasets. A single positive whole number.
 
 - ...:
 
@@ -21,12 +24,19 @@ simulate_sequence_batches(repetitions, ..., seed = NULL)
 
 - seed:
 
-  Optional base seed. Each dataset uses a deterministic offset.
+  Optional base seed. A single number, or `NULL` (the default). Dataset
+  `i` uses `seed + i - 1`.
 
 ## Value
 
-A combined long-form `simulab_sim` with dataset identifiers and
-dataset-specific transition parameters.
+A `simulab_sim` base `data.frame` in long form, one row per dataset,
+sequence and position, with the column `dataset` followed by the columns
+[`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md)
+returns (`id`, `period` and `state`). Components: `transitions`, the
+generating transition probabilities, one row per dataset and from/to
+pair with columns `dataset`, `from`, `to` and `probability`; and
+`initial_probabilities`, one row per dataset and state with columns
+`dataset`, `state` and `probability`.
 
 ## Examples
 

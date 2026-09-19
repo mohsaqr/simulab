@@ -44,8 +44,15 @@ define_variables(...)
 
 ## Value
 
-A `simulab_spec` base `data.frame` with one row per variable and columns
-`variable`, `distribution`, `formula`, `variance` and `link`.
+A `simulab_spec` base `data.frame`, shaped by the form it was given.
+Distribution calls give one row per distribution parameter, with columns
+`variable`, `distribution`, `parameter` and `value`. The column form and
+the constructor form give one row per variable, with columns `variable`,
+`distribution`, `formula`, `variance` and `link`. Both forms are
+accepted by
+[`simulate_study()`](https://mohsaqr.github.io/simulab/reference/simulate_study.md)
+and
+[`augment_study()`](https://mohsaqr.github.io/simulab/reference/augment_study.md).
 
 ## Examples
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,12 +65,16 @@
 
 
 <dt id="arg-normalize">normalize<a class="anchor" aria-label="anchor" href="#arg-normalize"></a></dt>
-<dd><p>Return row-conditional transition proportions.</p></dd>
+<dd><p>Return row-conditional transition proportions. When
+<code>FALSE</code>, the <code>probability</code> column is kept but filled with <code>NA</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy base <code>data.frame</code> with <code>from</code>, <code>to</code>, count, and probability.</p>
+    <p>A tidy base <code>data.frame</code> with one row per observed <code>from</code>/<code>to</code> pair
+and columns <code>from</code>, <code>to</code>, <code>count</code>, and <code>probability</code>. Pairs never observed
+are absent rather than zero, so <code>probability</code> sums to one within each
+<code>from</code> state when <code>normalize</code> is <code>TRUE</code>.</p>
     </div>
 
     <div class="section level2">

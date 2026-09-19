@@ -1,6 +1,9 @@
 # Simulate a latent profile model
 
-Simulate a latent profile model
+Draws each observation from a multivariate normal mixture: a profile is
+sampled from `proportions`, then the indicators are drawn from that
+profile's means, standard deviations and within-profile correlation
+matrix.
 
 ## Usage
 
@@ -20,30 +23,39 @@ simulate_lpa(
 
 - n:
 
-  Number of observations.
+  Number of observations. A single whole number of at least 2.
 
 - means:
 
-  Profile-by-variable mean matrix, or a tidy data frame with columns
-  `profile`, `variable` and `mean`.
+  Profile-by-variable mean matrix (one row per profile, one column per
+  indicator, at least 2 rows), or a tidy data frame with columns
+  `profile`, `variable` and `mean`. Column names become the indicator
+  columns of the returned data; row names are ignored, profile names
+  come from `labels`.
 
 - sds:
 
-  Scalar, per-variable vector, profile-by-variable matrix, or a tidy
-  data frame with columns `profile`, `variable` and `sd`.
+  Scalar (the default, `1`), per-variable vector, profile-by-variable
+  matrix, or a tidy data frame with columns `profile`, `variable` and
+  `sd`. All values must be positive.
 
 - proportions:
 
-  Profile proportions.
+  Profile proportions, one positive value per profile; they are rescaled
+  to sum to one. `NULL` (the default) makes every profile equally
+  likely.
 
 - correlations:
 
-  Optional list of within-profile correlation matrices, or a tidy data
-  frame with columns `profile`, `row`, `column` and `correlation`.
+  Optional list of within-profile correlation matrices, one per profile,
+  or a tidy data frame with columns `profile`, `row`, `column` and
+  `correlation`. `NULL` (the default) makes the indicators uncorrelated
+  within every profile.
 
 - labels:
 
-  Optional profile labels.
+  Optional profile labels, one unique value per profile. Defaults to
+  `"Profile 1"`, `"Profile 2"` and so on.
 
 - seed:
 
@@ -51,7 +63,11 @@ simulate_lpa(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with true profile and parameters.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id`, `profile` (the true profile label) and one numeric column
+per indicator. A `parameters` component holds one row per
+profile-by-variable combination with columns `profile`, `variable`,
+`mean`, `sd` and `proportion`.
 
 ## Examples
 

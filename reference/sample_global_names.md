@@ -12,7 +12,8 @@ sample_global_names(n, regions = "all", seed = NULL)
 
 - n:
 
-  Number of unique names.
+  Number of unique names to draw, at most the number of distinct names
+  the chosen regions hold.
 
 - regions:
 
@@ -25,7 +26,9 @@ sample_global_names(n, regions = "all", seed = NULL)
 
 ## Value
 
-A tidy base `data.frame` with order, region, and name.
+A tidy base `data.frame` with one row per sampled name and columns
+`order`, `region` and `name`. A name belonging to more than one region
+carries them joined by `";"`.
 
 ## Examples
 

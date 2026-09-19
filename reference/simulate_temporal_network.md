@@ -54,7 +54,8 @@ simulate_temporal_network(
 
 - weight:
 
-  Edge-spell weight distribution.
+  Edge-spell weight distribution. One weight is drawn per spell and held
+  constant while the spell is active.
 
 - weight_mean, weight_sd, weight_range:
 
@@ -70,9 +71,16 @@ simulate_temporal_network(
 
 ## Value
 
-A tidy spell-level `simulab_sim` with `from`, `to`, `onset`, `terminus`,
-`weight`, and `censored`. Event and snapshot edge lists are available as
-components.
+A tidy spell-level `simulab_sim` base `data.frame` with one row per
+activity spell and columns `from`, `to`, `onset`, `terminus`, `weight`,
+and `censored`. `terminus` is exclusive: the spell covers periods
+`onset` through `terminus - 1`, so a spell still active in the final
+period has `terminus == periods + 1` and `censored == TRUE`.
+`as.data.frame(x, what = )` also returns `events` (`from`, `to`, `time`,
+`event` – `"formation"` or `"dissolution"` – and `weight`, ordered by
+time), `snapshots` (one row per active dyad per period: `period`,
+`from`, `to`, `weight`), `nodes` (`node`, `type`), and a one-row
+`settings` table.
 
 ## Examples
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,8 +89,17 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> with coefficient, predictor, and
-population R-squared tables.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one row per observation and
+columns <code>id</code>, one column per predictor, and <code>outcome</code> (renamed by
+<code>outcome</code>). Three tidy tables come from <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>:
+<code>what = "coefficients"</code> has one row per term with columns <code>term</code> and
+<code>coefficient</code>, the intercept first; <code>what = "effects"</code> has a single row
+with columns <code>signal_variance</code> (the quadratic form of the slopes in the
+predictor covariance matrix), <code>residual_variance</code> (<code>error_sd^2</code>) and the
+population <code>r_squared</code>
+<code>signal_variance / (signal_variance + residual_variance)</code>;
+<code>what = "predictor_correlation"</code> has one row per correlation-matrix cell
+with columns <code>row</code>, <code>column</code> and <code>correlation</code>.</p>
     </div>
 
     <div class="section level2">

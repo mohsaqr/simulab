@@ -34,17 +34,23 @@ A base `data.frame` with one row per target and parameter, and columns
 `distribution`, `mean`, `variance`, `parameter` and `value`. The
 `parameter` names are those
 [`list_distributions()`](https://mohsaqr.github.io/simulab/reference/list_distributions.md)
-reports, so the result states a distribution call.
+reports, so the result states a distribution call. For a one-parameter
+family the reported `variance` is the one the solved parameters imply
+rather than a target. Called with no arguments the result is instead the
+catalogue: one row per invertible distribution, with columns
+`distribution`, `parameters` and `targets`.
 
 ## Details
 
 Most inversions are closed form. For a scale family whose shape is fixed
 by the coefficient of variation alone – Weibull, log-logistic, Frechet,
 Nakagami – the shape is found by root finding and the scale then follows
-exactly. Some families cannot reach every pair: a Nakagami squared
-coefficient of variation is at most `pi / 2 - 1`, a Lomax with a finite
-variance always has one above 1, and a beta variance is below
-`mean * (1 - mean)`. Those are refused rather than approximated.
+exactly. Two one-parameter families, `chi` and `zero_truncated_poisson`,
+likewise invert their mean by root finding. Some families cannot reach
+every pair: a Nakagami squared coefficient of variation is at most
+`pi / 2 - 1`, a Lomax with a finite variance always has one above 1, and
+a beta variance is below `mean * (1 - mean)`. Those are refused rather
+than approximated.
 
 ## Conditions
 

@@ -50,8 +50,14 @@ simulate_bipartite_network(
 
 ## Value
 
-A tidy cross-mode edge-list `simulab_sim`; nodes and the actor-by-event
-incidence matrix are components.
+A tidy cross-mode edge-list `simulab_sim` base `data.frame` with one row
+per actor-event edge and columns `from` (always an actor), `to` (always
+an event), `weight`, `from_mode`, and `to_mode`. The two modes are
+disjoint, so no edge joins two actors or two events and self-loops
+cannot occur. `as.data.frame(x, what = )` also returns `nodes` (`node`,
+`mode`), `incidence` (the wide actor-by-event incidence table: an
+`actor` column followed by one column per event), and a one-row
+`settings` table.
 
 ## Examples
 

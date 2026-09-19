@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,8 @@
 
 <dt id="arg-initial">initial<a class="anchor" aria-label="anchor" href="#arg-initial"></a></dt>
 <dd><p>Starting-state probabilities or the name of an input variable
-containing each row's starting state.</p></dd>
+containing each row's starting state. When <code>NULL</code>, every chain starts in
+the first state.</p></dd>
 
 
 <dt id="arg-id-period-state">id, period, state<a class="anchor" aria-label="anchor" href="#arg-id-period-state"></a></dt>
@@ -84,8 +85,10 @@ containing each row's starting state.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> combining input variables
-with one row per chain position.</p>
+    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> combining the input
+variables with one row per chain position: <code>id</code>, <code>period</code>, <code>state</code>,
+followed by the other input columns. A <code>transitions</code> table
+(<code>from</code>, <code>to</code>, <code>probability</code>) is available through <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>.</p>
     </div>
 
     <div class="section level2">

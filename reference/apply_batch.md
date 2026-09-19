@@ -12,11 +12,15 @@ apply_batch(inputs, fun, ..., id = "batch_id")
 
 - inputs:
 
-  List of data frames or simulation results.
+  List with at least one element, commonly data frames or simulation
+  results. Element names label the batches; when `inputs` is unnamed the
+  positions `"1"`, `"2"`, ... are used instead.
 
 - fun:
 
-  Function returning a data frame.
+  Function applied to each element. It must return a base `data.frame`,
+  and every call must return the same columns, otherwise the run is an
+  error.
 
 - ...:
 
@@ -24,11 +28,13 @@ apply_batch(inputs, fun, ..., id = "batch_id")
 
 - id:
 
-  Name of the batch identifier.
+  Single string naming the batch-label column, default `"batch_id"`.
 
 ## Value
 
-A combined base `data.frame` with one batch identifier per output.
+A base `data.frame` stacking the `fun` outputs by row, with the batch
+label in a leading column named by `id`, so one row per row of each
+output.
 
 ## Examples
 

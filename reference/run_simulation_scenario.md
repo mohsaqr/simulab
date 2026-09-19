@@ -12,7 +12,7 @@ run_simulation_scenario(scenario, seed = NULL)
 
 - scenario:
 
-  Scenario from
+  A single scenario name from
   [`simulation_scenarios()`](https://mohsaqr.github.io/simulab/reference/simulation_scenarios.md).
 
 - seed:
@@ -21,7 +21,8 @@ run_simulation_scenario(scenario, seed = NULL)
 
 ## Value
 
-A `simulab_sim` result.
+The `simulab_sim` base `data.frame` returned by the simulator the
+scenario calls, whose columns depend on the scenario's family.
 
 ## Examples
 

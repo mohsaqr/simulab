@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,24 +58,42 @@
 
 
 <dl><dt id="arg-estimates">estimates<a class="anchor" aria-label="anchor" href="#arg-estimates"></a></dt>
-<dd><p>Tidy estimates with term and estimate columns.</p></dd>
+<dd><p>Tidy base <code>data.frame</code> with a term column and an estimate
+column.</p></dd>
 
 
 <dt id="arg-truth">truth<a class="anchor" aria-label="anchor" href="#arg-truth"></a></dt>
-<dd><p>Tidy truth with term and truth columns.</p></dd>
+<dd><p>Tidy base <code>data.frame</code> with a term column and a true-value
+column.</p></dd>
 
 
-<dt id="arg-term-estimate-true-value">term, estimate, true_value<a class="anchor" aria-label="anchor" href="#arg-term-estimate-true-value"></a></dt>
-<dd><p>Column names.</p></dd>
+<dt id="arg-term">term<a class="anchor" aria-label="anchor" href="#arg-term"></a></dt>
+<dd><p>Name of the term column in both frames, default <code>"term"</code>. It is
+the key the two frames are merged on.</p></dd>
+
+
+<dt id="arg-estimate">estimate<a class="anchor" aria-label="anchor" href="#arg-estimate"></a></dt>
+<dd><p>Name of the estimate column in <code>estimates</code>, default
+<code>"estimate"</code>.</p></dd>
+
+
+<dt id="arg-true-value">true_value<a class="anchor" aria-label="anchor" href="#arg-true-value"></a></dt>
+<dd><p>Name of the true-value column in <code>truth</code>, default
+<code>"truth"</code>.</p></dd>
 
 
 <dt id="arg-tolerance">tolerance<a class="anchor" aria-label="anchor" href="#arg-tolerance"></a></dt>
-<dd><p>Absolute error tolerance for successful recovery.</p></dd>
+<dd><p>Single non-negative absolute-error tolerance for successful
+recovery, default <code>0.1</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A base <code>data.frame</code> with bias, absolute/relative error, and recovery.</p>
+    <p>A base <code>data.frame</code> with one row per term appearing in either frame
+(the merge keeps unmatched terms) and the columns <code>term</code>, <code>estimate</code>,
+<code>truth</code>, <code>bias</code> (estimate minus truth), <code>absolute_error</code>,
+<code>relative_error</code> (<code>NA</code> where truth is zero) and <code>recovered</code>, a logical
+that is <code>TRUE</code> when <code>absolute_error</code> is at most <code>tolerance</code>.</p>
     </div>
 
     <div class="section level2">

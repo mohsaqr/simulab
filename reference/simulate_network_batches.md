@@ -1,6 +1,8 @@
 # Simulate repeated networks
 
-Simulate repeated networks
+Calls
+[`simulate_network()`](https://mohsaqr.github.io/simulab/reference/simulate_network.md)
+`repetitions` times and stacks the edge lists.
 
 ## Usage
 
@@ -12,7 +14,7 @@ simulate_network_batches(repetitions, ..., seed = NULL)
 
 - repetitions:
 
-  Number of networks.
+  Number of networks. A single positive whole number.
 
 - ...:
 
@@ -21,11 +23,17 @@ simulate_network_batches(repetitions, ..., seed = NULL)
 
 - seed:
 
-  Optional base seed. Each network uses a deterministic offset.
+  Optional base seed. A single number, or `NULL` (the default). Network
+  `i` uses `seed + i - 1`.
 
 ## Value
 
-A combined tidy edge-list `simulab_sim` with network identifiers.
+A `simulab_sim` base `data.frame` edge list, one row per network and
+edge, with the column `network` followed by the columns
+[`simulate_network()`](https://mohsaqr.github.io/simulab/reference/simulate_network.md)
+returns (`from`, `to` and `weight`). The component `settings`, reached
+with `as.data.frame(x, what = "settings")`, holds one row per network
+with its generator arguments and realized edge count.
 
 ## Examples
 

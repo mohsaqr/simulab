@@ -70,8 +70,11 @@ simulate_edge_list(
 
 ## Value
 
-A tidy `simulab_sim` with `from`, `to`, and `weight` columns; node,
-adjacency, and settings tables are components.
+A tidy `simulab_sim` base `data.frame` with one row per edge and columns
+`from`, `to`, and `weight` (plus `edge_class` when `edge_classes` is
+supplied). `as.data.frame(x, what = )` also returns `nodes` (`node`,
+`type`), `adjacency` (a long `row`/`column`/`weight` table over all
+ordered node pairs), and a one-row `settings` table.
 
 ## Examples
 

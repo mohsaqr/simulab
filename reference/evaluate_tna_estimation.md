@@ -1,6 +1,10 @@
 # Evaluate TNA estimation against generated truth
 
-Evaluate TNA estimation against generated truth
+Draws a transition system per replication, simulates sequences from it,
+fits each estimator in `models`, and scores the fitted edges against the
+generating probabilities. Fitted weights are row-normalized before the
+comparison, so estimators on different weight scales are all read as
+transition probabilities.
 
 ## Usage
 
@@ -24,40 +28,52 @@ evaluate_tna_estimation(
 
 - repetitions:
 
-  Number of simulation replications.
+  Number of simulation replications. A single positive whole number,
+  defaulting to `100`.
 
 - n:
 
-  Number of sequences per replication.
+  Number of sequences per replication. A single whole number of at least
+  2, defaulting to `200`.
 
 - chain_length:
 
-  Sequence length.
+  Sequence length. A single whole number of at least 2, defaulting to
+  `25`.
 
 - n_states:
 
-  Number of states.
+  Number of states. A single whole number of at least 2, defaulting to
+  `6`.
 
 - models:
 
-  TNA estimators to evaluate.
+  TNA estimators to evaluate. A character vector of at least one of
+  `"tna"`, `"ftna"`, `"ctna"` and `"atna"`, all four by default.
 
 - concentration, diagonal_concentration:
 
-  Transition-system parameters.
+  Transition-system parameters passed to
+  [`generate_transition_system()`](https://mohsaqr.github.io/simulab/reference/generate_transition_system.md),
+  defaulting to `1` and `0`.
 
 - missing_tail:
 
   Trailing missing positions passed to
-  [`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md).
+  [`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md),
+  defaulting to `c(0L, 5L)`.
 
 - threshold:
 
-  Edge-presence threshold for recovery metrics.
+  Absolute weight threshold above which an edge counts as present, in
+  both the agreement and the recovery metrics. A single non-negative
+  number, defaulting to `0`.
 
 - seed:
 
-  Optional base seed.
+  Optional base seed. A single number, or `NULL` (the default).
+  Replication `i` draws its transition system with `seed + i - 1` and
+  its sequences with that offset plus `100000`.
 
 - ...:
 
@@ -66,8 +82,15 @@ evaluate_tna_estimation(
 
 ## Value
 
-A tidy `simulab_sim` of replication/model agreement metrics, with
-generated truth and estimated edges as components.
+A `simulab_sim` base `data.frame` with one row per replication and
+model, holding `iteration`, `model`, the
+[`compare_networks()`](https://mohsaqr.github.io/simulab/reference/compare_networks.md)
+agreement metrics and the
+[`evaluate_edge_recovery()`](https://mohsaqr.github.io/simulab/reference/evaluate_edge_recovery.md)
+summary. Components: `truth`, the generating probabilities with columns
+`iteration`, `from`, `to` and `weight`; and `estimated_edges`, the
+row-normalized fitted edges with columns `iteration`, `model`, `from`,
+`to` and `weight`.
 
 ## Examples
 
@@ -78,14 +101,4 @@ if (requireNamespace("tna", quietly = TRUE)) {
     models = "tna", seed = 1
   )
 }
-#> <simulab_sim:tna_estimation> 2 rows x 15 columns
-#>   iteration model   pearson    cosine        mae       rmse   jaccard edges_x
-#> 1         1   tna 0.9873226 0.9963721 0.02853191 0.03352190 1.0000000       9
-#> 2         2   tna 0.9812276 0.9906651 0.04997134 0.06423688 0.8888889       9
-#>   edges_y precision    recall        f1 true_positive false_positive
-#> 1       9         1 1.0000000 1.0000000             9              0
-#> 2       8         1 0.8888889 0.9411765             8              0
-#>   false_negative
-#> 1              0
-#> 2              1
 ```

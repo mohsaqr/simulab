@@ -1,6 +1,8 @@
 # Simulate a hidden Markov model
 
-Simulate a hidden Markov model
+Draws an initial hidden state for each sequence from `initial`, evolves
+it with `transition` for `chain_length` occasions, and emits one
+observed category per occasion from `emission`.
 
 ## Usage
 
@@ -21,29 +23,37 @@ simulate_hmm(
 
 - n:
 
-  Number of sequences.
+  Number of sequences. A single positive whole number.
 
 - transition:
 
   Hidden-state transition matrix, or a tidy data frame with columns
-  `from`, `to` and `probability`.
+  `from`, `to` and `probability`. Square, with rows indexing the current
+  state and columns the next state; every row must sum to one.
 
 - chain_length:
 
-  Sequence length.
+  Sequence length. A single positive whole number; every sequence has
+  the same length.
 
 - emission:
 
   Hidden-state-by-observed-category probability matrix, or a tidy data
-  frame with columns `state`, `observation` and `probability`.
+  frame with columns `state`, `observation` and `probability`. Rows
+  index the hidden states and must sum to one; columns index the
+  observed categories.
 
 - initial:
 
-  Initial hidden-state probabilities.
+  Initial hidden-state probabilities, one per hidden state, summing to
+  one. `NULL` (the default) starts every sequence in the first hidden
+  state with probability one; supply a vector for a random start.
 
 - state_labels, observation_labels:
 
-  Optional labels.
+  Optional labels, one unique value per hidden state and per observed
+  category. They default to `"State 1"`, `"State 2"`, ... and
+  `"Observation 1"`, `"Observation 2"`, ...
 
 - seed:
 
@@ -51,8 +61,13 @@ simulate_hmm(
 
 ## Value
 
-A long-form `simulab_sim` base `data.frame` with observed and true
-hidden states, plus tidy parameter tables.
+A long-form `simulab_sim` base `data.frame` with one row per
+sequence-occasion (`n * chain_length` rows) and columns `id`,
+`occasion`, `state` (the true hidden state label) and `observation` (the
+emitted category label). Components `transitions` (columns `from`, `to`,
+`probability`), `emissions` (columns `state`, `observation`,
+`probability`) and `initial_probabilities` (columns `state`,
+`probability`) hold the generating parameters in tidy form.
 
 ## Examples
 

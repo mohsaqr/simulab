@@ -23,7 +23,8 @@ augment_density(
 
 - values:
 
-  Numeric source values.
+  Numeric source values, of which at least two must be present and
+  distinct.
 
 - variable:
 
@@ -31,7 +32,8 @@ augment_density(
 
 - use_limits, keep_missing, seed:
 
-  Density-simulation arguments.
+  Density-simulation arguments, as in
+  [`simulate_density()`](https://mohsaqr.github.io/simulab/reference/simulate_density.md).
 
 ## Value
 

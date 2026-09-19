@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +76,9 @@ between node groups.</p></dd>
 
 
 <dt id="arg-loops">loops<a class="anchor" aria-label="anchor" href="#arg-loops"></a></dt>
-<dd><p>Permit self transitions.</p></dd>
+<dd><p>Permit self transitions when drawing the underlying edges. A
+node left with no outgoing edge is nevertheless given a self transition of
+probability one, so self-loops can appear even when <code>loops</code> is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -85,8 +87,13 @@ between node groups.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy non-zero transition edge list with node, group, adjacency, and
-full transition tables as components.</p>
+    <p>A tidy <code>simulab_sim</code> base <code>data.frame</code> holding the non-zero
+transitions only, one row per edge, with columns <code>from</code>, <code>to</code>, and
+<code>probability</code>. <code>as.data.frame(x, what = )</code> also returns <code>nodes</code>
+(<code>node</code>, <code>group</code>), <code>adjacency</code> (the long <code>row</code>/<code>column</code>/<code>weight</code> table of
+the underlying directed Bernoulli graph), and <code>transitions</code> (the full
+<code>nodes^2</code>-row transition table including zeros). The transition matrix is
+row-stochastic: every <code>from</code> node's probabilities sum to one.</p>
     </div>
 
     <div class="section level2">

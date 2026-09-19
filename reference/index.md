@@ -113,7 +113,7 @@
 - [`list_distributions()`](https://mohsaqr.github.io/simulab/reference/list_distributions.md)
   : List the distributions a specification may use
 - [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md)
-  : List canonical simulation verbs
+  : List public simulation and generation verbs
 - [`merge_studies()`](https://mohsaqr.github.io/simulab/reference/merge_studies.md)
   : Merge study data by identifiers
 - [`missingness_matrix()`](https://mohsaqr.github.io/simulab/reference/missingness_matrix.md)
@@ -187,6 +187,8 @@
   : Simulate a latent profile model
 - [`simulate_markov()`](https://mohsaqr.github.io/simulab/reference/simulate_markov.md)
   : Simulate Markov chains
+- [`simulate_ml_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_ml_lpa.md)
+  : Simulate a two-level latent profile model
 - [`simulate_multilevel()`](https://mohsaqr.github.io/simulab/reference/simulate_multilevel.md)
   : Simulate a two-level Gaussian model
 - [`simulate_multiplex_network()`](https://mohsaqr.github.io/simulab/reference/simulate_multiplex_network.md)

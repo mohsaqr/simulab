@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,21 +51,25 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Input base <code>data.frame</code>.</p></dd>
+<dd><p>Input base <code>data.frame</code>, with at least one row.</p></dd>
 
 
 <dt id="arg-factors">factors<a class="anchor" aria-label="anchor" href="#arg-factors"></a></dt>
-<dd><p>Named integer vector giving factor levels.</p></dd>
+<dd><p>Named numeric vector of whole numbers giving the number of
+levels of each factor. Every entry must be at least 2.</p></dd>
 
 
 <dt id="arg-coding">coding<a class="anchor" aria-label="anchor" href="#arg-coding"></a></dt>
-<dd><p>Factor coding passed to <code><a href="factorial_design.html">factorial_design()</a></code>.</p></dd>
+<dd><p>Factor coding passed to <code><a href="factorial_design.html">factorial_design()</a></code>: <code>"dummy"</code> (the
+default), <code>"effect"</code> or <code>"level"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> containing every row-condition
-combination.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one row per row of <code>data</code>
+crossed with every design condition, so <code>nrow(data) * prod(factors)</code> rows:
+the columns of <code>data</code> followed by one column per factor. The <code>design</code>
+component holds the distinct conditions, one row each.</p>
     </div>
 
     <div class="section level2">

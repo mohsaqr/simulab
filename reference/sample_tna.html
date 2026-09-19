@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,18 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_tna</span><span class="op">(</span><span class="va">data</span>, fraction <span class="op">=</span> <span class="fl">0.3</span>, replace <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sample_tna</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  fraction <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  replace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"long"</span>, <span class="st">"wide"</span><span class="op">)</span>,</span>
+<span>  id <span class="op">=</span> <span class="st">"id"</span>,</span>
+<span>  period <span class="op">=</span> <span class="st">"period"</span>,</span>
+<span>  state <span class="op">=</span> <span class="st">"state"</span>,</span>
+<span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -51,28 +62,50 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Sequence data.</p></dd>
+<dd><p>Sequence data, in long or wide form.</p></dd>
 
 
 <dt id="arg-fraction">fraction<a class="anchor" aria-label="anchor" href="#arg-fraction"></a></dt>
-<dd><p>Sampling fraction.</p></dd>
+<dd><p>Single number in <code>(0, 1]</code> giving the fraction of sequences
+to draw, default <code>0.3</code>. At least two sequences are always drawn.</p></dd>
 
 
 <dt id="arg-replace">replace<a class="anchor" aria-label="anchor" href="#arg-replace"></a></dt>
-<dd><p>Sample with replacement.</p></dd>
+<dd><p>Single flag, whether to draw with replacement. Default
+<code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Optional seed.</p></dd>
+<dd><p>Optional single seed, restored on exit.</p></dd>
+
+
+<dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
+<dd><p>One of <code>"auto"</code>, <code>"long"</code> or <code>"wide"</code>, naming the layout of
+<code>data</code>. The default <code>"auto"</code> detects it.</p></dd>
+
+
+<dt id="arg-id-period-state">id, period, state<a class="anchor" aria-label="anchor" href="#arg-id-period-state"></a></dt>
+<dd><p>Column names identifying the sequence, the position
+within it, and the state. Used only when <code>data</code> is in long form; the
+defaults are <code>"id"</code>, <code>"period"</code> and <code>"state"</code>.</p></dd>
+
+
+<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
+<dd><p>Optional column name. When given, sequences are sampled within
+each group and the refit is grouped.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed to <code><a href="fit_tna.html">fit_tna()</a></code>.</p></dd>
+<dd><p>Further arguments passed to <code><a href="fit_tna.html">fit_tna()</a></code>, such as <code>model</code>. The
+sampled sequences are always refitted in wide form, so <code>format</code> is
+consumed by the sampling step and is not forwarded.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy fitted TNA result.</p>
+    <p>The <code><a href="fit_tna.html">fit_tna()</a></code> result for the sampled sequences: a <code>simulab_sim</code>
+edge list with one row per transition and the columns <code>from</code>, <code>to</code> and
+<code>weight</code>, plus the <code>initial_probabilities</code> and <code>model_info</code> components.</p>
     </div>
 
     <div class="section level2">
@@ -81,14 +114,6 @@
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"tna"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">sample_tna</span><span class="op">(</span><span class="va">data</span>, fraction <span class="op">=</span> <span class="fl">0.5</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:tna_model&gt; 6 rows x 3 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      from      to    weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 State 1 State 1 0.1411765</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 State 2 State 1 0.5526316</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 State 3 State 1 0.6440678</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 State 1 State 2 0.3529412</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 State 2 State 2 0.3289474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 State 3 State 2 0.3220339</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

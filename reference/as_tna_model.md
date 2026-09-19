@@ -24,7 +24,10 @@ as_tna_model(x, group = NULL)
 
 ## Value
 
-A native `tna` or `group_tna` model object.
+A native `tna` or `group_tna` model object. For a
+[`compare_tna_models()`](https://mohsaqr.github.io/simulab/reference/compare_tna_models.md)
+result the stored models are returned as a list named by model type
+instead.
 
 ## Examples
 
@@ -34,5 +37,4 @@ if (requireNamespace("tna", quietly = TRUE)) {
   model <- as_tna_model(fit_tna(data, model = "tna"))
   class(model)
 }
-#> [1] "tna"
 ```

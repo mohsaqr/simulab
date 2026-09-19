@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,25 +78,31 @@
 
 
 <dl><dt id="arg-nodes">nodes<a class="anchor" aria-label="anchor" href="#arg-nodes"></a></dt>
-<dd><p>Number of nodes or node labels.</p></dd>
+<dd><p>Number of nodes or node labels. A single number produces the
+integer labels <code>1:nodes</code>.</p></dd>
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>Graph model.</p></dd>
+<dd><p>Graph model. Every model except <code>bernoulli</code> requires the
+suggested <code>igraph</code> package.</p></dd>
 
 
 <dt id="arg-probability">probability<a class="anchor" aria-label="anchor" href="#arg-probability"></a></dt>
 <dd><p>Bernoulli edge probability, node matrix, or type matrix.
 A matrix may instead be given as a tidy data frame with columns <code>from</code>,
-<code>to</code> and <code>probability</code>.</p></dd>
+<code>to</code> and <code>probability</code>. Used by the <code>bernoulli</code> model only; the <code>block</code>
+model uses <code>within_probability</code> and <code>between_probability</code> instead.</p></dd>
 
 
 <dt id="arg-edges">edges<a class="anchor" aria-label="anchor" href="#arg-edges"></a></dt>
-<dd><p>Exact edge count for the fixed-edge Bernoulli model.</p></dd>
+<dd><p>Exact edge count for the fixed-edge Bernoulli model, capped at
+the number of admissible dyads.</p></dd>
 
 
 <dt id="arg-directed">directed<a class="anchor" aria-label="anchor" href="#arg-directed"></a></dt>
-<dd><p>Generate directed edges.</p></dd>
+<dd><p>Generate directed edges. Ignored by the <code>small_world</code> and
+<code>geometric</code> models, which are always undirected; the <code>directed</code> column of
+the <code>settings</code> table reports what was actually generated.</p></dd>
 
 
 <dt id="arg-loops">loops<a class="anchor" aria-label="anchor" href="#arg-loops"></a></dt>
@@ -112,7 +118,8 @@ A matrix may instead be given as a tidy data frame with columns <code>from</code
 
 
 <dt id="arg-node-type">node_type<a class="anchor" aria-label="anchor" href="#arg-node-type"></a></dt>
-<dd><p>Optional type label for each node.</p></dd>
+<dd><p>Optional type label for each node. With more than one type
+it also supplies the block membership used by the <code>block</code> model.</p></dd>
 
 
 <dt id="arg-edge-classes">edge_classes<a class="anchor" aria-label="anchor" href="#arg-edge-classes"></a></dt>
@@ -153,8 +160,13 @@ A matrix may instead be given as a tidy data frame with columns <code>from</code
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy edge-list <code>simulab_sim</code>; nodes, adjacency, and generation
-settings are components. Use <code><a href="as_igraph.html">as_igraph()</a></code> for native graph workflows.</p>
+    <p>A tidy edge-list <code>simulab_sim</code> base <code>data.frame</code> with one row per
+edge and columns <code>from</code>, <code>to</code>, <code>weight</code> (plus <code>edge_class</code> when
+<code>edge_classes</code> is supplied). <code>as.data.frame(x, what = )</code> also returns
+<code>nodes</code> (<code>node</code>, <code>type</code>), <code>adjacency</code> (a long <code>row</code>/<code>column</code>/<code>weight</code>
+table covering all <code>nodes^2</code> ordered pairs, symmetric when the generated
+graph is undirected), and a one-row <code>settings</code> table. Use <code><a href="as_igraph.html">as_igraph()</a></code>
+for native graph workflows.</p>
     </div>
 
     <div class="section level2">
@@ -179,16 +191,10 @@ settings are components. Use <code><a href="as_igraph.html">as_igraph()</a></cod
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4  settings    1       6</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Other generators: barabasi_albert, small_world, block, regular,</span></span></span>
-<span class="r-in"><span><span class="co"># geometric and forest_fire.</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">simulate_network</span><span class="op">(</span>nodes <span class="op">=</span> <span class="fl">60</span>, model <span class="op">=</span> <span class="st">"small_world"</span>, neighbors <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:network&gt; 6 rows x 3 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   from to weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    1  2      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    1  3      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    1 59      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    1 60      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    2  3      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    2  4      1</span>
+<span class="r-in"><span><span class="co"># geometric and forest_fire. These require the suggested igraph package.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"igraph"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">simulate_network</span><span class="op">(</span>nodes <span class="op">=</span> <span class="fl">60</span>, model <span class="op">=</span> <span class="st">"small_world"</span>, neighbors <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

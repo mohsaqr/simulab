@@ -1,6 +1,9 @@
 # Simulate a two-level Gaussian model
 
-Simulate a two-level Gaussian model
+Draws a random intercept (and optionally a random slope) per cluster,
+draws the predictors independently for every unit, and forms the outcome
+as the fixed part plus the cluster random effects plus normal residual
+noise.
 
 ## Usage
 
@@ -24,39 +27,51 @@ simulate_multilevel(
 
 - clusters:
 
-  Number of clusters.
+  Number of clusters. A single whole number of at least 2.
 
 - cluster_size:
 
-  Units per cluster, scalar or vector.
+  Units per cluster: a single whole number recycled across clusters, or
+  one whole number per cluster, so clusters may be unbalanced.
 
 - intercept:
 
-  Fixed intercept.
+  Fixed intercept. A single number, defaulting to `0`.
 
 - slopes:
 
-  Named fixed-effect slopes.
+  Named fixed-effect slopes; the names become the predictor columns of
+  the returned data. Defaults to `numeric(0)`, an intercept-only model
+  with no predictor columns.
 
 - predictor_means, predictor_sds:
 
-  Predictor parameters.
+  Mean and standard deviation of each predictor, a scalar recycled
+  across predictors (the defaults, `0` and `1`) or one value per entry
+  of `slopes`. Predictors are drawn independently at the unit level, not
+  at the cluster level, so they carry no between-cluster variance by
+  construction.
 
 - random_intercept_sd:
 
-  Random-intercept standard deviation.
+  Random-intercept standard deviation. A single non-negative number,
+  defaulting to `1`.
 
 - random_slope_sd:
 
-  Random-slope standard deviation for the first predictor.
+  Random-slope standard deviation for the first predictor only; the
+  remaining predictors have fixed slopes. A single non-negative number,
+  defaulting to `0` (no random slope).
 
 - random_effect_correlation:
 
-  Correlation between random intercept and slope.
+  Correlation between random intercept and slope. A single number in
+  `[-1, 1]`, defaulting to `0`.
 
 - residual_sd:
 
-  Residual standard deviation.
+  Residual standard deviation. A single positive number, defaulting to
+  `1`.
 
 - seed:
 
@@ -64,7 +79,15 @@ simulate_multilevel(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with fixed/random parameter tables.
+A `simulab_sim` base `data.frame` with one row per unit
+(`sum(cluster_size)` rows) and columns `id`, `cluster`, one column per
+name of `slopes`, and `outcome`. Components: `fixed_effects` (one row
+per fixed term, columns `term` and `coefficient`), `variance_components`
+(one row for each of `random_intercept`, `random_slope` and `residual`,
+columns `component` and `variance` – the *squared* standard deviations
+supplied as arguments), and `random_effects` (one row per cluster,
+columns `cluster`, `random_intercept` and `random_slope`; the
+`random_slope` column is present but zero when `random_slope_sd = 0`).
 
 ## Examples
 

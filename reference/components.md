@@ -16,8 +16,11 @@ components(x)
 
 ## Value
 
-A base `data.frame` with one row per available table and columns
-`table`, `rows`, and `columns`.
+A base `data.frame` with one row per available table and the columns
+`table` (the name to pass as `what` to
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html)), `rows`
+and `columns`. The first row is always the primary `"data"` table; a
+result that carries no extra tables returns that single row.
 
 ## Examples
 

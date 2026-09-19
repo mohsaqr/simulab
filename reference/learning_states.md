@@ -12,11 +12,17 @@ learning_states(categories = "all")
 
 - categories:
 
-  One or more learning-state categories, or `"all"`.
+  A character vector of one or more category identifiers from
+  [`learning_state_categories()`](https://mohsaqr.github.io/simulab/reference/learning_state_categories.md),
+  or `"all"` (the default) for every category. Unknown identifiers raise
+  an error.
 
 ## Value
 
-A tidy base `data.frame` with category and state columns.
+A tidy base `data.frame` with one row per category-state pair and
+columns `category` and `state`. A state may belong to more than one
+category and then appears once per category, so `state` is not unique:
+the full catalogue has 209 rows covering 202 distinct states.
 
 ## Examples
 

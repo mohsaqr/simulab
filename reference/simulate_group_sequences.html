@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,8 +106,12 @@ used without leaking RNG state.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Long-form grouped sequences with group-specific transitions and wide
-sequences as components.</p>
+    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> with one row per actor
+sequence position and columns <code>group</code>, <code>id</code>, <code>period</code>, and <code>state</code>. Actor
+identifiers are made unique across groups as <code>G&lt;group&gt;_A&lt;actor&gt;</code>.
+<code>as.data.frame(x, what = )</code> also returns <code>transitions</code> (<code>group</code>, <code>from</code>,
+<code>to</code>, <code>probability</code>), <code>wide</code> (one row per actor: <code>id</code>, <code>S1</code>, <code>S2</code>, ...,
+<code>group</code>), and <code>groups</code> (<code>group</code>, <code>actors</code>).</p>
     </div>
 
     <div class="section level2">

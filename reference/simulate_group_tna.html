@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,33 +111,23 @@ used without leaking RNG state.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Grouped long-form sequences with true transitions, fitted edges,
-model metadata, and a native grouped model accessible through
-<code><a href="as_tna_model.html">as_tna_model()</a></code>.</p>
+    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> of grouped sequences with
+columns <code>group</code>, <code>id</code>, <code>period</code>, and <code>state</code>.
+<code>as.data.frame(x, what = )</code> also returns <code>true_transitions</code> (the
+generating probabilities), <code>estimated_edges</code> (the fitted TNA weights),
+<code>model_info</code>, <code>wide</code>, and <code>groups</code>. The native <code>group_tna</code> model is
+accessible through <code><a href="as_tna_model.html">as_tna_model()</a></code>. Requires the suggested <code>tna</code> package.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">simulate_group_tna</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  groups <span class="op">=</span> <span class="fl">2</span>, actors <span class="op">=</span> <span class="fl">20</span>, chain_length <span class="op">=</span> <span class="fl">12</span>, n_states <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:group_tna&gt; 6 rows x 4 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     group    id period   state</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Group 1 G1_A1      1 State 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 Group 1 G1_A1      2 State 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 Group 1 G1_A1      3 State 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Group 1 G1_A1      4 State 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Group 1 G1_A1      5 State 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Group 1 G1_A1      6 State 2</span>
-<span class="r-in"><span><span class="fu"><a href="components.html">components</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              table rows columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             data  480       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 true_transitions   18       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  estimated_edges   18       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       model_info    2       5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5             wide   40      14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           groups    2       2</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"tna"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">simulate_group_tna</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    groups <span class="op">=</span> <span class="fl">2</span>, actors <span class="op">=</span> <span class="fl">20</span>, chain_length <span class="op">=</span> <span class="fl">12</span>, n_states <span class="op">=</span> <span class="fl">3</span>, seed <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="components.html">components</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

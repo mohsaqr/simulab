@@ -35,14 +35,18 @@ compare_centralities(
 
 ## Value
 
-A tidy base `data.frame` with one comparison per measure.
+A tidy base `data.frame` with one row per measure and columns `measure`,
+`method`, `correlation`, `mae`, and `nodes`. Nodes present in only one
+network contribute a centrality of zero to the other. `correlation` is
+`NA` when either set of centralities has no variance. Requires the
+suggested `igraph` package.
 
 ## Examples
 
 ``` r
 a <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 1)
 b <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed = 2)
-compare_centralities(a, b, measures = "degree")
-#>        measure  method correlation      mae nodes
-#> degree  degree pearson  0.03088574 2.866667    30
+if (requireNamespace("igraph", quietly = TRUE)) {
+  compare_centralities(a, b, measures = "degree")
+}
 ```

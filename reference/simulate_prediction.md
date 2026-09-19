@@ -1,6 +1,11 @@
 # Simulate a prediction design with continuous and categorical predictors
 
-Simulate a prediction design with continuous and categorical predictors
+Draws the continuous predictors independently from normal distributions
+and each categorical predictor by sampling its levels with replacement,
+then forms the outcome as the intercept plus the continuous linear
+predictor plus the level effects plus normal residual noise. With no
+categorical predictor the call is simply
+[`simulate_regression()`](https://mohsaqr.github.io/simulab/reference/simulate_regression.md).
 
 ## Usage
 
@@ -23,11 +28,13 @@ simulate_prediction(
 
 - n:
 
-  Sample size.
+  Sample size. A single whole number of at least 2.
 
 - coefficients:
 
-  Named continuous-predictor coefficients with optional `(Intercept)`.
+  Named numeric vector of continuous-predictor coefficients, with an
+  optional `(Intercept)` entry that defaults to `0` when absent. The
+  remaining names become the continuous predictor columns.
 
 - categorical_levels:
 
@@ -35,35 +42,55 @@ simulate_prediction(
   with columns `variable` and `level`. Optional `effect` and
   `probability` columns in that table supply `categorical_effects` and
   `category_probabilities`, so one table replaces all three arguments.
+  Defaults to `NULL`, no categorical predictor.
 
 - categorical_effects:
 
-  Named list of level effects matching `categorical_levels`.
+  Named list of level effects matching `categorical_levels` by name and
+  length, one number per level, added to the outcome for the level a
+  unit is assigned. Required whenever `categorical_levels` is given.
 
 - category_probabilities:
 
-  Optional named list of sampling probabilities.
+  Optional named list of sampling probabilities, one non-negative value
+  per level summing to one within each predictor. Defaults to `NULL`,
+  equal probabilities across a predictor's levels.
 
 - predictor_means, predictor_sds:
 
-  Continuous-predictor parameters.
+  Mean and standard deviation of each normally distributed continuous
+  predictor, a scalar recycled across them (the defaults, `0` and `1`)
+  or one value per continuous coefficient.
 
 - error_sd:
 
-  Residual standard deviation.
+  Residual standard deviation. A single positive number, defaulting to
+  `1`.
 
 - outcome:
 
-  Outcome-column name.
+  Outcome-column name. A single non-empty string, defaulting to
+  `"outcome"`.
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number, or `NULL` (the default).
 
 ## Value
 
-A `simulab_sim` base `data.frame` with coefficient, categorical effect,
-and population R-squared tables.
+When `categorical_levels` is `NULL`, whatever
+[`simulate_regression()`](https://mohsaqr.github.io/simulab/reference/simulate_regression.md)
+returns. Otherwise a `simulab_sim` base `data.frame` with one row per
+unit and columns `id`, one column per continuous coefficient name, one
+character column per categorical predictor, and the outcome named by
+`outcome`. Components: `coefficients` (one row per fixed term, columns
+`term` and `coefficient`, always including `(Intercept)`),
+`categorical_effects` (one row per predictor level, columns `variable`,
+`level`, `effect` and `probability`), and `effects` (one row, columns
+`signal_variance`, `residual_variance` and `r_squared`).
+`signal_variance` is the *realized* variance of the simulated linear
+predictor, so `r_squared` is the realized proportion of outcome variance
+it explains, not a population value.
 
 ## Examples
 

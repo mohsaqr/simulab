@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,7 @@
 <span><span class="co">#&gt; 2   2     A  0.1836433</span></span>
 <span><span class="co">#&gt; 3   3     A -0.8356286</span></span>
 <span><span class="co">#&gt; ... 70 more rows</span></span></code></pre></div>
-<p>Results are ordinary data frames, so no accessor is needed to analyse them. The <code>what</code> argument exists to reach the generating parameters, which are the part a simulation study needs and a plain data frame cannot carry.</p>
+<p>Results are ordinary data frames, so no accessor is needed to analyze them. The <code>what</code> argument exists to reach the generating parameters, which are the part a simulation study needs and a plain data frame cannot carry.</p>
 </div>
 <div class="section level2">
 <h2 id="long-form-input">Long-form input<a class="anchor" aria-label="anchor" href="#long-form-input"></a>
@@ -117,7 +117,7 @@
 <span><span class="op">)</span></span></code></pre></div>
 <p>Row and column order follows first appearance, so the layout is controlled by ordering the rows of the table. A symmetric argument such as a correlation or covariance may be given as one triangle: the mirror cell is filled and the diagonal defaults to 1 for a correlation. A list of matrices is one table with a grouping column, so <code><a href="reference/simulate_sequence_clusters.html">simulate_sequence_clusters()</a></code> takes a <code>cluster</code> column and <code><a href="reference/simulate_group_sequences.html">simulate_group_sequences()</a></code> takes a <code>group</code> column.</p>
 <p><code><a href="reference/simulate_prediction.html">simulate_prediction()</a></code> takes the levels, effects and sampling probabilities of its categorical predictors as one table with <code>variable</code>, <code>level</code>, <code>effect</code> and <code>probability</code> columns, in place of three parallel lists.</p>
-<p>30 of the package’s 35 matrix, array and list arguments accept long-form input. The remaining five are named lists of data frames, where a list is the correct shape.</p>
+<p>Every matrix, array and matrix-list argument in the package accepts the equivalent long-form data frame, routed through one set of converters in <code>R/tidy_input.R</code>; <code>tests/testthat/test-tidy-input.R</code> asserts that the two spellings produce identical output. The exceptions are the named lists of data frames, where a list is the correct shape.</p>
 <p>A table that omits cells raises <code>simulab_incomplete_tidy_input</code>; one missing a required column raises <code>simulab_bad_tidy_input</code>.</p>
 </div>
 <div class="section level2">
@@ -135,7 +135,7 @@
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">before</span>, <span class="va">after</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>The behaviour is implemented by saving <code>.Random.seed</code>, calling <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>, generating the data, and restoring the saved state on exit. Sixty-four exported functions accept a <code>seed</code> argument. Both properties were checked directly on 33 simulators spanning every family.</p>
+<p>The behavior is implemented by saving <code>.Random.seed</code>, calling <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>, generating the data, and restoring the saved state on exit. Sixty-four exported functions accept a <code>seed</code> argument. Both properties are checked on every one of the 42 dispatchable verbs in <code>tests/testthat/test-seed-contract.R</code>, which reads its case list from the simulator registry so a verb added without a case fails the suite rather than escaping the sweep.</p>
 </div>
 <div class="section level2">
 <h2 id="declarative-studies">Declarative studies<a class="anchor" aria-label="anchor" href="#declarative-studies"></a>
@@ -252,7 +252,7 @@
 <div class="section level2">
 <h2 id="simulator-catalogue">Simulator catalogue<a class="anchor" aria-label="anchor" href="#simulator-catalogue"></a>
 </h2>
-<p><code><a href="reference/list_simulators.html">list_simulators()</a></code> returns the canonical simulators as a data frame with columns <code>simulator</code>, <code>family</code> and <code>primary_shape</code>. <code><a href="reference/simulate_data.html">simulate_data()</a></code> dispatches on the <code>simulator</code> name and passes its remaining arguments through.</p>
+<p><code><a href="reference/list_simulators.html">list_simulators()</a></code> returns every public simulation and generation verb from a single registry. Its columns are <code>simulator</code>, <code>function_name</code>, <code>kind</code>, <code>family</code>, <code>primary_shape</code> and <code>dispatchable</code>. <code><a href="reference/simulate_data.html">simulate_data()</a></code> uses that same registry, dispatches on the <code>simulator</code> name and passes its remaining arguments through. This makes catalogue and dispatcher drift testable. All entries except the <code>data</code> dispatcher itself are directly dispatchable.</p>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -266,7 +266,7 @@
 <tr>
 <td>general</td>
 <td>
-<code>study</code>, <code>correlation</code>, <code>copula</code>, <code>ordinal</code>
+<code>study</code>, <code>correlation</code>, <code>correlated</code>, <code>copula</code>, <code>ordinal</code>; workflow: <code>scenarios</code>; dispatcher: <code>data</code>
 </td>
 </tr>
 <tr>
@@ -294,7 +294,7 @@
 <tr>
 <td>sequence</td>
 <td>
-<code>markov</code>, <code>sequence_clusters</code>, <code>hmm</code>, <code>group_sequences</code>, <code>group_tna</code>, <code>event_log</code>
+<code>markov</code>, <code>sequences</code>, <code>sequence_clusters</code>, <code>hmm</code>, <code>group_sequences</code>, <code>group_tna</code>, <code>event_log</code>; generator: <code>transition_system</code>; workflows: <code>until_event</code>, <code>sequence_batches</code>, <code>tna_batches</code>
 </td>
 </tr>
 <tr>
@@ -316,12 +316,17 @@
 <tr>
 <td>network</td>
 <td>
-<code>network</code>, <code>edge_list</code>, <code>temporal_network</code>, <code>network_matrix</code>, <code>bipartite_network</code>, <code>multiplex_network</code>, <code>tna_network</code>
+<code>network</code>, <code>edge_list</code>, <code>temporal_network</code>, <code>network_matrix</code>, <code>bipartite_network</code>, <code>multiplex_network</code>, <code>tna_network</code>; workflow: <code>network_batches</code>
 </td>
 </tr>
 </tbody>
 </table>
 <p>The <code>primary_shape</code> column records the layout of the observation table. Most simulators return one row per unit. Sequence simulators return one row per unit per position. Network simulators return one row per edge, except <code>network_matrix</code>, which returns one row per matrix cell.</p>
+<p>Use <code>kind</code>, <code>family</code> or <code>dispatchable</code> to narrow discovery:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/list_simulators.html">list_simulators</a></span><span class="op">(</span>kind <span class="op">=</span> <span class="st">"workflow"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/list_simulators.html">list_simulators</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"network"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/list_simulators.html">list_simulators</a></span><span class="op">(</span>dispatchable <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="what-each-simulator-exposes-as-truth">What each simulator exposes as truth<a class="anchor" aria-label="anchor" href="#what-each-simulator-exposes-as-truth"></a>
@@ -435,7 +440,7 @@
 <h2 id="parameter-recovery">Parameter recovery<a class="anchor" aria-label="anchor" href="#parameter-recovery"></a>
 </h2>
 <p>The generating parameters can be recovered from the simulated data by fitting the corresponding model. The script below runs seven such checks and reports the largest absolute discrepancy for each. It uses only base R and the package itself.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mohsaqr/simulab" class="external-link">simulab</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Linear regression coefficients, recovered by lm() on the simulated data.</span></span>
@@ -528,7 +533,7 @@
 <h2 id="treatment-assignment-and-design-structure">Treatment assignment and design structure<a class="anchor" aria-label="anchor" href="#treatment-assignment-and-design-structure"></a>
 </h2>
 <p><code><a href="reference/assign_treatment.html">assign_treatment()</a></code> allocates units to groups. It takes a data frame, a number of groups or their labels, optional <code>strata</code>, and optional allocation <code>ratios</code>. With <code>balanced = TRUE</code> the allocation is exactly balanced within each stratum.</p>
-<p><code><a href="reference/observe_treatment.html">observe_treatment()</a></code> generates a non-randomised exposure from covariates. It takes probability formulas and a link, and returns the input with an exposure variable appended.</p>
+<p><code><a href="reference/observe_treatment.html">observe_treatment()</a></code> generates a non-randomized exposure from covariates. It takes probability formulas and a link, and returns the input with an exposure variable appended.</p>
 <p><code><a href="reference/assign_stepped_wedge.html">assign_stepped_wedge()</a></code> builds a stepped-wedge trial. It takes long-form data with cluster and period columns, a number of waves, and a wave length, and returns the input with treatment and transition indicators.</p>
 <p><code><a href="reference/expand_clusters.html">expand_clusters()</a></code> turns cluster-level data into unit-level data. <code><a href="reference/expand_periods.html">expand_periods()</a></code> turns unit-level data into long form, with either common period values or irregular gamma-spaced intervals. <code><a href="reference/factorial_design.html">factorial_design()</a></code> builds a factorial grid from a named vector of level counts. <code><a href="reference/encode_factors.html">encode_factors()</a></code> applies factor, dummy or effect coding.</p>
 </div>
@@ -537,8 +542,8 @@
 </h2>
 <p><code><a href="reference/define_survival.html">define_survival()</a></code> records one event-time process. It takes an event name, a log-hazard <code>formula</code>, a Weibull <code>shape</code>, and an optional <code>transition</code> time at which the specification takes effect. Splitting a process across two definitions with different transition times gives a piecewise hazard.</p>
 <p><code><a href="reference/simulate_survival.html">simulate_survival()</a></code> and <code><a href="reference/augment_survival.html">augment_survival()</a></code> generate event times from such definitions. <code><a href="reference/combine_competing_risks.html">combine_competing_risks()</a></code> reduces several event-time variables to an observed time, an integer event code, and an event type.</p>
-<p><code><a href="reference/simulate_proportional_survival.html">simulate_proportional_survival()</a></code> generates times from a proportional-hazards model directly. It takes named covariate coefficients, a baseline of <code>"weibull"</code>, <code>"exponential"</code> or <code>"gompertz"</code>, a shape, and a target censoring proportion. The censoring rate is solved for rather than fixed, so the realised proportion matches the request.</p>
-<p><code><a href="reference/calibrate_survival.html">calibrate_survival()</a></code> goes the other way. It takes observed times and survival probabilities and returns the Weibull formula and shape that reproduce them, with the optimiser’s convergence code and the root mean squared error in the result.</p>
+<p><code><a href="reference/simulate_proportional_survival.html">simulate_proportional_survival()</a></code> generates times from a proportional-hazards model directly. It takes named covariate coefficients, a baseline of <code>"weibull"</code>, <code>"exponential"</code> or <code>"gompertz"</code>, a shape, and a target censoring proportion. The censoring rate is solved for rather than fixed, so the realized proportion matches the request.</p>
+<p><code><a href="reference/calibrate_survival.html">calibrate_survival()</a></code> goes the other way. It takes observed times and survival probabilities and returns the Weibull formula and shape that reproduce them, with the optimizer’s convergence code and the root mean squared error in the result.</p>
 </div>
 <div class="section level2">
 <h2 id="latent-variable-and-measurement-models">Latent variable and measurement models<a class="anchor" aria-label="anchor" href="#latent-variable-and-measurement-models"></a>
@@ -551,7 +556,7 @@
 <div class="section level2">
 <h2 id="longitudinal-and-multilevel-designs">Longitudinal and multilevel designs<a class="anchor" aria-label="anchor" href="#longitudinal-and-multilevel-designs"></a>
 </h2>
-<p><code><a href="reference/simulate_multilevel.html">simulate_multilevel()</a></code> draws data from a random-intercept and random-slope model. It takes a number of clusters, a cluster size, a fixed intercept, named fixed <code>slopes</code>, and standard deviations for the random intercept, the random slope and the residual. The realised intraclass correlation matches the value implied by the variance components.</p>
+<p><code><a href="reference/simulate_multilevel.html">simulate_multilevel()</a></code> draws data from a random-intercept and random-slope model. It takes a number of clusters, a cluster size, a fixed intercept, named fixed <code>slopes</code>, and standard deviations for the random intercept, the random slope and the residual. The realized intraclass correlation matches the value implied by the variance components.</p>
 <p><code><a href="reference/simulate_growth.html">simulate_growth()</a></code> draws latent growth curves. It takes measurement <code>times</code>, a mean intercept and slope, an optional quadratic term, random-effect standard deviations, and a residual standard deviation.</p>
 <p><code><a href="reference/simulate_longitudinal.html">simulate_longitudinal()</a></code> draws a multivariate first-order vector autoregressive process. It takes a lag-one <code>transition</code> matrix, an innovation covariance, an initial covariance, and a between-unit covariance of person means. <code>beeps_per_day</code> resets temporal carryover at each day boundary, which matches experience-sampling designs. <code>burn_in</code> discards warm-up occasions.</p>
 </div>
@@ -561,10 +566,10 @@
 <p><code><a href="reference/simulate_markov.html">simulate_markov()</a></code> draws state sequences from a first-order Markov chain. It takes a <code>transition</code> matrix or a tidy table with <code>from</code>, <code>to</code> and <code>probability</code> columns, a <code>chain_length</code>, and state labels. <code>initial</code> accepts either a named starting state or a vector of starting probabilities. <code>trim_state</code> truncates each sequence at the first occurrence of an absorbing state.</p>
 <p><code><a href="reference/simulate_sequences.html">simulate_sequences()</a></code> generates sequences with additional structure. Without a supplied transition matrix it draws one from a Dirichlet distribution, with <code>concentration</code> controlling how uneven the rows are. <code>stable_transitions</code> names preferred <code>from</code> and <code>to</code> pairs that are followed with probability <code>stability_probability</code>. <code>instability</code> perturbs the remaining transitions by one of <code>"random_jump"</code>, <code>"perturb"</code> or <code>"unlikely_jump"</code>. <code>missing_tail</code> removes a random number of trailing positions from each sequence.</p>
 <p><code><a href="reference/simulate_hmm.html">simulate_hmm()</a></code> draws observed symbols from a hidden Markov model, returning both the latent state and the observation for each position. <code><a href="reference/simulate_sequence_clusters.html">simulate_sequence_clusters()</a></code> draws sequences from a mixture of transition matrices and records the generating cluster.</p>
-<p><code><a href="reference/summarize_transitions.html">summarize_transitions()</a></code> counts observed transitions in long-form sequence data. It returns one row per ordered state pair with a count and, when <code>normalize = TRUE</code>, a row-normalised probability.</p>
+<p><code><a href="reference/summarize_transitions.html">summarize_transitions()</a></code> counts observed transitions in long-form sequence data. It returns one row per ordered state pair with a count and, when <code>normalize = TRUE</code>, a row-normalized probability.</p>
 <p><code><a href="reference/fit_tna.html">fit_tna()</a></code> estimates a transition network from sequence data using the <code>tna</code> package. It takes sequence data and a <code>model</code> of <code>"tna"</code>, <code>"ftna"</code>, <code>"ctna"</code> or <code>"atna"</code>, and returns a tidy edge list. <code><a href="reference/as_tna_model.html">as_tna_model()</a></code> converts the result to a native <code>tna</code> object when downstream plotting or inference requires one.</p>
 <p><code><a href="reference/bootstrap_tna.html">bootstrap_tna()</a></code>, <code><a href="reference/sample_tna.html">sample_tna()</a></code>, <code><a href="reference/cross_validate_tna.html">cross_validate_tna()</a></code>, <code><a href="reference/assess_tna_reliability.html">assess_tna_reliability()</a></code> and <code><a href="reference/compare_tna_models.html">compare_tna_models()</a></code> are simulation workflows built on the same estimators. <code><a href="reference/evaluate_tna_estimation.html">evaluate_tna_estimation()</a></code> repeatedly generates sequences from a known transition system and reports how well each estimator recovers it.</p>
-<p><code><a href="reference/learning_states.html">learning_states()</a></code> and <code><a href="reference/sample_learning_states.html">sample_learning_states()</a></code> supply labelled state spaces in eight categories, including metacognitive, cognitive, behavioural, social, motivational, affective, group-regulation and learning-management-system states. <code><a href="reference/simulate_event_log.html">simulate_event_log()</a></code> generates educational event logs with groups, actors, courses, timestamps and achievement levels.</p>
+<p><code><a href="reference/learning_states.html">learning_states()</a></code> and <code><a href="reference/sample_learning_states.html">sample_learning_states()</a></code> supply labeled state spaces in eight categories, including metacognitive, cognitive, behavioral, social, motivational, affective, group-regulation and learning-management-system states. <code><a href="reference/simulate_event_log.html">simulate_event_log()</a></code> generates educational event logs with groups, actors, courses, timestamps and achievement levels.</p>
 </div>
 <div class="section level2">
 <h2 id="networks">Networks<a class="anchor" aria-label="anchor" href="#networks"></a>
@@ -577,7 +582,7 @@
 <h2 id="calibration">Calibration<a class="anchor" aria-label="anchor" href="#calibration"></a>
 </h2>
 <p><code><a href="reference/calibrate_moments.html">calibrate_moments()</a></code> solves a distribution’s own parameters from a target mean and variance, across 36 distributions. The result names the parameters a distribution call takes, so a moment target becomes a specification.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/calibrate_moments.html">calibrate_moments</a></span><span class="op">(</span><span class="st">"lognormal"</span>, mean <span class="op">=</span> <span class="fl">10</span>, variance <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   distribution mean variance parameter     value</span></span>
 <span><span class="co">#&gt; 1    lognormal   10       25   meanlog 2.1910133</span></span>
@@ -604,7 +609,7 @@
 <h2 id="input-validation">Input validation<a class="anchor" aria-label="anchor" href="#input-validation"></a>
 </h2>
 <p>Argument checks state the contract that was broken and name the argument.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/simulate_clusters.html">simulate_clusters</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, centers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error: `centers` must be a matrix, with at least 2 rows</span></span>
 <span></span>
@@ -622,9 +627,9 @@
 <div class="section level2">
 <h2 id="package-status">Package status<a class="anchor" aria-label="anchor" href="#package-status"></a>
 </h2>
-<p>Version 0.4.0 is the first release under the simulab name. The version continues the line of Saqrlab (0.4.1), which has never been on CRAN. The package is a CRAN release candidate and a new submission.</p>
-<p>The test suite contains 612 assertions across 26 files and covers 89.9% of package lines, measured with <code>covr</code>. With every suggested package installed there are no skips. Tests include statistical calibration checks, seeded regression checks, recovery checks for transition networks and grouped models, error-path checks by condition class, equivalence tests against simstudy, and identity checks between the matrix and long-form call styles. Every distribution is checked against its theoretical mean, every entry that carries both a sampler and a quantile function is checked for agreeing with itself, and every moment inversion is checked by integrating the quantile function it produced.</p>
-<p>All 123 exported functions carry runnable examples, which <code>R CMD check</code> executes. <code>R CMD check --as-cran</code> reports one note, the standard note for a first submission, on R 4.5.2 under macOS on arm64. GitHub Actions runs the same check on macOS, Windows and Ubuntu across R release, devel and oldrel-1.</p>
+<p>Version 0.4.1 is intended to be the first CRAN release under the simulab name. It follows the 0.4.0 release candidate and continues the version line of Saqrlab, which has never been on CRAN. The package is a new submission.</p>
+<p>The test suite contains 670 assertions across 28 files and covers 90.8% of package lines, measured with <code>covr</code>. With every suggested package installed there are no skips. Tests include statistical calibration checks, seeded regression checks, recovery checks for transition networks and grouped models, error-path checks by condition class, equivalence tests against simstudy, and identity checks between the matrix and long-form call styles. Every distribution is checked against its theoretical mean, every entry that carries both a sampler and a quantile function is checked for agreeing with itself, and every moment inversion is checked by integrating the quantile function it produced.</p>
+<p>All 123 exported functions carry runnable examples, which <code>R CMD check</code> executes. <code>R CMD check --as-cran</code> reports one note, the standard note for a first submission, on R 4.5.2 under macOS on arm64. GitHub Actions is configured to run checks on macOS, Windows and Ubuntu across R release, devel and oldrel-1, plus a manual-enabled Ubuntu check.</p>
 </div>
 <div class="section level2">
 <h2 id="function-reference">Function reference<a class="anchor" aria-label="anchor" href="#function-reference"></a>
@@ -653,7 +658,7 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>Saqr, M. (2026). simulab: Unified Simulation of Statistical and Study Data. R package version 0.4.0. <a href="https://github.com/mohsaqr/simulab" class="external-link uri">https://github.com/mohsaqr/simulab</a></p>
+<p>Saqr, M. (2026). simulab: Unified Simulation of Statistical and Study Data. R package version 0.4.1. <a href="https://github.com/mohsaqr/simulab" class="external-link uri">https://github.com/mohsaqr/simulab</a></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

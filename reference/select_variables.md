@@ -12,19 +12,23 @@ select_variables(data, keep = NULL, drop = NULL)
 
 - data:
 
-  Base `data.frame`.
+  Base `data.frame`, or a `simulab_sim`.
 
 - keep:
 
-  Variables to retain.
+  Variables to retain, in the order given. A character vector of column
+  names, or `NULL` (the default).
 
 - drop:
 
-  Variables to remove.
+  Variables to remove, the others keeping their order. A character
+  vector of column names, or `NULL` (the default). Only one of `keep`
+  and `drop` may be given.
 
 ## Value
 
-A `simulab_sim` base `data.frame` with the requested variables.
+A `simulab_sim` base `data.frame` with every row of `data` and the
+requested variables.
 
 ## Examples
 

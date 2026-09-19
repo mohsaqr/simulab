@@ -32,7 +32,8 @@ augment_markov(
 - initial:
 
   Starting-state probabilities or the name of an input variable
-  containing each row's starting state.
+  containing each row's starting state. When `NULL`, every chain starts
+  in the first state.
 
 - id, period, state:
 
@@ -44,8 +45,11 @@ augment_markov(
 
 ## Value
 
-A long-form `simulab_sim` base `data.frame` combining input variables
-with one row per chain position.
+A long-form `simulab_sim` base `data.frame` combining the input
+variables with one row per chain position: `id`, `period`, `state`,
+followed by the other input columns. A `transitions` table (`from`,
+`to`, `probability`) is available through
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 
 ## Examples
 

@@ -1,6 +1,11 @@
 # Simulate a multivariate longitudinal VAR process
 
-Simulate a multivariate longitudinal VAR process
+Draws a person mean for each unit from `between_covariance` around
+`grand_means`, then runs a first-order vector autoregression on the
+deviations from that person mean:
+`y_t = mu + intercept + transition %*% (y_{t-1} - mu) + e_t`, with `e_t`
+drawn from `innovation_covariance`. The first `burn_in` occasions are
+discarded so the retained occasions are near stationarity.
 
 ## Usage
 
@@ -24,48 +29,64 @@ simulate_longitudinal(
 
 - n:
 
-  Number of units.
+  Number of units. A single positive whole number.
 
 - occasions:
 
-  Number of occasions.
+  Number of occasions retained per unit. A single whole number of at
+  least 2.
 
 - transition:
 
   Lag-one coefficients as a square matrix, or as a tidy data frame with
-  columns `from`, `to` and `coefficient`.
+  columns `from`, `to` and `coefficient` (`from` supplies the matrix row
+  and `to` the column). Entry `[i, j]` multiplies variable `j` at the
+  previous occasion when forming variable `i` at the current occasion,
+  so rows index the *receiving* variable and columns the *predicting*
+  variable. The spectral radius must be below one.
 
 - intercept:
 
-  Variable intercepts.
+  Variable intercepts, a scalar recycled across variables (the default,
+  `0`) or one value per variable. The intercept is added to the
+  deviation from the person mean at every occasion, so a non-zero
+  intercept shifts the stationary mean to
+  `person_mean + solve(diag(p) - transition) %*% intercept` and the
+  `person_means` component is then no longer the realised process mean.
 
 - innovation_covariance:
 
   Innovation covariance matrix, or a tidy data frame with columns `row`,
-  `column` and `covariance`.
+  `column` and `covariance`. Must be symmetric and positive
+  semidefinite. `NULL` (the default) uses the identity.
 
 - initial_covariance:
 
   Initial-state covariance matrix, or a tidy data frame with columns
-  `row`, `column` and `covariance`.
+  `row`, `column` and `covariance`. `NULL` (the default) reuses
+  `innovation_covariance`.
 
 - between_covariance:
 
   Between-unit covariance of person means, or a tidy data frame with
-  columns `row`, `column` and `covariance`.
+  columns `row`, `column` and `covariance`. `NULL` (the default) is a
+  zero matrix, giving every unit the same person mean, `grand_means`.
 
 - grand_means:
 
-  Population means.
+  Population means, a scalar recycled across variables (the default,
+  `0`) or one value per variable.
 
 - beeps_per_day:
 
-  Optional number of occasions per day. Temporal carryover resets at
-  each day boundary.
+  Optional number of occasions per day; `occasions` must be divisible by
+  it. Adds `day` and `beep` columns to the returned data. Temporal
+  carryover resets at each day boundary.
 
 - burn_in:
 
-  Warm-up occasions discarded before output.
+  Warm-up occasions generated and then discarded before output. A single
+  non-negative whole number, defaulting to `50`.
 
 - seed:
 
@@ -73,8 +94,15 @@ simulate_longitudinal(
 
 ## Value
 
-A long-form `simulab_sim` base `data.frame`; wide observations and
-transition/covariance tables are available as components.
+A long-form `simulab_sim` base `data.frame` with one row per
+unit-occasion (`n * occasions` rows) and columns `id`, `occasion` and
+one per variable, plus `day` and `beep` when `beeps_per_day` is
+supplied. Components: `wide` (one row per unit, one
+`<variable>.<occasion>` column per measurement), `transition`,
+`innovation_covariance` and `between_covariance` (tidy matrix tables
+with columns `row`, `column` and `coefficient` or `covariance`), and
+`person_means` (one row per unit with columns `id` and one per
+variable).
 
 ## Examples
 

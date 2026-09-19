@@ -25,8 +25,9 @@ as.data.frame(x, row.names = NULL, optional = FALSE, what = "data", ...)
 
 - what:
 
-  Name of the table to return. Use `components(x)` to list the available
-  choices.
+  Single string naming the table to return, default `"data"` for the
+  primary simulated observations. Use `components(x)` to list the
+  available choices; an unrecognised name is an error that lists them.
 
 - ...:
 
@@ -34,7 +35,8 @@ as.data.frame(x, row.names = NULL, optional = FALSE, what = "data", ...)
 
 ## Value
 
-A base `data.frame` containing the requested simulation table.
+A plain base `data.frame` (the `simulab_sim` class and attributes are
+dropped) containing the requested simulation table.
 
 ## Examples
 

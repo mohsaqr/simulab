@@ -38,11 +38,15 @@ simulate_study(
 
 - envir:
 
-  Environment used to resolve functions and external values in formulas.
+  Environment used to resolve functions and external values named by a
+  `formula`/`variance` specification. It is not consulted by the
+  distribution-call form, whose parameters must be expressions over
+  variables defined earlier in the same specification.
 
 ## Value
 
-A `simulab_sim` base `data.frame`. Use
+A `simulab_sim` base `data.frame` with `n` rows: the identifier column
+followed by one column per variable. Use
 `as.data.frame(x, what = "definitions")` for the generating definitions.
 
 ## Examples

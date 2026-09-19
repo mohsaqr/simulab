@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,8 +90,13 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy cross-mode edge-list <code>simulab_sim</code>; nodes and the
-actor-by-event incidence matrix are components.</p>
+    <p>A tidy cross-mode edge-list <code>simulab_sim</code> base <code>data.frame</code> with one
+row per actor-event edge and columns <code>from</code> (always an actor), <code>to</code>
+(always an event), <code>weight</code>, <code>from_mode</code>, and <code>to_mode</code>. The two modes are
+disjoint, so no edge joins two actors or two events and self-loops cannot
+occur. <code>as.data.frame(x, what = )</code> also returns <code>nodes</code> (<code>node</code>, <code>mode</code>),
+<code>incidence</code> (the wide actor-by-event incidence table: an <code>actor</code> column
+followed by one column per event), and a one-row <code>settings</code> table.</p>
     </div>
 
     <div class="section level2">

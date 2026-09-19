@@ -46,8 +46,15 @@ simulate_ttest(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with one row per observation and tidy
-group/effect parameter tables.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id`, `group` and `outcome` (renamed by `outcome`). Two tidy
+tables come from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "parameters"` has one row per group with columns `group`, `n`,
+`mean` and `sd`; `what = "effects"` has a single row with columns
+`contrast`, `mean_difference`, `pooled_sd` and `cohens_d`, the
+population Cohen's d formed from the sample-size-weighted pooled
+standard deviation.
 
 ## Examples
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,8 +83,14 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A base <code>data.frame</code> with one row per target ICC and the required
-random-effect variance.</p>
+    <p>A base <code>data.frame</code> with one row per target ICC and columns <code>icc</code>,
+<code>distribution</code> and <code>random_effect_variance</code>. Except for the <code>normal</code>
+<code>total_variance</code> case, which returns <code>icc * total_variance</code>, the variance
+is <code>icc / (1 - icc)</code> times a residual variance on the linear-predictor
+scale: <code>within_variance</code> for <code>normal</code>, the logistic latent variance
+<code>pi^2 / 3</code> for <code>binary</code>, <code>log(1 + 1 / mean)</code> for <code>poisson</code>,
+<code>trigamma(1 / dispersion)</code> for <code>gamma</code>, and
+<code>trigamma(1 / (1 / mean + dispersion))</code> for <code>negative_binomial</code>.</p>
     </div>
 
     <div class="section level2">

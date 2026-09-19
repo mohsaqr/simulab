@@ -1,9 +1,12 @@
 # Run a simulator across a scenario grid
 
-Scenario columns are matched to simulator arguments. Identifier and
-replication columns are added to each generated observation, which makes
-the result immediately suitable for grouped estimation and recovery
-checks.
+Every column of `scenarios` other than `id` and `replication` is passed
+to the simulator as a named argument, so the column names must be
+simulator argument names and must not repeat an argument given in `...`.
+The identifier and replication values are prepended to each generated
+observation, which makes the result immediately suitable for grouped
+estimation and recovery checks. Every scenario must produce the same
+primary columns, otherwise the run is an error.
 
 ## Usage
 
@@ -22,13 +25,16 @@ simulate_scenarios(
 
 - scenarios:
 
-  A base `data.frame`, commonly from
-  [`scenario_grid()`](https://mohsaqr.github.io/simulab/reference/scenario_grid.md).
+  A base `data.frame` with at least one row, commonly from
+  [`scenario_grid()`](https://mohsaqr.github.io/simulab/reference/scenario_grid.md),
+  containing the `id` and `replication` columns.
 
 - simulator:
 
-  Canonical simulator name from
-  [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md).
+  Canonical simulator name, taken from the `simulator` column of
+  [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md)
+  and dispatched through
+  [`simulate_data()`](https://mohsaqr.github.io/simulab/reference/simulate_data.md).
 
 - ...:
 
@@ -36,20 +42,25 @@ simulate_scenarios(
 
 - id:
 
-  Scenario identifier column.
+  Single string naming the scenario identifier column of `scenarios`,
+  default `"scenario_id"`.
 
 - replication:
 
-  Replication column.
+  Single string naming the replication column of `scenarios`, default
+  `"replication"`.
 
 - seed:
 
-  Optional base seed. Each row receives a deterministic offset.
+  Optional single base seed. Row `i` of `scenarios` is simulated with
+  `seed + i - 1`, unless `scenarios` or `...` already supplies a `seed`.
 
 ## Value
 
-A combined `simulab_sim` base `data.frame`; the scenario grid is a
-secondary component.
+A `simulab_sim` base `data.frame` stacking every scenario's output, with
+one row per generated observation: the `id` and `replication` columns
+first, then the simulator's own columns. The `scenarios` component holds
+the grid that was run, one row per scenario.
 
 ## Examples
 

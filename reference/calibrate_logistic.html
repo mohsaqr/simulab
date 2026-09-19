@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,15 @@ coefficients are proportionally scaled to reach this target.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A base <code>data.frame</code> with one row per calibrated coefficient.</p>
+    <p>A base <code>data.frame</code> with one row per calibrated coefficient and
+columns <code>term</code>, <code>coefficient</code>, <code>calibration</code> and <code>coefficient_scale</code>.
+Coefficients are log-odds on the logit scale. The first row is
+<code>"(Intercept)"</code>, followed by the <code>treatment</code> row when <code>risk_ratio</code> or
+<code>risk_difference</code> was supplied, then one row per name of <code>coefficients</code>.
+<code>calibration</code> names the target that was solved for – <code>"prevalence"</code>,
+<code>"auc"</code>, <code>"risk_ratio"</code> or <code>"risk_difference"</code> – and
+<code>coefficient_scale</code> is the factor the supplied covariate coefficients
+were multiplied by, which is <code>1</code> unless <code>auc</code> was given.</p>
     </div>
 
     <div class="section level2">

@@ -65,8 +65,13 @@ simulate_multiplex_network(
 
 ## Value
 
-A tidy layered edge-list `simulab_sim` with `layer`, `from`, `to`, and
-`weight`; nodes, layers, adjacency, and settings are components.
+A tidy layered edge-list `simulab_sim` base `data.frame` with one row
+per edge and columns `layer`, `from`, `to`, and `weight`. Every layer is
+drawn independently over the same node set. `as.data.frame(x, what = )`
+also returns `nodes` (`node`, `type`), `layers` (`layer`,
+`probability`), `adjacency` (a long `layer`/`row`/`column`/`weight`
+table over all ordered node pairs in every layer), and a one-row
+`settings` table.
 
 ## Examples
 

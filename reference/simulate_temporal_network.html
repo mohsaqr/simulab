@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,8 @@ the next period.</p></dd>
 
 
 <dt id="arg-weight">weight<a class="anchor" aria-label="anchor" href="#arg-weight"></a></dt>
-<dd><p>Edge-spell weight distribution.</p></dd>
+<dd><p>Edge-spell weight distribution. One weight is drawn per spell
+and held constant while the spell is active.</p></dd>
 
 
 <dt id="arg-weight-mean-weight-sd-weight-range">weight_mean, weight_sd, weight_range<a class="anchor" aria-label="anchor" href="#arg-weight-mean-weight-sd-weight-range"></a></dt>
@@ -112,9 +113,15 @@ the next period.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy spell-level <code>simulab_sim</code> with <code>from</code>, <code>to</code>, <code>onset</code>,
-<code>terminus</code>, <code>weight</code>, and <code>censored</code>. Event and snapshot edge lists are
-available as components.</p>
+    <p>A tidy spell-level <code>simulab_sim</code> base <code>data.frame</code> with one row per
+activity spell and columns <code>from</code>, <code>to</code>, <code>onset</code>, <code>terminus</code>, <code>weight</code>,
+and <code>censored</code>. <code>terminus</code> is exclusive: the spell covers periods <code>onset</code>
+through <code>terminus - 1</code>, so a spell still active in the final period has
+<code>terminus == periods + 1</code> and <code>censored == TRUE</code>.
+<code>as.data.frame(x, what = )</code> also returns <code>events</code> (<code>from</code>, <code>to</code>, <code>time</code>,
+<code>event</code> – <code>"formation"</code> or <code>"dissolution"</code> – and <code>weight</code>, ordered by
+time), <code>snapshots</code> (one row per active dyad per period: <code>period</code>, <code>from</code>,
+<code>to</code>, <code>weight</code>), <code>nodes</code> (<code>node</code>, <code>type</code>), and a one-row <code>settings</code> table.</p>
     </div>
 
     <div class="section level2">

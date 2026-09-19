@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,48 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.3" id="simulab-043">simulab 0.4.3<a class="anchor" aria-label="anchor" href="#simulab-043"></a></h2>
+<div class="section level3">
+<h3 id="two-level-latent-profile-data-0-4-3">Two-level latent profile data<a class="anchor" aria-label="anchor" href="#two-level-latent-profile-data-0-4-3"></a></h3>
+<ul><li>New <code><a href="../reference/simulate_ml_lpa.html">simulate_ml_lpa()</a></code> generates the nonparametric two-level mixture of Vermunt (2003): clusters belong to latent cluster classes, a cluster class fixes how common each individual profile is inside its clusters, and one measurement model is shared by every cluster. This is the generating model behind two-level latent profile and latent class software, and it was the gap between <code><a href="../reference/simulate_lpa.html">simulate_lpa()</a></code> (a mixture with no clusters) and <code><a href="../reference/simulate_multilevel.html">simulate_multilevel()</a></code> (clusters with no mixture).</li>
+<li>The verb returns one row per individual with <code>id</code>, <code>cluster</code>, <code>cluster_class</code>, <code>profile</code> and the indicators, plus three tidy components: <code>parameters</code> (profile means, standard deviations and marginal prevalence), <code>profile_probabilities</code> (the cluster-class-by-profile prevalence matrix that defines the two-level structure) and <code>clusters</code> (each cluster’s class and size). Matrix and tidy-data-frame input are both accepted, as elsewhere in the package.</li>
+<li>Registered in <code><a href="../reference/list_simulators.html">list_simulators()</a></code> and dispatchable through <code>simulate_data("ml_lpa", ...)</code>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.2" id="simulab-042">simulab 0.4.2<a class="anchor" aria-label="anchor" href="#simulab-042"></a></h2>
+<div class="section level3">
+<h3 id="correctness-fixes-found-by-a-documentation-audit-0-4-2">Correctness fixes found by a documentation audit<a class="anchor" aria-label="anchor" href="#correctness-fixes-found-by-a-documentation-audit-0-4-2"></a></h3>
+<p>A function-by-function audit of every exported verb’s documentation against its implementation found five cases where the code did not do what the documentation described. All five are fixed, and each carries a regression test.</p>
+<ul><li>
+<code><a href="../reference/simulate_longitudinal.html">simulate_longitudinal()</a></code> read a tidy <code>transition</code> table with <code>from</code> and <code>to</code> reversed. A row written as <code>from = "a", to = "b"</code> produced the effect of <code>b</code> on <code>a</code>, the opposite of what it says. <code>from</code> is now the driving variable at <code>t-1</code> and <code>to</code> the driven variable at <code>t</code>, matching the column names and the documented VAR recursion. Callers who compensated for the old behaviour by swapping the columns must stop doing so; the matrix form is unaffected.</li>
+<li>
+<code><a href="../reference/simulate_event_log.html">simulate_event_log()</a></code> ignored a fixed <code>sequence_length</code>. Because <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code> reads a length-one numeric as an upper bound, <code>sequence_length = 8</code> drew lengths uniformly from 1 to 8 instead of producing sequences of exactly 8. The same trap affected <code>simulate_sequences(missing_tail = )</code> with a fixed count. Both now draw through a shared range sampler, which leaves seeded output unchanged wherever the range was already non-degenerate.</li>
+<li>
+<code><a href="../reference/simulate_correlated.html">simulate_correlated()</a></code> failed with “non-conformable arguments” for a single variable whose standard deviation was not 1, because <code><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag()</a></code> on a length-one numeric builds an identity matrix of that size.</li>
+<li>
+<code><a href="../reference/simulate_irt.html">simulate_irt()</a></code> accepted an item-by-threshold <code>difficulty</code> matrix outside the graded model, where it reached <code><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep()</a></code> as an over-long <code>STATS</code>. That produced a warning rather than an error and a malformed parameters table. It is now rejected with a message naming the model that takes a matrix.</li>
+<li>
+<code><a href="../reference/sample_tna.html">sample_tna()</a></code> hardcoded the <code>id</code>, <code>period</code> and <code>state</code> column names, so sequence data using any other names yielded integer state labels and all-zero weights with no error. It now takes <code>format</code>, <code>id</code>, <code>period</code>, <code>state</code> and <code>group</code> arguments and passes them to the sampling step.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-4-2">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-4-2"></a></h3>
+<ul><li>Every exported function’s documentation was checked against its implementation and corrected where the two disagreed. The corrections concentrate on <code>@return</code> sections, which now name the component tables and their columns, and on parameterizations that were stated imprecisely: survival status coding and the Weibull shape convention, IRT difficulty and guessing, factor uniquenesses as variances, copula marginals, the latent rather than realized ordinal correlation, and the missingness mechanisms.</li>
+<li>Examples that use the suggested <code>igraph</code> and <code>tna</code> packages are now guarded with <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code>, so they no longer fail where a suggested package is absent.</li>
+<li>Added a seed-contract test that checks reproducibility and random-number state restoration on every dispatchable verb, reading its case list from the simulator registry.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.1" id="simulab-041">simulab 0.4.1<a class="anchor" aria-label="anchor" href="#simulab-041"></a></h2>
+<div class="section level3">
+<h3 id="simulator-registry-and-generator-hardening-0-4-1">Simulator registry and generator hardening<a class="anchor" aria-label="anchor" href="#simulator-registry-and-generator-hardening-0-4-1"></a></h3>
+<ul><li>
+<code><a href="../reference/list_simulators.html">list_simulators()</a></code> and <code><a href="../reference/simulate_data.html">simulate_data()</a></code> now share one internal registry. All 43 public <code>simulate_*</code> and <code>generate_*</code> verbs are represented and classified as simulators, generators, workflows, or the dispatcher itself; the catalogue also reports the backing function and dispatchability.</li>
+<li>Previously undiscoverable sequence, transition-system, batch, scenario, correlated-data and until-event verbs can now be called through <code><a href="../reference/simulate_data.html">simulate_data()</a></code>.</li>
+<li>Fixed multiplex generation when a layer legitimately contains zero edges.</li>
+<li>Fixed one-predictor Gaussian generation when its standard deviation is a non-unit scalar; scalar <code><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag()</a></code> interpretation had produced a zero-sized scale matrix.</li>
+<li>Added registry-contract, dispatch, calibration and validation tests for the least-covered prediction, ordinal, cluster, latent-profile and multiplex generator branches.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="the-distribution-call-lane-reaches-every-simulator-0-4-1">The distribution-call lane reaches every simulator<a class="anchor" aria-label="anchor" href="#the-distribution-call-lane-reaches-every-simulator-0-4-1"></a></h3>
 <p>A specification written as distribution calls is now accepted wherever one is taken. Previously only <code><a href="../reference/simulate_study.html">simulate_study()</a></code> understood it.</p>
@@ -152,13 +193,13 @@
 </ul></div>
 <div class="section level4">
 <h4 id="validation-and-error-reporting-0-4-0">Validation and error reporting<a class="anchor" aria-label="anchor" href="#validation-and-error-reporting-0-4-0"></a></h4>
-<ul><li><p>Every <code><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot()</a></code> in the package now carries a named message stating the argument contract, so a rejected call reports what the argument must be rather than the deparsed predicate that failed. <code><a href="../reference/simulate_clusters.html">simulate_clusters()</a></code> with a list of centres now says <code>`centers` must be a matrix, with at least 2 rows</code> instead of <code>is.matrix(centers) is not TRUE</code>.</p></li>
+<ul><li><p>Every <code><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot()</a></code> in the package now carries a named message stating the argument contract, so a rejected call reports what the argument must be rather than the deparsed predicate that failed. <code><a href="../reference/simulate_clusters.html">simulate_clusters()</a></code> with a list of centers now says <code>`centers` must be a matrix, with at least 2 rows</code> instead of <code>is.matrix(centers) is not TRUE</code>.</p></li>
 <li><p>Calibration and missingness solvers no longer return an unconverged root. <code><a href="../reference/calibrate_logistic.html">calibrate_logistic()</a></code>, <code><a href="../reference/inject_missingness.html">inject_missingness()</a></code>, <code><a href="../reference/missingness_matrix.html">missingness_matrix()</a></code> and <code><a href="../reference/simulate_proportional_survival.html">simulate_proportional_survival()</a></code> now raise a classed <code>simulab_no_solution</code> error when the requested target is unattainable, and <code>simulab_no_convergence</code> when the search does not reach its tolerance. The censoring-rate solve is also tightened by one iteration, moving its residual from 1.6e-07 to 3.2e-14.</p></li>
 <li><p><code><a href="../reference/read_definitions.html">read_definitions()</a></code> now returns character specification columns. A file whose formulas were all numeric literals previously read back with integer <code>formula</code> and <code>variance</code> columns, which <code><a href="../reference/simulate_study.html">simulate_study()</a></code> rejected, so a specification could not round-trip through CSV. It also validates <code>link</code>, rejects empty entries, and raises classed <code>simulab_bad_definition_file</code>, <code>simulab_duplicate_variable</code>, <code>simulab_unknown_distribution</code> and <code>simulab_unknown_link</code> errors.</p></li>
 </ul></div>
 <div class="section level4">
 <h4 id="documentation-0-4-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-4-0"></a></h4>
-<ul><li>Every exported function now has a runnable <code>@examples</code> block, including the arguments whose required shape was previously undiscoverable: the class-by-indicator-by-category array of <code><a href="../reference/simulate_lca.html">simulate_lca()</a></code>, the named coefficient vectors of <code><a href="../reference/simulate_regression.html">simulate_regression()</a></code> and <code><a href="../reference/simulate_multilevel.html">simulate_multilevel()</a></code>, the cluster-by-variable centre matrix of <code><a href="../reference/simulate_clusters.html">simulate_clusters()</a></code>, and the tidy from/to/probability transition table accepted throughout the sequence simulators.</li>
+<ul><li>Every exported function now has a runnable <code>@examples</code> block, including the arguments whose required shape was previously undiscoverable: the class-by-indicator-by-category array of <code><a href="../reference/simulate_lca.html">simulate_lca()</a></code>, the named coefficient vectors of <code><a href="../reference/simulate_regression.html">simulate_regression()</a></code> and <code><a href="../reference/simulate_multilevel.html">simulate_multilevel()</a></code>, the cluster-by-variable center matrix of <code><a href="../reference/simulate_clusters.html">simulate_clusters()</a></code>, and the tidy from/to/probability transition table accepted throughout the sequence simulators.</li>
 </ul></div>
 <div class="section level4">
 <h4 id="fixes-carried-from-development-0-4-0">Fixes carried from development<a class="anchor" aria-label="anchor" href="#fixes-carried-from-development-0-4-0"></a></h4>

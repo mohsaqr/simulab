@@ -11,7 +11,7 @@ already exists is refused rather than overwritten."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,13 +71,17 @@ already exists is refused rather than overwritten.</p>
 
 
 <dt id="arg-envir">envir<a class="anchor" aria-label="anchor" href="#arg-envir"></a></dt>
-<dd><p>Environment used to resolve formula values.</p></dd>
+<dd><p>Environment used to resolve functions and external values named
+by a <code>formula</code>/<code>variance</code> specification. It is not consulted by the
+distribution-call form, whose parameters must be expressions over columns
+of <code>data</code> or variables defined earlier in the same specification.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> containing the original and new
-variables.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one row per row of <code>data</code>,
+containing the original and new variables. Use
+<code>as.data.frame(x, what = "definitions")</code> for the generating definitions.</p>
     </div>
     <div class="section level2">
     <h2 id="conditions">Conditions<a class="anchor" aria-label="anchor" href="#conditions"></a></h2>

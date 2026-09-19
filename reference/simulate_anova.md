@@ -43,8 +43,18 @@ simulate_anova(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with group parameters and the
-population eta-squared effect.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id`, `group` and `outcome` (renamed by `outcome`). Two tidy
+tables come from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "parameters"` has one row per group with columns `group`, `n`,
+`mean` and `sd`; `what = "effects"` has a single row with columns
+`grand_mean`, `between_sum_squares` (`sum(n * (mean - grand_mean)^2)`),
+`within_sum_squares` (`sum((n - 1) * sd^2)`) and `eta_squared`, their
+ratio `between / (between + within)`. Because the within term uses the
+degrees of freedom `n - 1` rather than `n`, `eta_squared` is the
+design's sum-of-squares eta-squared and differs slightly from the
+variance-ratio population eta-squared.
 
 ## Examples
 

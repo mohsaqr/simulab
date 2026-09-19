@@ -42,7 +42,8 @@ simulate_network_matrix(
 
 - weighted:
 
-  Generate weighted adjacency/co-occurrence values.
+  Generate weighted adjacency/co-occurrence values. Ignored by the
+  `frequency` and `transition` types, which are always weighted.
 
 - weight_range:
 
@@ -50,7 +51,8 @@ simulate_network_matrix(
 
 - frequency_mean:
 
-  Mean positive count for frequency matrices.
+  Mean positive count for frequency matrices; drawn as
+  `1 + rpois(frequency_mean - 1)`, so entries are at least one.
 
 - seed:
 
@@ -58,8 +60,14 @@ simulate_network_matrix(
 
 ## Value
 
-A tidy full matrix table with `from`, `to`, and `value`; non-zero edges,
-nodes, and a wide matrix are components.
+A tidy `simulab_sim` base `data.frame` holding the complete matrix in
+long form: `nodes^2` rows with columns `from`, `to`, and `value`, zeros
+included. `as.data.frame(x, what = )` also returns `edges` (the non-zero
+rows only), `nodes` (`node`), `matrix` (the wide form: a `from` column
+followed by one column per node), and a one-row `settings` table whose
+`directed` field reports whether the generated matrix is asymmetric. The
+`transition` type is row-stochastic: every `from` state's `value`
+entries sum to one.
 
 ## Examples
 

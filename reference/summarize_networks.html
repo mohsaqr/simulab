@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,20 +51,29 @@
 
 
 <dl><dt id="arg-networks">networks<a class="anchor" aria-label="anchor" href="#arg-networks"></a></dt>
-<dd><p>Named list of supported networks.</p></dd>
+<dd><p>Named list of supported networks. Unnamed elements are
+labelled <code>Network 1</code>, <code>Network 2</code>, and so on.</p></dd>
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
-<dd><p>Edge-presence threshold.</p></dd>
+<dd><p>Edge-presence threshold, applied as
+<code>abs(weight) &gt; threshold</code>. It affects the <code>edges</code> and <code>mean_weight</code>
+columns only; <code>density</code> and <code>components</code> are computed from every edge in
+the network, thresholded or not.</p></dd>
 
 
 <dt id="arg-directed">directed<a class="anchor" aria-label="anchor" href="#arg-directed"></a></dt>
-<dd><p>Treat networks as directed.</p></dd>
+<dd><p>Treat networks as directed. <code>density</code> is the directed edge
+density when <code>TRUE</code>; <code>components</code> always counts weakly connected
+components.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy base <code>data.frame</code> with one summary row per network.</p>
+    <p>A tidy base <code>data.frame</code> with one row per network and columns
+<code>network</code>, <code>nodes</code>, <code>edges</code>, <code>density</code>, <code>mean_weight</code>, and <code>components</code>.
+<code>mean_weight</code> is <code>NA</code> when no edge passes the threshold. Requires the
+suggested <code>igraph</code> package.</p>
     </div>
 
     <div class="section level2">
@@ -73,10 +82,9 @@
 <span class="r-in"><span>  first <span class="op">=</span> <span class="fu"><a href="simulate_network.html">simulate_network</a></span><span class="op">(</span>nodes <span class="op">=</span> <span class="fl">25</span>, model <span class="op">=</span> <span class="st">"bernoulli"</span>, probability <span class="op">=</span> <span class="fl">0.1</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  second <span class="op">=</span> <span class="fu"><a href="simulate_network.html">simulate_network</a></span><span class="op">(</span>nodes <span class="op">=</span> <span class="fl">25</span>, model <span class="op">=</span> <span class="st">"bernoulli"</span>, probability <span class="op">=</span> <span class="fl">0.2</span>, seed <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">summarize_networks</span><span class="op">(</span><span class="va">networks</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        network nodes edges   density mean_weight components</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> first    first    25    63 0.1050000           1          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> second  second    25   130 0.2166667           1          1</span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"igraph"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">summarize_networks</span><span class="op">(</span><span class="va">networks</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

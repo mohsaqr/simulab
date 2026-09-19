@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,7 +81,8 @@ is generated.</p></dd>
 
 
 <dt id="arg-initial">initial<a class="anchor" aria-label="anchor" href="#arg-initial"></a></dt>
-<dd><p>Initial probabilities or a fixed starting state.</p></dd>
+<dd><p>Initial probabilities or a fixed starting state. When <code>NULL</code>
+and <code>transition</code> is supplied, every sequence starts in the first state.</p></dd>
 
 
 <dt id="arg-states">states<a class="anchor" aria-label="anchor" href="#arg-states"></a></dt>
@@ -138,9 +139,12 @@ sequence.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code>. Wide sequences,
-transition probabilities, initial probabilities, and settings are tidy
-components.</p>
+    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> with columns <code>id</code>,
+<code>period</code>, and <code>state</code>, one row per observed sequence position.
+<code>as.data.frame(x, what = )</code> also returns <code>transitions</code> (<code>from</code>, <code>to</code>,
+<code>probability</code>, row-stochastic in <code>from</code>), <code>initial_probabilities</code>
+(<code>state</code>, <code>probability</code>), <code>wide</code> (one row per sequence, columns <code>id</code>,
+<code>S1</code>, <code>S2</code>, ...), and a one-row <code>settings</code> table.</p>
     </div>
 
     <div class="section level2">

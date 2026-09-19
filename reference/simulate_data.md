@@ -13,16 +13,19 @@ simulate_data(type, ...)
 
 - type:
 
-  Simulator name from
+  Dispatchable simulator name, taken from the `simulator` column of
   [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md).
+  An unknown name, or a name whose `dispatchable` entry is `FALSE`, is
+  an error.
 
 - ...:
 
-  Arguments passed to the selected canonical simulation verb.
+  Arguments passed on to the selected canonical simulation verb.
 
 ## Value
 
-A `simulab_sim` base `data.frame`.
+Whatever the selected verb returns, which for every dispatchable entry
+is a `simulab_sim` base `data.frame`.
 
 ## Examples
 

@@ -9,7 +9,7 @@ values written by earlier rules. A row no rule selects is left missing."></head>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,7 +67,9 @@ form written with <code>when()</code> or the <code>formula</code>/<code>variance
 
 
 <dt id="arg-envir">envir<a class="anchor" aria-label="anchor" href="#arg-envir"></a></dt>
-<dd><p>Formula evaluation environment.</p></dd>
+<dd><p>Environment used to resolve values a condition or formula names
+but the data does not carry. Distribution parameters inside <code>when()</code> are
+evaluated against the data alone, so they may only name columns.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -26,11 +26,15 @@ summarize_transitions(
 
 - normalize:
 
-  Return row-conditional transition proportions.
+  Return row-conditional transition proportions. When `FALSE`, the
+  `probability` column is kept but filled with `NA`.
 
 ## Value
 
-A tidy base `data.frame` with `from`, `to`, count, and probability.
+A tidy base `data.frame` with one row per observed `from`/`to` pair and
+columns `from`, `to`, `count`, and `probability`. Pairs never observed
+are absent rather than zero, so `probability` sums to one within each
+`from` state when `normalize` is `TRUE`.
 
 ## Examples
 

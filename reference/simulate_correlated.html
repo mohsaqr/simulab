@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,9 +79,9 @@
 <dd><p>Correlation structure: one of <code>"independent"</code>,
 <code>"exchangeable"</code>, <code>"ar1"</code>, or <code>"custom"</code>. If left unset it is chosen from
 the other arguments: <code>"custom"</code> when <code>correlation</code> is supplied,
-<code>"exchangeable"</code> when a non-zero <code>rho</code> (or <code>tau</code>) is supplied, and
-<code>"independent"</code> otherwise. Passing <code>"independent"</code> together with a
-non-zero <code>rho</code> is a contradiction and raises an error.</p></dd>
+<code>"exchangeable"</code> when a non-zero <code>rho</code> is supplied, and <code>"independent"</code>
+otherwise. Passing <code>"independent"</code> together with a non-zero <code>rho</code> is a
+contradiction and raises a <code>simulab_contradictory_structure</code> error.</p></dd>
 
 
 <dt id="arg-correlation">correlation<a class="anchor" aria-label="anchor" href="#arg-correlation"></a></dt>
@@ -99,9 +99,14 @@ non-zero <code>rho</code> is a contradiction and raises an error.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code>. The requested correlation and
-covariance structures are available through <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> using
-<code>what = "correlation"</code> or <code>what = "covariance"</code>.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one row per observation and
+columns <code>id</code> and one column per variable. Three tidy tables come from
+<code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>: <code>what = "parameters"</code> has one row per variable with
+columns <code>variable</code>, <code>mean</code> and <code>sd</code>; <code>what = "correlation"</code> and
+<code>what = "covariance"</code> each have one row per matrix cell with columns
+<code>row</code>, <code>column</code> and <code>correlation</code> or <code>covariance</code>. The covariance is the
+correlation matrix scaled by <code>sds</code> on both sides, so <code>sds</code> are standard
+deviations rather than variances.</p>
     </div>
 
     <div class="section level2">

@@ -59,7 +59,15 @@ calibrate_logistic(
 
 ## Value
 
-A base `data.frame` with one row per calibrated coefficient.
+A base `data.frame` with one row per calibrated coefficient and columns
+`term`, `coefficient`, `calibration` and `coefficient_scale`.
+Coefficients are log-odds on the logit scale. The first row is
+`"(Intercept)"`, followed by the `treatment` row when `risk_ratio` or
+`risk_difference` was supplied, then one row per name of `coefficients`.
+`calibration` names the target that was solved for – `"prevalence"`,
+`"auc"`, `"risk_ratio"` or `"risk_difference"` – and `coefficient_scale`
+is the factor the supplied covariate coefficients were multiplied by,
+which is `1` unless `auc` was given.
 
 ## Examples
 

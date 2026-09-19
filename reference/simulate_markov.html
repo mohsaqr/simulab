@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,9 @@
 
 
 <dt id="arg-transition">transition<a class="anchor" aria-label="anchor" href="#arg-transition"></a></dt>
-<dd><p>Square transition matrix or tidy transition table.</p></dd>
+<dd><p>Square transition matrix, or a tidy transition table with
+<code>from</code>, <code>to</code>, and <code>probability</code> columns. Every row of the implied matrix
+must sum to one.</p></dd>
 
 
 <dt id="arg-chain-length">chain_length<a class="anchor" aria-label="anchor" href="#arg-chain-length"></a></dt>
@@ -74,7 +76,8 @@
 
 
 <dt id="arg-initial">initial<a class="anchor" aria-label="anchor" href="#arg-initial"></a></dt>
-<dd><p>Starting-state probabilities or a single fixed start state.</p></dd>
+<dd><p>Starting-state probabilities or a single fixed start state.
+When <code>NULL</code>, every chain starts in the first state.</p></dd>
 
 
 <dt id="arg-states">states<a class="anchor" aria-label="anchor" href="#arg-states"></a></dt>
@@ -82,7 +85,8 @@
 
 
 <dt id="arg-trim-state">trim_state<a class="anchor" aria-label="anchor" href="#arg-trim-state"></a></dt>
-<dd><p>Optional terminal state. Later observations are removed.</p></dd>
+<dd><p>Optional terminal state. The first occurrence is kept and
+all later observations of that chain are removed.</p></dd>
 
 
 <dt id="arg-id-period-state">id, period, state<a class="anchor" aria-label="anchor" href="#arg-id-period-state"></a></dt>
@@ -95,9 +99,12 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> with one row per chain
-position. Wide chains, transitions, and initial probabilities are available
-through <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>.</p>
+    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> with columns <code>id</code>,
+<code>period</code>, and <code>state</code> (renamed by those arguments), one row per chain
+position. <code>as.data.frame(x, what = )</code> also returns <code>transitions</code>
+(<code>from</code>, <code>to</code>, <code>probability</code>), <code>initial_probabilities</code> (<code>state</code>,
+<code>probability</code>), and <code>wide</code> (one row per chain, columns <code>id</code>, <code>S1</code>, <code>S2</code>,
+...).</p>
     </div>
 
     <div class="section level2">

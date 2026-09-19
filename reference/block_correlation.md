@@ -57,7 +57,8 @@ block_correlation(
 ## Value
 
 A base `data.frame` with one row per cluster and correlation-matrix
-cell.
+cell, and columns `row`, `column`, `correlation` and `cluster`. The
+`row` and `column` labels are of the form `period_<p>_unit_<u>`.
 
 ## Examples
 

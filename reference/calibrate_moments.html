@@ -15,7 +15,7 @@ variance is then the one those parameters imply."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,14 +81,20 @@ one-parameter family, whose variance its mean determines.</p></dd>
     <p>A base <code>data.frame</code> with one row per target and parameter, and
 columns <code>distribution</code>, <code>mean</code>, <code>variance</code>, <code>parameter</code> and <code>value</code>. The
 <code>parameter</code> names are those <code><a href="list_distributions.html">list_distributions()</a></code> reports, so the result
-states a distribution call.</p>
+states a distribution call. For a one-parameter family the reported
+<code>variance</code> is the one the solved parameters imply rather than a target.
+Called with no arguments the result is instead the catalogue: one row per
+invertible distribution, with columns <code>distribution</code>, <code>parameters</code> and
+<code>targets</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Most inversions are closed form. For a scale family whose shape is fixed by
 the coefficient of variation alone – Weibull, log-logistic, Frechet,
 Nakagami – the shape is found by root finding and the scale then follows
-exactly. Some families cannot reach every pair: a Nakagami squared
+exactly. Two one-parameter families, <code>chi</code> and <code>zero_truncated_poisson</code>,
+likewise invert their mean by root finding. Some families cannot reach
+every pair: a Nakagami squared
 coefficient of variation is at most <code>pi / 2 - 1</code>, a Lomax with a finite
 variance always has one above 1, and a beta variance is below
 <code>mean * (1 - mean)</code>. Those are refused rather than approximated.</p>

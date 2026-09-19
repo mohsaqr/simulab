@@ -25,7 +25,10 @@ define_missingnesses(...)
 ## Value
 
 A `simulab_missing_spec` base `data.frame` with one row per target
-variable.
+variable, in the order given, and the columns of
+[`define_missingness()`](https://mohsaqr.github.io/simulab/reference/define_missingness.md):
+`variable`, `formula`, `link`, `baseline` and `monotone`. Target
+variables must be unique.
 
 ## Examples
 

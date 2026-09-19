@@ -17,11 +17,14 @@ define_survivals(...)
   **Hazard calls.**
   `time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3)` names
   the event with the argument name and states its hazard as a call.
-  `log_rate` is the log hazard and may be any expression over the
-  covariates; `shape` and `scale` default to 1 and `from`, the time at
-  which the segment begins, to 0. Arguments may be positional or named,
-  and repeating the argument name gives one event several segments,
-  which is a piecewise hazard.
+  `log_rate` is the linear predictor on the log scale, the `formula` of
+  [`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md),
+  so a coefficient inside it is a log hazard ratio. It may be any
+  expression over the covariates; `shape` and `scale` default to 1 and
+  `from`, the time at which the segment begins, to 0. Arguments may be
+  positional, in the order `log_rate`, `shape`, `scale`, `from`, or
+  named, and repeating the argument name gives one event several
+  segments, which is a piecewise hazard.
 
   **Specification columns** given as named vectors (`event`, `formula`,
   `scale`, `shape`, `transition`).
@@ -39,7 +42,11 @@ define_survivals(...)
 ## Value
 
 A `simulab_survival_spec` base `data.frame` with one row per hazard
-segment.
+segment and the columns of
+[`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md):
+`event`, `formula`, `scale`, `shape` and `transition`. Rows written by
+the column form and by the hazard-call form are ordered by `event` and
+then `transition`.
 
 ## Examples
 

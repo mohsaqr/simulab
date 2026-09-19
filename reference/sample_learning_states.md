@@ -1,6 +1,7 @@
 # Sample learning states reproducibly
 
-Sample learning states reproducibly
+Samples without replacement from the distinct states of the selected
+categories, so the result never repeats a state.
 
 ## Usage
 
@@ -12,12 +13,14 @@ sample_learning_states(n, categories = "all", seed = NULL)
 
 - n:
 
-  Number of unique states.
+  Number of unique states to draw. A single positive whole number, at
+  most the number of distinct states in the selected categories.
 
 - categories:
 
   Categories passed to
-  [`learning_states()`](https://mohsaqr.github.io/simulab/reference/learning_states.md).
+  [`learning_states()`](https://mohsaqr.github.io/simulab/reference/learning_states.md),
+  defaulting to `"all"`.
 
 - seed:
 
@@ -25,7 +28,10 @@ sample_learning_states(n, categories = "all", seed = NULL)
 
 ## Value
 
-A tidy base `data.frame` with selection order, category, and state.
+A tidy base `data.frame` with `n` rows, one per sampled state, and
+columns `order` (the selection order, `1:n`), `category` and `state`. A
+state belonging to several categories gets all of them in `category`,
+joined by `";"`.
 
 ## Examples
 

@@ -12,19 +12,24 @@ summarize_simulations(data, by = NULL, variables = NULL)
 
 - data:
 
-  Simulation data.
+  Simulation data: a `simulab_sim` or a plain base `data.frame`.
 
 - by:
 
-  Optional grouping columns.
+  Optional character vector of grouping column names. `NULL`, the
+  default, summarizes all rows together.
 
 - variables:
 
-  Numeric variables. `NULL` selects all numeric non-grouping columns.
+  Character vector of numeric variables to summarize. `NULL`, the
+  default, selects every numeric non-grouping column.
 
 ## Value
 
-A tidy base `data.frame` of variable/group summaries.
+A plain base `data.frame` with one row per group and variable: the `by`
+columns (or a single `.group` column holding `"all"` when `by` is
+`NULL`), then `variable`, `observations` (the non-missing count),
+`mean`, `sd`, `minimum` and `maximum`.
 
 ## Examples
 

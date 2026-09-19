@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,36 +63,48 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>Sequence data.</p></dd>
+<dd><p>Sequence data in long or wide form.</p></dd>
 
 
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
-<dd><p>TNA estimator.</p></dd>
+<dd><p>TNA estimator, one of <code>"tna"</code> (the default), <code>"ftna"</code>,
+<code>"ctna"</code>, <code>"atna"</code>.</p></dd>
 
 
 <dt id="arg-repetitions">repetitions<a class="anchor" aria-label="anchor" href="#arg-repetitions"></a></dt>
-<dd><p>Number of bootstrap samples.</p></dd>
+<dd><p>Single whole number of bootstrap samples, at least 2,
+default <code>100</code>.</p></dd>
 
 
 <dt id="arg-fraction">fraction<a class="anchor" aria-label="anchor" href="#arg-fraction"></a></dt>
-<dd><p>Fraction of sequences sampled with replacement.</p></dd>
+<dd><p>Single number in <code>(0, 1]</code> giving the fraction of sequences
+drawn with replacement in each repetition, default <code>1</code>. At least two
+sequences are always drawn.</p></dd>
 
 
 <dt id="arg-format-id-period-state-group">format, id, period, state, group<a class="anchor" aria-label="anchor" href="#arg-format-id-period-state-group"></a></dt>
-<dd><p>Input arguments passed to <code><a href="fit_tna.html">fit_tna()</a></code>.</p></dd>
+<dd><p>Arguments describing the shape and
+column names of <code>data</code>. They are used to reshape <code>data</code> before resampling;
+the resampled sequences are then fitted in wide form, so only <code>group</code> is
+forwarded to <code><a href="fit_tna.html">fit_tna()</a></code>. <code>group</code> resamples within each group.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Optional seed.</p></dd>
+<dd><p>Optional single seed, restored on exit and recorded on the
+result.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Estimator arguments.</p></dd>
+<dd><p>Further arguments passed to <code><a href="fit_tna.html">fit_tna()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy edge-by-bootstrap <code>simulab_sim</code> with percentile summaries.</p>
+    <p>A <code>simulab_sim</code> edge list with one row per repetition and
+transition: a leading <code>iteration</code> column followed by the columns
+<code><a href="fit_tna.html">fit_tna()</a></code> returns. The <code>summary</code> component holds one row per edge (per
+group, when <code>group</code> is given) with the bootstrap <code>mean</code>, <code>sd</code>, and the
+2.5% and 97.5% percentiles as <code>lower</code> and <code>upper</code>.</p>
     </div>
 
     <div class="section level2">
@@ -101,14 +113,6 @@
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"tna"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">bootstrap_tna</span><span class="op">(</span><span class="va">data</span>, model <span class="op">=</span> <span class="st">"tna"</span>, repetitions <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:tna_bootstrap&gt; 6 rows x 4 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   iteration    from      to    weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1 State 1 State 1 0.1071429</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1 State 2 State 1 0.5414013</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1 State 3 State 1 0.5652174</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1 State 1 State 2 0.3928571</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1 State 2 State 2 0.3757962</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1 State 3 State 2 0.3739130</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

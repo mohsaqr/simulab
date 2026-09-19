@@ -41,7 +41,8 @@ simulate_sequences(
 
 - initial:
 
-  Initial probabilities or a fixed starting state.
+  Initial probabilities or a fixed starting state. When `NULL` and
+  `transition` is supplied, every sequence starts in the first state.
 
 - states:
 
@@ -96,8 +97,12 @@ simulate_sequences(
 
 ## Value
 
-A long-form `simulab_sim` base `data.frame`. Wide sequences, transition
-probabilities, initial probabilities, and settings are tidy components.
+A long-form `simulab_sim` base `data.frame` with columns `id`, `period`,
+and `state`, one row per observed sequence position.
+`as.data.frame(x, what = )` also returns `transitions` (`from`, `to`,
+`probability`, row-stochastic in `from`), `initial_probabilities`
+(`state`, `probability`), `wide` (one row per sequence, columns `id`,
+`S1`, `S2`, ...), and a one-row `settings` table.
 
 ## Examples
 

@@ -27,7 +27,9 @@ simulate_markov(
 
 - transition:
 
-  Square transition matrix or tidy transition table.
+  Square transition matrix, or a tidy transition table with `from`,
+  `to`, and `probability` columns. Every row of the implied matrix must
+  sum to one.
 
 - chain_length:
 
@@ -35,7 +37,8 @@ simulate_markov(
 
 - initial:
 
-  Starting-state probabilities or a single fixed start state.
+  Starting-state probabilities or a single fixed start state. When
+  `NULL`, every chain starts in the first state.
 
 - states:
 
@@ -43,7 +46,8 @@ simulate_markov(
 
 - trim_state:
 
-  Optional terminal state. Later observations are removed.
+  Optional terminal state. The first occurrence is kept and all later
+  observations of that chain are removed.
 
 - id, period, state:
 
@@ -55,10 +59,11 @@ simulate_markov(
 
 ## Value
 
-A long-form `simulab_sim` base `data.frame` with one row per chain
-position. Wide chains, transitions, and initial probabilities are
-available through
-[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
+A long-form `simulab_sim` base `data.frame` with columns `id`, `period`,
+and `state` (renamed by those arguments), one row per chain position.
+`as.data.frame(x, what = )` also returns `transitions` (`from`, `to`,
+`probability`), `initial_probabilities` (`state`, `probability`), and
+`wide` (one row per chain, columns `id`, `S1`, `S2`, ...).
 
 ## Examples
 

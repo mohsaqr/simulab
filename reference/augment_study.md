@@ -29,12 +29,17 @@ augment_study(data, specification, seed = NULL, envir = parent.frame())
 
 - envir:
 
-  Environment used to resolve formula values.
+  Environment used to resolve functions and external values named by a
+  `formula`/`variance` specification. It is not consulted by the
+  distribution-call form, whose parameters must be expressions over
+  columns of `data` or variables defined earlier in the same
+  specification.
 
 ## Value
 
-A `simulab_sim` base `data.frame` containing the original and new
-variables.
+A `simulab_sim` base `data.frame` with one row per row of `data`,
+containing the original and new variables. Use
+`as.data.frame(x, what = "definitions")` for the generating definitions.
 
 ## Conditions
 

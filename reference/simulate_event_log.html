@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,15 +91,18 @@
 
 
 <dt id="arg-achievement-probabilities">achievement_probabilities<a class="anchor" aria-label="anchor" href="#arg-achievement-probabilities"></a></dt>
-<dd><p>Achievement probabilities.</p></dd>
+<dd><p>Achievement probabilities, one per level and
+summing to one. When <code>NULL</code>, the levels are equally likely.</p></dd>
 
 
 <dt id="arg-start-time">start_time<a class="anchor" aria-label="anchor" href="#arg-start-time"></a></dt>
-<dd><p>Initial timestamp.</p></dd>
+<dd><p>Initial timestamp. Every actor's first event is placed at
+this time.</p></dd>
 
 
 <dt id="arg-interval-range">interval_range<a class="anchor" aria-label="anchor" href="#arg-interval-range"></a></dt>
-<dd><p>Minimum and maximum seconds between events.</p></dd>
+<dd><p>Minimum and maximum seconds between an actor's
+consecutive events, drawn uniformly.</p></dd>
 
 
 <dt id="arg-transitions">transitions<a class="anchor" aria-label="anchor" href="#arg-transitions"></a></dt>
@@ -120,8 +123,13 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A long-form <code>simulab_sim</code> event log with wide, one-hot, transition,
-actor, and group tables as components.</p>
+    <p>A long-form <code>simulab_sim</code> base <code>data.frame</code> with one row per actor
+event and columns <code>group</code>, <code>id</code>, <code>course</code>, <code>achievement</code>, <code>period</code>,
+<code>state</code>, and <code>timestamp</code>. <code>as.data.frame(x, what = )</code> also returns
+<code>transitions</code> (<code>group</code>, <code>from</code>, <code>to</code>, <code>probability</code>), <code>actors</code>
+(<code>group</code>, <code>id</code>, <code>course</code>, <code>achievement</code>), <code>groups</code> (<code>group</code>, <code>actors</code>),
+<code>wide</code> (one row per actor, columns <code>id</code>, <code>S1</code>, ..., plus actor metadata),
+and <code>one_hot</code> (the event log with <code>state</code> replaced by indicator columns).</p>
     </div>
 
     <div class="section level2">
@@ -138,12 +146,12 @@ actor, and group tables as components.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 Group 1 G1_A1 Course 1        high      6         Track 2020-01-01 00:10:24</span>
 <span class="r-in"><span><span class="fu"><a href="components.html">components</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         table rows columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        data  104       7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        data  160       7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 transitions  128       4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3      actors   20       4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4      groups    2       2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5        wide   20      12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6     one_hot  104      22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     one_hot  160      22</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

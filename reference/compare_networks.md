@@ -16,11 +16,21 @@ compare_networks(x, y, threshold = 0)
 
 - threshold:
 
-  Absolute weight threshold for edge presence.
+  Absolute weight threshold for edge presence: a dyad counts as an edge
+  when `abs(weight) > threshold`.
 
 ## Value
 
-A one-row base `data.frame` with weight and edge-overlap metrics.
+A one-row base `data.frame` with columns `pearson`, `cosine`, `mae`,
+`rmse`, `jaccard`, `edges_x`, and `edges_y`. `pearson` and `cosine` are
+`NA` when either network's aligned weights have no variance or are all
+zero.
+
+## Details
+
+The two networks are aligned on the union of the dyads that carry an
+edge in either network; dyads absent from both are excluded, so every
+metric is conditional on that union rather than on all possible dyads.
 
 ## Examples
 

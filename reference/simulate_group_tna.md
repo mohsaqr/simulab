@@ -71,31 +71,23 @@ simulate_group_tna(
 
 ## Value
 
-Grouped long-form sequences with true transitions, fitted edges, model
-metadata, and a native grouped model accessible through
+A long-form `simulab_sim` base `data.frame` of grouped sequences with
+columns `group`, `id`, `period`, and `state`.
+`as.data.frame(x, what = )` also returns `true_transitions` (the
+generating probabilities), `estimated_edges` (the fitted TNA weights),
+`model_info`, `wide`, and `groups`. The native `group_tna` model is
+accessible through
 [`as_tna_model()`](https://mohsaqr.github.io/simulab/reference/as_tna_model.md).
+Requires the suggested `tna` package.
 
 ## Examples
 
 ``` r
-result <- simulate_group_tna(
-  groups = 2, actors = 20, chain_length = 12, n_states = 3, seed = 1
-)
-head(result)
-#> <simulab_sim:group_tna> 6 rows x 4 columns
-#>     group    id period   state
-#> 1 Group 1 G1_A1      1 State 3
-#> 2 Group 1 G1_A1      2 State 2
-#> 3 Group 1 G1_A1      3 State 2
-#> 4 Group 1 G1_A1      4 State 2
-#> 5 Group 1 G1_A1      5 State 1
-#> 6 Group 1 G1_A1      6 State 2
-components(result)
-#>              table rows columns
-#> 1             data  480       4
-#> 2 true_transitions   18       4
-#> 3  estimated_edges   18       4
-#> 4       model_info    2       5
-#> 5             wide   40      14
-#> 6           groups    2       2
+if (requireNamespace("tna", quietly = TRUE)) {
+  result <- simulate_group_tna(
+    groups = 2, actors = 20, chain_length = 12, n_states = 3, seed = 1
+  )
+  head(result)
+  components(result)
+}
 ```

@@ -46,11 +46,15 @@ simulate_spline(
 
 - output_range:
 
-  Optional output range.
+  Optional numeric pair. The spline value `v` is rescaled to
+  `output_range[1] + v * diff(output_range)`, which maps `[0, 1]` onto
+  the pair. Values outside `[0, 1]` are rescaled the same way, not
+  clipped.
 
 - noise_variance:
 
-  Non-negative Gaussian noise variance.
+  Non-negative Gaussian noise variance; the noise added to each value
+  has standard deviation `sqrt(noise_variance)`.
 
 - seed:
 
@@ -58,8 +62,11 @@ simulate_spline(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with the spline variable and a tidy
-basis table.
+A `simulab_sim` base `data.frame` holding `data` with the spline
+variable added. `as.data.frame(x, what = "basis")` gives the tidy basis
+table, one row per observation/basis combination, and
+`as.data.frame(x, what = "parameters")` gives one row per basis
+coefficient.
 
 ## Examples
 

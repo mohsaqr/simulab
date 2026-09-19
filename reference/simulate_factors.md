@@ -1,6 +1,12 @@
 # Simulate a common-factor model
 
-Simulate a common-factor model
+Draws factor scores from a multivariate normal with unit variances and
+correlation `factor_correlation`, then forms each indicator as
+`intercept + loadings %*% scores + error`, where the error standard
+deviation is `sqrt(uniqueness)`. The implied population covariance is
+`loadings %*% factor_correlation %*% t(loadings) + diag(uniquenesses)`.
+Because the factors have unit variance, the loadings are on the
+standardized-factor metric.
 
 ## Usage
 
@@ -20,29 +26,39 @@ simulate_factors(
 
 - n:
 
-  Number of observations.
+  Number of observations. A single whole number of at least 2.
 
 - loadings:
 
-  Variable-by-factor loading matrix, or a tidy data frame with columns
-  `item`, `factor` and `loading`.
+  Variable-by-factor loading matrix (one row per indicator, one column
+  per factor, at least 2 rows), or a tidy data frame with columns
+  `item`, `factor` and `loading`. Row and column names, when present,
+  name the indicators and the factors.
 
 - uniquenesses:
 
-  Residual variances.
+  Residual *variances* (not standard deviations), a scalar recycled
+  across indicators or one non-negative value per indicator. `NULL` (the
+  default) uses `1 - rowSums(loadings^2)`, which gives every indicator
+  unit total variance, so the loadings are then fully standardized.
+  Loadings whose squared row sum exceeds one therefore raise an error
+  rather than producing a Heywood case.
 
 - factor_correlation:
 
   Optional factor correlation matrix, or a tidy data frame with columns
-  `row`, `column` and `correlation`.
+  `row`, `column` and `correlation`. `NULL` (the default) makes the
+  factors orthogonal.
 
 - intercepts:
 
-  Variable intercepts.
+  Variable intercepts, a scalar recycled across indicators (the default,
+  `0`) or one value per indicator.
 
 - include_scores:
 
-  Include true factor scores in primary data.
+  Single flag; when `TRUE` the true factor scores are appended to the
+  primary data as one column per factor. Defaults to `FALSE`.
 
 - seed:
 
@@ -50,8 +66,13 @@ simulate_factors(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with population covariance and
-parameter tables.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id` and one per indicator, plus one column per factor when
+`include_scores = TRUE`. A `parameters` component holds one row per
+variable-by-factor combination with columns `variable`, `factor`,
+`loading`, `uniqueness` and `intercept`; a `covariance` component holds
+the implied population covariance in tidy form, one row per variable
+pair, with columns `row`, `column` and `covariance`.
 
 ## Examples
 

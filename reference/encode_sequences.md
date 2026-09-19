@@ -30,8 +30,10 @@ encode_sequences(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with identifiers and one column per
-state.
+A `simulab_sim` base `data.frame` with one row per input row: every
+input column except `state`, followed by one 0/1 indicator column per
+observed state. A `mapping` table (`state`, `column`) is available
+through [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 
 ## Examples
 

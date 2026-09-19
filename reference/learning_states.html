@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,12 +51,17 @@
 
 
 <dl><dt id="arg-categories">categories<a class="anchor" aria-label="anchor" href="#arg-categories"></a></dt>
-<dd><p>One or more learning-state categories, or <code>"all"</code>.</p></dd>
+<dd><p>A character vector of one or more category identifiers
+from <code><a href="learning_state_categories.html">learning_state_categories()</a></code>, or <code>"all"</code> (the default) for every
+category. Unknown identifiers raise an error.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy base <code>data.frame</code> with category and state columns.</p>
+    <p>A tidy base <code>data.frame</code> with one row per category-state pair and
+columns <code>category</code> and <code>state</code>. A state may belong to more than one
+category and then appears once per category, so <code>state</code> is not unique:
+the full catalogue has 209 rows covering 202 distinct states.</p>
     </div>
 
     <div class="section level2">

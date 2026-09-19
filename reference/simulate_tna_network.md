@@ -36,7 +36,10 @@ simulate_tna_network(
 
 - loops:
 
-  Permit self transitions.
+  Permit self transitions when drawing the underlying edges. A node left
+  with no outgoing edge is nevertheless given a self transition of
+  probability one, so self-loops can appear even when `loops` is
+  `FALSE`.
 
 - seed:
 
@@ -44,8 +47,13 @@ simulate_tna_network(
 
 ## Value
 
-A tidy non-zero transition edge list with node, group, adjacency, and
-full transition tables as components.
+A tidy `simulab_sim` base `data.frame` holding the non-zero transitions
+only, one row per edge, with columns `from`, `to`, and `probability`.
+`as.data.frame(x, what = )` also returns `nodes` (`node`, `group`),
+`adjacency` (the long `row`/`column`/`weight` table of the underlying
+directed Bernoulli graph), and `transitions` (the full `nodes^2`-row
+transition table including zeros). The transition matrix is
+row-stochastic: every `from` node's probabilities sum to one.
 
 ## Examples
 

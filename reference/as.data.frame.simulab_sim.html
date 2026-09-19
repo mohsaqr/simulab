@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,8 +64,9 @@
 
 
 <dt id="arg-what">what<a class="anchor" aria-label="anchor" href="#arg-what"></a></dt>
-<dd><p>Name of the table to return. Use <code>components(x)</code> to list the
-available choices.</p></dd>
+<dd><p>Single string naming the table to return, default <code>"data"</code> for
+the primary simulated observations. Use <code>components(x)</code> to list the
+available choices; an unrecognised name is an error that lists them.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -74,7 +75,8 @@ available choices.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A base <code>data.frame</code> containing the requested simulation table.</p>
+    <p>A plain base <code>data.frame</code> (the <code>simulab_sim</code> class and attributes
+are dropped) containing the requested simulation table.</p>
     </div>
 
     <div class="section level2">

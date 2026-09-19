@@ -1,6 +1,115 @@
 # Changelog
 
+## simulab 0.4.3
+
+### Two-level latent profile data
+
+- New
+  [`simulate_ml_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_ml_lpa.md)
+  generates the nonparametric two-level mixture of Vermunt (2003):
+  clusters belong to latent cluster classes, a cluster class fixes how
+  common each individual profile is inside its clusters, and one
+  measurement model is shared by every cluster. This is the generating
+  model behind two-level latent profile and latent class software, and
+  it was the gap between
+  [`simulate_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_lpa.md)
+  (a mixture with no clusters) and
+  [`simulate_multilevel()`](https://mohsaqr.github.io/simulab/reference/simulate_multilevel.md)
+  (clusters with no mixture).
+- The verb returns one row per individual with `id`, `cluster`,
+  `cluster_class`, `profile` and the indicators, plus three tidy
+  components: `parameters` (profile means, standard deviations and
+  marginal prevalence), `profile_probabilities` (the
+  cluster-class-by-profile prevalence matrix that defines the two-level
+  structure) and `clusters` (each cluster’s class and size). Matrix and
+  tidy-data-frame input are both accepted, as elsewhere in the package.
+- Registered in
+  [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md)
+  and dispatchable through `simulate_data("ml_lpa", ...)`.
+
+## simulab 0.4.2
+
+### Correctness fixes found by a documentation audit
+
+A function-by-function audit of every exported verb’s documentation
+against its implementation found five cases where the code did not do
+what the documentation described. All five are fixed, and each carries a
+regression test.
+
+- [`simulate_longitudinal()`](https://mohsaqr.github.io/simulab/reference/simulate_longitudinal.md)
+  read a tidy `transition` table with `from` and `to` reversed. A row
+  written as `from = "a", to = "b"` produced the effect of `b` on `a`,
+  the opposite of what it says. `from` is now the driving variable at
+  `t-1` and `to` the driven variable at `t`, matching the column names
+  and the documented VAR recursion. Callers who compensated for the old
+  behaviour by swapping the columns must stop doing so; the matrix form
+  is unaffected.
+- [`simulate_event_log()`](https://mohsaqr.github.io/simulab/reference/simulate_event_log.md)
+  ignored a fixed `sequence_length`. Because
+  [`sample()`](https://rdrr.io/r/base/sample.html) reads a length-one
+  numeric as an upper bound, `sequence_length = 8` drew lengths
+  uniformly from 1 to 8 instead of producing sequences of exactly 8. The
+  same trap affected `simulate_sequences(missing_tail = )` with a fixed
+  count. Both now draw through a shared range sampler, which leaves
+  seeded output unchanged wherever the range was already non-degenerate.
+- [`simulate_correlated()`](https://mohsaqr.github.io/simulab/reference/simulate_correlated.md)
+  failed with “non-conformable arguments” for a single variable whose
+  standard deviation was not 1, because
+  [`diag()`](https://rdrr.io/r/base/diag.html) on a length-one numeric
+  builds an identity matrix of that size.
+- [`simulate_irt()`](https://mohsaqr.github.io/simulab/reference/simulate_irt.md)
+  accepted an item-by-threshold `difficulty` matrix outside the graded
+  model, where it reached [`sweep()`](https://rdrr.io/r/base/sweep.html)
+  as an over-long `STATS`. That produced a warning rather than an error
+  and a malformed parameters table. It is now rejected with a message
+  naming the model that takes a matrix.
+- [`sample_tna()`](https://mohsaqr.github.io/simulab/reference/sample_tna.md)
+  hardcoded the `id`, `period` and `state` column names, so sequence
+  data using any other names yielded integer state labels and all-zero
+  weights with no error. It now takes `format`, `id`, `period`, `state`
+  and `group` arguments and passes them to the sampling step.
+
+### Documentation
+
+- Every exported function’s documentation was checked against its
+  implementation and corrected where the two disagreed. The corrections
+  concentrate on `@return` sections, which now name the component tables
+  and their columns, and on parameterizations that were stated
+  imprecisely: survival status coding and the Weibull shape convention,
+  IRT difficulty and guessing, factor uniquenesses as variances, copula
+  marginals, the latent rather than realized ordinal correlation, and
+  the missingness mechanisms.
+- Examples that use the suggested `igraph` and `tna` packages are now
+  guarded with
+  [`requireNamespace()`](https://rdrr.io/r/base/ns-load.html), so they
+  no longer fail where a suggested package is absent.
+- Added a seed-contract test that checks reproducibility and
+  random-number state restoration on every dispatchable verb, reading
+  its case list from the simulator registry.
+
 ## simulab 0.4.1
+
+### Simulator registry and generator hardening
+
+- [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md)
+  and
+  [`simulate_data()`](https://mohsaqr.github.io/simulab/reference/simulate_data.md)
+  now share one internal registry. All 43 public `simulate_*` and
+  `generate_*` verbs are represented and classified as simulators,
+  generators, workflows, or the dispatcher itself; the catalogue also
+  reports the backing function and dispatchability.
+- Previously undiscoverable sequence, transition-system, batch,
+  scenario, correlated-data and until-event verbs can now be called
+  through
+  [`simulate_data()`](https://mohsaqr.github.io/simulab/reference/simulate_data.md).
+- Fixed multiplex generation when a layer legitimately contains zero
+  edges.
+- Fixed one-predictor Gaussian generation when its standard deviation is
+  a non-unit scalar; scalar [`diag()`](https://rdrr.io/r/base/diag.html)
+  interpretation had produced a zero-sized scale matrix.
+- Added registry-contract, dispatch, calibration and validation tests
+  for the least-covered prediction, ordinal, cluster, latent-profile and
+  multiplex generator branches.
 
 ### The distribution-call lane reaches every simulator
 
@@ -326,7 +435,7 @@ This is a new CRAN submission.
   a rejected call reports what the argument must be rather than the
   deparsed predicate that failed.
   [`simulate_clusters()`](https://mohsaqr.github.io/simulab/reference/simulate_clusters.md)
-  with a list of centres now says
+  with a list of centers now says
   `` `centers` must be a matrix, with at least 2 rows `` instead of
   `is.matrix(centers) is not TRUE`.
 
@@ -363,7 +472,7 @@ This is a new CRAN submission.
   [`simulate_regression()`](https://mohsaqr.github.io/simulab/reference/simulate_regression.md)
   and
   [`simulate_multilevel()`](https://mohsaqr.github.io/simulab/reference/simulate_multilevel.md),
-  the cluster-by-variable centre matrix of
+  the cluster-by-variable center matrix of
   [`simulate_clusters()`](https://mohsaqr.github.io/simulab/reference/simulate_clusters.md),
   and the tidy from/to/probability transition table accepted throughout
   the sequence simulators.

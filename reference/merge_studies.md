@@ -12,19 +12,24 @@ merge_studies(x, y, by, join = c("inner", "full", "left"))
 
 - x, y:
 
-  Base data frames.
+  Base data frames, or `simulab_sim` objects, to join.
 
 - by:
 
-  Identifier variables shared by both inputs.
+  Identifier variables shared by both inputs. A character vector of at
+  least one name present in both.
 
 - join:
 
-  Join type.
+  Join type, one of `"inner"` (the default), keeping only matched
+  identifiers, `"full"`, keeping every row of both inputs, or `"left"`,
+  keeping every row of `x`.
 
 ## Value
 
-A `simulab_sim` base `data.frame` containing the merged data.
+A `simulab_sim` base `data.frame` containing the merged data, sorted by
+`by` as [`merge()`](https://rdrr.io/r/base/merge.html) leaves it, with
+unmatched cells filled with `NA` under the `"full"` and `"left"` joins.
 
 ## Examples
 

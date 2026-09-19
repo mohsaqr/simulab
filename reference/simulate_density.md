@@ -24,7 +24,8 @@ simulate_density(
 
 - values:
 
-  Numeric source values.
+  Numeric source values, of which at least two must be present and
+  distinct. Missing values are dropped before the density is estimated.
 
 - variable:
 
@@ -36,7 +37,8 @@ simulate_density(
 
 - keep_missing:
 
-  Preserve the source missing-data proportion.
+  Draw missing values at the source's missing-data rate, so the
+  proportion is reproduced in expectation rather than exactly.
 
 - id:
 
@@ -48,8 +50,10 @@ simulate_density(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with one generated density value per
-observation.
+A `simulab_sim` base `data.frame` with `n` rows and columns `id` and
+`variable`, one generated density value per row.
+`as.data.frame(x, what = "source")` gives a one-row summary of the
+source values.
 
 ## Examples
 

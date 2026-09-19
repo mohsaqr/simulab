@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,11 +51,15 @@
 
 
 <dl><dt id="arg-inputs">inputs<a class="anchor" aria-label="anchor" href="#arg-inputs"></a></dt>
-<dd><p>List of data frames or simulation results.</p></dd>
+<dd><p>List with at least one element, commonly data frames or
+simulation results. Element names label the batches; when <code>inputs</code> is
+unnamed the positions <code>"1"</code>, <code>"2"</code>, ... are used instead.</p></dd>
 
 
 <dt id="arg-fun">fun<a class="anchor" aria-label="anchor" href="#arg-fun"></a></dt>
-<dd><p>Function returning a data frame.</p></dd>
+<dd><p>Function applied to each element. It must return a base
+<code>data.frame</code>, and every call must return the same columns, otherwise the
+run is an error.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -63,12 +67,15 @@
 
 
 <dt id="arg-id">id<a class="anchor" aria-label="anchor" href="#arg-id"></a></dt>
-<dd><p>Name of the batch identifier.</p></dd>
+<dd><p>Single string naming the batch-label column, default
+<code>"batch_id"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A combined base <code>data.frame</code> with one batch identifier per output.</p>
+    <p>A base <code>data.frame</code> stacking the <code>fun</code> outputs by row, with the
+batch label in a leading column named by <code>id</code>, so one row per row of each
+output.</p>
     </div>
 
     <div class="section level2">

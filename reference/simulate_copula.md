@@ -30,17 +30,27 @@ simulate_copula(
   Variable definitions from
   [`define_variables()`](https://mohsaqr.github.io/simulab/reference/define_variables.md).
   In the distribution-call form every marginal must carry a quantile
-  function; `list_distributions(copula = TRUE)` reports which do. In the
-  `formula`/`variance` column form the marginal is stated as a mean and
-  a dispersion.
+  function; `list_distributions(copula = TRUE)` reports which do. The
+  `formula`/`variance` column form covers twelve marginals: `formula` is
+  the mean (through `link`) and `variance` carries the second parameter,
+  which is a variance for `normal`, a precision for `beta`, a dispersion
+  for `gamma` and `negative_binomial`, and a size for `binomial`. It is
+  unused by `binary`, `exponential`, `poisson` and `no_zero_poisson`;
+  for `uniform` and `uniform_integer` `formula` instead carries both
+  limits, and for `categorical` `formula` carries the category
+  probabilities and `variance` their labels. A marginal outside those
+  twelve raises `simulab_no_quantile`; state it as a distribution call
+  instead.
 
 - rho:
 
-  Optional latent Pearson correlation.
+  Optional latent Pearson correlation, zero by default.
 
 - tau:
 
-  Optional Kendall correlation, overriding `rho`.
+  Optional Kendall correlation, overriding `rho`. It is converted to the
+  latent Pearson correlation `sin(pi * tau / 2)`, so a continuous margin
+  pair attains Kendall's tau of `tau`.
 
 - structure:
 
@@ -69,8 +79,15 @@ simulate_copula(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with one row per observation and a
-tidy latent-correlation table.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id` (renamed by `id`) and one column per variable. Two tidy
+tables come from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "definitions"` restates the specification, and
+`what = "latent_correlation"` has one row per correlation-matrix cell
+with columns `row`, `column` and `correlation`. That matrix is the
+correlation of the latent Gaussian variables, not of the generated
+margins, which are pulled apart by their own quantile transforms.
 
 ## Conditions
 

@@ -55,7 +55,16 @@ simulate_ordinal(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with one row per observation.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id` and one column per variable, each holding a category label.
+Two tidy tables come from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "probabilities"` has one row per variable and category with
+columns `variable`, `category` and `probability`; `what = "correlation"`
+has one row per latent correlation-matrix cell with columns `row`,
+`column` and `correlation`. That correlation is the latent Gaussian one,
+not the correlation of the realised categories, which is attenuated by
+the thresholding.
 
 ## Examples
 

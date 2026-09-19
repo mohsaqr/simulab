@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,8 +85,11 @@ tidy data frame with columns <code>cluster</code>, <code>variable</code> and <co
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> with true cluster membership and
-tidy center/scale tables.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one row per observation and
+columns <code>id</code>, <code>cluster</code> (the true membership label) and one column per
+variable. One tidy table comes from <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>:
+<code>what = "parameters"</code> has one row per cluster-variable combination with
+columns <code>cluster</code>, <code>variable</code>, <code>center</code>, <code>sd</code> and <code>proportion</code>.</p>
     </div>
 
     <div class="section level2">

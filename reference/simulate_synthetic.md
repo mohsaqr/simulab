@@ -38,7 +38,10 @@ simulate_synthetic(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with jointly resampled rows.
+A `simulab_sim` base `data.frame` with `n` rows of jointly resampled
+values, the identifier column first.
+`as.data.frame(x, what = "provenance")` gives the source row each
+synthetic row was drawn from.
 
 ## Examples
 

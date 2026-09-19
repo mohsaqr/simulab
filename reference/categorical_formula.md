@@ -1,6 +1,7 @@
 # Construct a categorical probability formula
 
-Construct a categorical probability formula
+Supply exactly one of `probabilities` and `categories`; supplying both,
+or neither, is an error. Probabilities are normalised to sum to one.
 
 ## Usage
 
@@ -12,12 +13,12 @@ categorical_formula(probabilities = NULL, categories = NULL)
 
 - probabilities:
 
-  Category probabilities.
+  Category probabilities, at least two of them.
 
 - categories:
 
-  Number of equal-probability categories when probabilities are not
-  supplied.
+  Number of equal-probability categories, used instead of
+  `probabilities`.
 
 ## Value
 

@@ -20,7 +20,8 @@ augment_synthetic(data, source, variables = NULL, seed = NULL)
 
 - variables:
 
-  Variables to resample.
+  Variables to resample. `NULL`, the default, resamples every variable
+  in `source`.
 
 - seed:
 
@@ -28,7 +29,10 @@ augment_synthetic(data, source, variables = NULL, seed = NULL)
 
 ## Value
 
-A `simulab_sim` base `data.frame` with resampled variables added.
+A `simulab_sim` base `data.frame` with the resampled variables added,
+one source row drawn per row of `data`.
+`as.data.frame(x, what = "provenance")` gives the source row each
+destination row was drawn from.
 
 ## Examples
 

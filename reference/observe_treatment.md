@@ -1,6 +1,10 @@
 # Generate observational treatment or exposure groups
 
-Generate observational treatment or exposure groups
+Evaluates one formula per modelled group against every row of `data` and
+draws that row's exposure from the resulting probabilities, so the
+formulas are the propensity model. One group is always implicit: it is
+listed last and takes the remaining probability, which makes it the
+reference category of the logit link.
 
 ## Usage
 
@@ -20,36 +24,52 @@ observe_treatment(
 
 - data:
 
-  Base `data.frame`.
+  Base `data.frame`, or a `simulab_sim`, with at least one row.
 
 - formulas:
 
-  Character vector of probability formulas. An implicit final group
-  receives the remaining probability.
+  Character vector of at least one formula, each an expression over the
+  columns of `data`. Under the identity link they are evaluated on the
+  probability scale; under the logit link they are the log odds of that
+  group relative to the implicit final group, that is a multinomial
+  logit linear predictor. An implicit final group receives the remaining
+  probability.
 
 - link:
 
-  Identity or multinomial-logit link.
+  Scale the formulas are stated on, one of `"identity"` (the default) or
+  `"logit"`, the multinomial-logit link.
 
 - labels:
 
-  Optional group labels.
+  Optional atomic vector of group labels, one per formula plus one for
+  the implicit final group. Defaults to `NULL`: `c(1, 0)` for a single
+  formula, so the modelled group is `1` and the implicit reference is
+  `0`, and `1` to the number of groups otherwise, the implicit group
+  last.
 
 - name:
 
-  Name of the exposure variable.
+  Name of the exposure variable, which must not already exist in `data`.
+  A single non-empty string, defaulting to `"treatment"`.
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number, or `NULL` (the default).
 
 - envir:
 
-  Formula evaluation environment.
+  Environment the formulas are evaluated in after the data columns.
+  Defaults to the caller's environment.
 
 ## Value
 
-A `simulab_sim` base `data.frame` with the generated exposure group.
+A `simulab_sim` base `data.frame` with the columns of `data` followed by
+the exposure variable named by `name`, one row per input row. The
+component `probabilities`, reached with
+`as.data.frame(x, what = "probabilities")`, holds one row per
+observation and group, with columns `observation`, `group` and
+`probability`.
 
 ## Examples
 

@@ -1,6 +1,8 @@
 # Print a simulation result
 
-Print a simulation result
+Prints a one-line header giving the simulation type and the full
+dimensions, then at most the first 10 rows of the primary data, then a
+count of the rows not shown.
 
 ## Usage
 

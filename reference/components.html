@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,8 +56,10 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A base <code>data.frame</code> with one row per available table and columns
-<code>table</code>, <code>rows</code>, and <code>columns</code>.</p>
+    <p>A base <code>data.frame</code> with one row per available table and the columns
+<code>table</code> (the name to pass as <code>what</code> to <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>), <code>rows</code> and
+<code>columns</code>. The first row is always the primary <code>"data"</code> table; a result
+that carries no extra tables returns that single row.</p>
     </div>
 
     <div class="section level2">

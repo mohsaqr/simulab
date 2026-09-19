@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,24 +56,33 @@
 
 
 <dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Named vectors or two-value numeric ranges.</p></dd>
+<dd><p>Named vectors, one per parameter. Under <code>method = "grid"</code> every
+element is a level of a full factorial crossing. Under the sampling
+methods a length-2 numeric vector is read as a <code>c(minimum, maximum)</code> range
+to draw from, and any other vector is sampled from with replacement.</p></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
-<dd><p>Number of rows for random or Latin-hypercube designs.</p></dd>
+<dd><p>Single positive whole number of rows to draw for the <code>"random"</code> and
+<code>"latin_hypercube"</code> methods, default <code>10</code>. Ignored by <code>"grid"</code>, whose row
+count is the product of the parameter lengths.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Full grid, random sampling, or Latin hypercube.</p></dd>
+<dd><p>One of <code>"grid"</code> (the default), <code>"random"</code>, or
+<code>"latin_hypercube"</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Optional random seed.</p></dd>
+<dd><p>Optional single random seed. It is applied for the sampling
+methods only and is restored on exit.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A base <code>data.frame</code> with one row per parameter combination.</p>
+    <p>A base <code>data.frame</code> with one row per parameter combination, a
+leading <code>scenario_id</code> column numbering the rows, and then one column per
+parameter in the order given.</p>
     </div>
 
     <div class="section level2">

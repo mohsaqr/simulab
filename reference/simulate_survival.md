@@ -34,7 +34,8 @@ simulate_survival(
 
 - id:
 
-  Identifier name used when covariates are omitted.
+  Identifier name used when covariates are omitted. Defaults to `"id"`
+  and is ignored when `covariates` is supplied.
 
 - seed, digits, envir:
 
@@ -43,7 +44,10 @@ simulate_survival(
 
 ## Value
 
-A `simulab_sim` base `data.frame`.
+A `simulab_sim` base `data.frame` with one row per simulated subject:
+the identifier (or the supplied covariates) followed by one column per
+event defined in `specification`. The `survival_definitions` component
+holds the specification that generated it.
 
 ## Examples
 

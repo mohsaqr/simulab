@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,8 +83,17 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> with group parameters and the
-population eta-squared effect.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> with one row per observation and
+columns <code>id</code>, <code>group</code> and <code>outcome</code> (renamed by <code>outcome</code>). Two tidy tables
+come from <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>: <code>what = "parameters"</code> has one row per group
+with columns <code>group</code>, <code>n</code>, <code>mean</code> and <code>sd</code>; <code>what = "effects"</code> has a single
+row with columns <code>grand_mean</code>, <code>between_sum_squares</code>
+(<code>sum(n * (mean - grand_mean)^2)</code>), <code>within_sum_squares</code>
+(<code>sum((n - 1) * sd^2)</code>) and <code>eta_squared</code>, their ratio
+<code>between / (between + within)</code>. Because the within term uses the
+degrees of freedom <code>n - 1</code> rather than <code>n</code>, <code>eta_squared</code> is the
+design's sum-of-squares eta-squared and differs slightly from the
+variance-ratio population eta-squared.</p>
     </div>
 
     <div class="section level2">

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,9 +69,9 @@ structures.</p></dd>
 <dd><p>Correlation structure: one of <code>"independent"</code>,
 <code>"exchangeable"</code>, <code>"ar1"</code>, or <code>"custom"</code>. If left unset it is chosen from
 the other arguments: <code>"custom"</code> when <code>correlation</code> is supplied,
-<code>"exchangeable"</code> when a non-zero <code>rho</code> (or <code>tau</code>) is supplied, and
-<code>"independent"</code> otherwise. Passing <code>"independent"</code> together with a
-non-zero <code>rho</code> is a contradiction and raises an error.</p></dd>
+<code>"exchangeable"</code> when a non-zero <code>rho</code> is supplied, and <code>"independent"</code>
+otherwise. Passing <code>"independent"</code> together with a non-zero <code>rho</code> is a
+contradiction and raises a <code>simulab_contradictory_structure</code> error.</p></dd>
 
 
 <dt id="arg-correlation">correlation<a class="anchor" aria-label="anchor" href="#arg-correlation"></a></dt>

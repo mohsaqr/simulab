@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,11 +85,14 @@
 
 
 <dt id="arg-output-range">output_range<a class="anchor" aria-label="anchor" href="#arg-output-range"></a></dt>
-<dd><p>Optional output range.</p></dd>
+<dd><p>Optional numeric pair. The spline value <code>v</code> is rescaled
+to <code>output_range[1] + v * diff(output_range)</code>, which maps <code>[0, 1]</code> onto the
+pair. Values outside <code>[0, 1]</code> are rescaled the same way, not clipped.</p></dd>
 
 
 <dt id="arg-noise-variance">noise_variance<a class="anchor" aria-label="anchor" href="#arg-noise-variance"></a></dt>
-<dd><p>Non-negative Gaussian noise variance.</p></dd>
+<dd><p>Non-negative Gaussian noise variance; the noise added
+to each value has standard deviation <code>sqrt(noise_variance)</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -98,8 +101,11 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>simulab_sim</code> base <code>data.frame</code> with the spline variable and a tidy
-basis table.</p>
+    <p>A <code>simulab_sim</code> base <code>data.frame</code> holding <code>data</code> with the spline
+variable added. <code>as.data.frame(x, what = "basis")</code> gives the tidy basis
+table, one row per observation/basis combination, and
+<code>as.data.frame(x, what = "parameters")</code> gives one row per basis
+coefficient.</p>
     </div>
 
     <div class="section level2">

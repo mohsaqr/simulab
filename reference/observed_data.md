@@ -1,6 +1,8 @@
 # Apply a missingness mask to complete data
 
-Apply a missingness mask to complete data
+Sets every cell the mask flags to `NA`, leaving the complete data
+otherwise untouched, and keeps the mask alongside the result as a tidy
+component.
 
 ## Usage
 
@@ -12,20 +14,32 @@ observed_data(data, missingness, id = NULL)
 
 - data:
 
-  Complete base `data.frame`.
+  Complete base `data.frame`, or a `simulab_sim`, with as many rows as
+  `missingness` and in the same row order.
 
 - missingness:
 
   A logical mask returned by
-  [`missingness_matrix()`](https://mohsaqr.github.io/simulab/reference/missingness_matrix.md).
+  [`missingness_matrix()`](https://mohsaqr.github.io/simulab/reference/missingness_matrix.md),
+  with one row per row of `data`. Its columns that also name columns of
+  `data`, other than those listed in `id`, are the targets, and each
+  must be logical.
 
 - id:
 
-  Identifier columns present in both inputs and never made missing.
+  Identifier columns the mask carries that are never made missing. A
+  character vector, or `NULL` (the default). Name the identifier columns
+  of the mask here, or they are treated as targets and rejected for not
+  being logical.
 
 ## Value
 
-A `simulab_sim` base `data.frame` containing observed data.
+A `simulab_sim` base `data.frame` with the columns and rows of `data`,
+the flagged cells of the target variables replaced by `NA`. The
+component `missingness`, reached with
+`as.data.frame(x, what = "missingness")`, is the mask in long form, one
+row per observation and target variable, with columns `observation`,
+`variable` and the logical `missing`.
 
 ## Examples
 

@@ -1,6 +1,11 @@
 # Compute a tidy Weibull survival curve
 
-Compute a tidy Weibull survival curve
+Evaluates the simstudy Weibull curve of
+[`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md),
+`S(t) = exp(-exp(formula) * t^(1 / shape) / scale)`, at `n` survival
+probabilities spread evenly from `1 - 1 / n` down to `1 / n`, inverting
+it for the matching times. The points are therefore equally spaced in
+survival probability, not in time.
 
 ## Usage
 
@@ -12,28 +17,36 @@ survival_curve(formula, shape, scale = 1, n = 100L, time_limits = NULL)
 
 - formula:
 
-  Log-hazard intercept.
+  Intercept of the linear predictor on the log scale. A single finite
+  number. `exp(formula)` multiplies the cumulative hazard, and equals
+  the hazard only when `shape` and `scale` are both 1.
 
 - shape:
 
-  Positive shape parameter.
+  Positive Weibull shape in the simstudy parameterization, the exponent
+  applied to the transformed time. A single positive number.
 
 - scale:
 
-  Positive scale parameter.
+  Positive Weibull scale, dividing the cumulative hazard. A single
+  positive number, defaulting to `1`.
 
 - n:
 
-  Number of curve points.
+  Number of curve points. A single whole number of at least 2,
+  defaulting to `100`.
 
 - time_limits:
 
-  Optional time range.
+  Optional inclusive time range, as an increasing non-negative numeric
+  vector of length 2, that the curve is restricted to. Defaults to
+  `NULL`, the whole curve. Points outside the range are dropped, so
+  fewer than `n` rows are returned.
 
 ## Value
 
-A base `data.frame` with one row per curve point and columns `time` and
-`survival`.
+A base `data.frame` with one row per retained curve point, in increasing
+time order, and columns `time` and `survival`.
 
 ## Examples
 

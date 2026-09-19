@@ -26,7 +26,14 @@ augment_correlated(
 
 - specification:
 
-  New variable definitions.
+  New variable definitions, in the `formula`/`variance` column form
+  built by
+  [`define_variable()`](https://mohsaqr.github.io/simulab/reference/define_variable.md).
+  Unlike
+  [`simulate_copula()`](https://mohsaqr.github.io/simulab/reference/simulate_copula.md),
+  `augment_correlated()` does not accept the distribution-call form, and
+  one row of `specification` is one new variable. None of the named
+  variables may already exist in `data`.
 
 - rho, tau, structure, correlation:
 
@@ -34,7 +41,8 @@ augment_correlated(
   rule as
   [`simulate_copula()`](https://mohsaqr.github.io/simulab/reference/simulate_copula.md):
   leaving it unset selects `"exchangeable"` when a non-zero `rho` or
-  `tau` is given.
+  `tau` is given. `tau` is converted to the latent Pearson correlation
+  `sin(pi * tau / 2)`.
 
 - group:
 
@@ -51,7 +59,16 @@ augment_correlated(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with the correlated variables.
+A `simulab_sim` base `data.frame` holding every column of `data` plus
+one column per new variable. Two tidy tables come from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "definitions"` restates the specification, and
+`what = "latent_correlation"` describes the latent Gaussian correlation.
+Without `group` that table has one row per correlation-matrix cell, with
+columns `row`, `column` and `correlation`; with `group` the correlation
+is across the observations inside each group, so the table instead has
+one row per group with columns `group`, `observations`, `rho` and
+`structure`.
 
 ## Examples
 

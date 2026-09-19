@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,9 +86,16 @@ group through the corresponding grouped TNA estimator.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy edge-list <code>simulab_sim</code>. Initial probabilities and model
-metadata are components; use <code><a href="as_tna_model.html">as_tna_model()</a></code> when a native model object is
-required by <code>tna</code> plotting or inference functions.</p>
+    <p>A tidy edge-list <code>simulab_sim</code> base <code>data.frame</code> with one row per
+ordered state pair and columns <code>from</code>, <code>to</code>, and <code>weight</code>, prefixed by a
+<code>group</code> column when <code>group</code> is supplied. For <code>model = "tna"</code> the weights
+are the estimated transition probabilities and sum to one within each
+<code>from</code> state; the other estimators return their own (not row-stochastic)
+weights. <code>as.data.frame(x, what = )</code> also returns
+<code>initial_probabilities</code> (<code>state</code>, <code>probability</code>) and <code>model_info</code>
+(<code>model</code>, <code>grouped</code>, <code>group</code>, <code>observations</code>, <code>sequence_positions</code>).
+Use <code><a href="as_tna_model.html">as_tna_model()</a></code> when a native model object is required by <code>tna</code>
+plotting or inference functions.</p>
     </div>
 
     <div class="section level2">
@@ -97,14 +104,6 @@ required by <code>tna</code> plotting or inference functions.</p>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"tna"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">fit_tna</span><span class="op">(</span><span class="va">data</span>, model <span class="op">=</span> <span class="st">"tna"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:tna_model&gt; 6 rows x 3 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      from      to    weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 State 1 State 1 0.1104651</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 State 2 State 1 0.5637584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 State 3 State 1 0.6386555</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 State 1 State 2 0.3720930</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 State 2 State 2 0.3288591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 State 3 State 2 0.3277311</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

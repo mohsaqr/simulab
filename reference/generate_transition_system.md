@@ -27,15 +27,20 @@ generate_transition_system(
 
 - concentration:
 
-  Dirichlet concentration for off-diagonal transitions.
+  Dirichlet concentration applied to every transition and to the
+  initial-state probabilities.
 
 - diagonal_concentration:
 
-  Optional additional self-transition concentration.
+  Optional extra concentration added to the self-transition (diagonal)
+  entries only. The default `0` leaves self-transitions no more likely
+  than any other transition.
 
 - state_categories:
 
-  Optional learning-state categories.
+  Optional learning-state categories, used only when `states` is `NULL`,
+  to draw state labels with
+  [`sample_learning_states()`](https://mohsaqr.github.io/simulab/reference/sample_learning_states.md).
 
 - seed:
 
@@ -43,8 +48,11 @@ generate_transition_system(
 
 ## Value
 
-A tidy transition-edge `simulab_sim` with initial probabilities as a
-component.
+A tidy transition-edge `simulab_sim` base `data.frame` with `n_states^2`
+rows and columns `from`, `to`, and `probability`; every `from` state's
+probabilities sum to one. An `initial_probabilities` table (`state`,
+`probability`) is available through
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 
 ## Examples
 

@@ -52,15 +52,17 @@ simulate_event_log(
 
 - achievement_probabilities:
 
-  Achievement probabilities.
+  Achievement probabilities, one per level and summing to one. When
+  `NULL`, the levels are equally likely.
 
 - start_time:
 
-  Initial timestamp.
+  Initial timestamp. Every actor's first event is placed at this time.
 
 - interval_range:
 
-  Minimum and maximum seconds between events.
+  Minimum and maximum seconds between an actor's consecutive events,
+  drawn uniformly.
 
 - transitions:
 
@@ -81,8 +83,13 @@ simulate_event_log(
 
 ## Value
 
-A long-form `simulab_sim` event log with wide, one-hot, transition,
-actor, and group tables as components.
+A long-form `simulab_sim` base `data.frame` with one row per actor event
+and columns `group`, `id`, `course`, `achievement`, `period`, `state`,
+and `timestamp`. `as.data.frame(x, what = )` also returns `transitions`
+(`group`, `from`, `to`, `probability`), `actors` (`group`, `id`,
+`course`, `achievement`), `groups` (`group`, `actors`), `wide` (one row
+per actor, columns `id`, `S1`, ..., plus actor metadata), and `one_hot`
+(the event log with `state` replaced by indicator columns).
 
 ## Examples
 
@@ -99,10 +106,10 @@ head(result)
 #> 6 Group 1 G1_A1 Course 1        high      6         Track 2020-01-01 00:10:24
 components(result)
 #>         table rows columns
-#> 1        data  104       7
+#> 1        data  160       7
 #> 2 transitions  128       4
 #> 3      actors   20       4
 #> 4      groups    2       2
 #> 5        wide   20      12
-#> 6     one_hot  104      22
+#> 6     one_hot  160      22
 ```

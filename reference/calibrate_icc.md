@@ -43,8 +43,14 @@ calibrate_icc(
 
 ## Value
 
-A base `data.frame` with one row per target ICC and the required
-random-effect variance.
+A base `data.frame` with one row per target ICC and columns `icc`,
+`distribution` and `random_effect_variance`. Except for the `normal`
+`total_variance` case, which returns `icc * total_variance`, the
+variance is `icc / (1 - icc)` times a residual variance on the
+linear-predictor scale: `within_variance` for `normal`, the logistic
+latent variance `pi^2 / 3` for `binary`, `log(1 + 1 / mean)` for
+`poisson`, `trigamma(1 / dispersion)` for `gamma`, and
+`trigamma(1 / (1 / mean + dispersion))` for `negative_binomial`.
 
 ## Examples
 

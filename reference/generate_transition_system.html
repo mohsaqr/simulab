@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,16 +66,19 @@
 
 
 <dt id="arg-concentration">concentration<a class="anchor" aria-label="anchor" href="#arg-concentration"></a></dt>
-<dd><p>Dirichlet concentration for off-diagonal transitions.</p></dd>
+<dd><p>Dirichlet concentration applied to every transition and
+to the initial-state probabilities.</p></dd>
 
 
 <dt id="arg-diagonal-concentration">diagonal_concentration<a class="anchor" aria-label="anchor" href="#arg-diagonal-concentration"></a></dt>
-<dd><p>Optional additional self-transition
-concentration.</p></dd>
+<dd><p>Optional extra concentration added to the
+self-transition (diagonal) entries only. The default <code>0</code> leaves
+self-transitions no more likely than any other transition.</p></dd>
 
 
 <dt id="arg-state-categories">state_categories<a class="anchor" aria-label="anchor" href="#arg-state-categories"></a></dt>
-<dd><p>Optional learning-state categories.</p></dd>
+<dd><p>Optional learning-state categories, used only when
+<code>states</code> is <code>NULL</code>, to draw state labels with <code><a href="sample_learning_states.html">sample_learning_states()</a></code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -84,8 +87,10 @@ concentration.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy transition-edge <code>simulab_sim</code> with initial probabilities as a
-component.</p>
+    <p>A tidy transition-edge <code>simulab_sim</code> base <code>data.frame</code> with
+<code>n_states^2</code> rows and columns <code>from</code>, <code>to</code>, and <code>probability</code>; every
+<code>from</code> state's probabilities sum to one. An <code>initial_probabilities</code> table
+(<code>state</code>, <code>probability</code>) is available through <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code>.</p>
     </div>
 
     <div class="section level2">

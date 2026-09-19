@@ -40,9 +40,9 @@ simulate_correlated(
   Correlation structure: one of `"independent"`, `"exchangeable"`,
   `"ar1"`, or `"custom"`. If left unset it is chosen from the other
   arguments: `"custom"` when `correlation` is supplied, `"exchangeable"`
-  when a non-zero `rho` (or `tau`) is supplied, and `"independent"`
-  otherwise. Passing `"independent"` together with a non-zero `rho` is a
-  contradiction and raises an error.
+  when a non-zero `rho` is supplied, and `"independent"` otherwise.
+  Passing `"independent"` together with a non-zero `rho` is a
+  contradiction and raises a `simulab_contradictory_structure` error.
 
 - correlation:
 
@@ -59,10 +59,15 @@ simulate_correlated(
 
 ## Value
 
-A `simulab_sim` base `data.frame`. The requested correlation and
-covariance structures are available through
-[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) using
-`what = "correlation"` or `what = "covariance"`.
+A `simulab_sim` base `data.frame` with one row per observation and
+columns `id` and one column per variable. Three tidy tables come from
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html):
+`what = "parameters"` has one row per variable with columns `variable`,
+`mean` and `sd`; `what = "correlation"` and `what = "covariance"` each
+have one row per matrix cell with columns `row`, `column` and
+`correlation` or `covariance`. The covariance is the correlation matrix
+scaled by `sds` on both sides, so `sds` are standard deviations rather
+than variances.
 
 ## Examples
 

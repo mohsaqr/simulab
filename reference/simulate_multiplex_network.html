@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,8 +105,13 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tidy layered edge-list <code>simulab_sim</code> with <code>layer</code>, <code>from</code>, <code>to</code>,
-and <code>weight</code>; nodes, layers, adjacency, and settings are components.</p>
+    <p>A tidy layered edge-list <code>simulab_sim</code> base <code>data.frame</code> with one row
+per edge and columns <code>layer</code>, <code>from</code>, <code>to</code>, and <code>weight</code>. Every layer is
+drawn independently over the same node set.
+<code>as.data.frame(x, what = )</code> also returns <code>nodes</code> (<code>node</code>, <code>type</code>),
+<code>layers</code> (<code>layer</code>, <code>probability</code>), <code>adjacency</code> (a long
+<code>layer</code>/<code>row</code>/<code>column</code>/<code>weight</code> table over all ordered node pairs in every
+layer), and a one-row <code>settings</code> table.</p>
     </div>
 
     <div class="section level2">

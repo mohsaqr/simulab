@@ -1,6 +1,11 @@
 # Simulate longitudinal growth trajectories
 
-Simulate longitudinal growth trajectories
+Draws per-unit random growth coefficients, then forms the outcome at
+each measurement occasion as
+`(intercept + b0) + (slope + b1) * time + (quadratic + b2) * time^2`
+plus normal residual noise, where `b2` is present only when `random_sd`
+has three elements. Every unit is observed at every occasion (balanced
+design).
 
 ## Usage
 
@@ -22,29 +27,36 @@ simulate_growth(
 
 - n:
 
-  Number of units.
+  Number of units. A single whole number of at least 2.
 
 - times:
 
-  Measurement occasions.
+  Measurement occasions: a finite numeric vector of at least two unique
+  values, used verbatim as the `time` predictor (so `0:4` puts the
+  intercept at the first occasion).
 
 - intercept, slope, quadratic:
 
-  Fixed growth coefficients.
+  Fixed growth coefficients, each a single number; they default to `0`,
+  `1` and `0`.
 
 - random_sd:
 
-  Standard deviations for random intercept, slope, and optional
-  quadratic term.
+  Standard deviations for the random intercept, slope, and optional
+  quadratic term. A non-negative numeric vector of length 2 (the
+  default, `c(1, 0.25)`) or 3.
 
 - random_correlation:
 
-  Correlation matrix for random effects, or a tidy data frame with
-  columns `row`, `column` and `correlation`.
+  Correlation matrix for the random effects, matching the length of
+  `random_sd`, or a tidy data frame with columns `row`, `column` and
+  `correlation`. `NULL` (the default) makes the random effects
+  uncorrelated.
 
 - residual_sd:
 
-  Residual standard deviation.
+  Residual standard deviation. A single positive number, defaulting to
+  `1`.
 
 - seed:
 
@@ -52,7 +64,16 @@ simulate_growth(
 
 ## Value
 
-A long-form `simulab_sim` base `data.frame`.
+A long-form `simulab_sim` base `data.frame` with one row per
+unit-occasion (`n * length(times)` rows) and columns `id`, `time` and
+`outcome`. Rows are ordered by occasion first and unit second. A
+`parameters` component holds one row for each of `intercept`, `slope`,
+`quadratic` and `residual_sd`, with columns `term` and `value` (note
+that `residual_sd` is a standard deviation, and that the random-effect
+standard deviations are not repeated there). A `random_effects`
+component holds one row per unit with columns `id`, `intercept`, `slope`
+and, when `random_sd` has three elements, `quadratic`, giving each
+unit's deviation from the fixed coefficients.
 
 ## Examples
 

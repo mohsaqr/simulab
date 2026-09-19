@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,8 +61,14 @@
 
 
 <dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
-<dd><p>Numeric value, expression string, or one-sided formula that
-defines the distribution mean or probability.</p></dd>
+<dd><p>Numeric value, expression string, or one-sided formula giving
+the distribution's primary argument. For most families that is the mean or
+probability, but <code>"uniform"</code> and <code>"uniform_integer"</code> take
+<code>"minimum;maximum"</code>, <code>"categorical"</code> takes semicolon-separated category
+probabilities, <code>"mixture"</code> takes <code>"value | probability + ..."</code>,
+<code>"treatment"</code> takes semicolon-separated allocation ratios,
+<code>"cluster_size"</code> takes the total to be split, and <code>"custom"</code> takes the name
+of a generator function.</p></dd>
 
 
 <dt id="arg-variance">variance<a class="anchor" aria-label="anchor" href="#arg-variance"></a></dt>

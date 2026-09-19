@@ -1,6 +1,6 @@
 # Summarize simulated variables
 
-Summarize simulated variables
+Summarizes the primary data only; the other components are not included.
 
 ## Usage
 
@@ -21,8 +21,10 @@ summary(object, ...)
 
 ## Value
 
-A base `data.frame` with one row per variable and columns describing
-storage class, missingness, uniqueness, and numeric summaries.
+A base `data.frame` with one row per column of the primary data and the
+columns `variable`, `class`, `observations`, `missing`, `unique`,
+`mean`, `sd`, `minimum` and `maximum`. The last four are `NA` for
+non-numeric columns.
 
 ## Examples
 
