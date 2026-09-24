@@ -35,4 +35,5 @@ if (requireNamespace("igraph", quietly = TRUE)) {
   graph <- as_igraph(network)
   igraph::vcount(graph)
 }
+#> [1] 30
 ```

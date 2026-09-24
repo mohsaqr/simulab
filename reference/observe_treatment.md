@@ -1,6 +1,6 @@
 # Generate observational treatment or exposure groups
 
-Evaluates one formula per modelled group against every row of `data` and
+Evaluates one formula per modeled group against every row of `data` and
 draws that row's exposure from the resulting probabilities, so the
 formulas are the propensity model. One group is always implicit: it is
 listed last and takes the remaining probability, which makes it the
@@ -44,7 +44,7 @@ observe_treatment(
 
   Optional atomic vector of group labels, one per formula plus one for
   the implicit final group. Defaults to `NULL`: `c(1, 0)` for a single
-  formula, so the modelled group is `1` and the implicit reference is
+  formula, so the modeled group is `1` and the implicit reference is
   `0`, and `1` to the number of groups otherwise, the implicit group
   last.
 

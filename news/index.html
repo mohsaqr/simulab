@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,16 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.4" id="simulab-044">simulab 0.4.4<a class="anchor" aria-label="anchor" href="#simulab-044"></a></h2>
+<div class="section level3">
+<h3 id="cran-preparation-0-4-4">CRAN preparation<a class="anchor" aria-label="anchor" href="#cran-preparation-0-4-4"></a></h3>
+<ul><li>The seed-contract test no longer errors when the suggested <code>tna</code> package is unavailable: <code><a href="../reference/simulate_group_tna.html">simulate_group_tna()</a></code> also calls <code><a href="../reference/fit_tna.html">fit_tna()</a></code> and is now skipped alongside <code><a href="../reference/simulate_tna_batches.html">simulate_tna_batches()</a></code> in that case.</li>
+<li>Documentation uses US spelling throughout, matching <code>Language: en-US</code>.</li>
+<li>
+<code>DESCRIPTION</code> names the maintainer as copyright holder (<code>cph</code>).</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.3" id="simulab-043">simulab 0.4.3<a class="anchor" aria-label="anchor" href="#simulab-043"></a></h2>
 <div class="section level3">
 <h3 id="two-level-latent-profile-data-0-4-3">Two-level latent profile data<a class="anchor" aria-label="anchor" href="#two-level-latent-profile-data-0-4-3"></a></h3>
@@ -51,7 +61,7 @@
 <h3 id="correctness-fixes-found-by-a-documentation-audit-0-4-2">Correctness fixes found by a documentation audit<a class="anchor" aria-label="anchor" href="#correctness-fixes-found-by-a-documentation-audit-0-4-2"></a></h3>
 <p>A function-by-function audit of every exported verb’s documentation against its implementation found five cases where the code did not do what the documentation described. All five are fixed, and each carries a regression test.</p>
 <ul><li>
-<code><a href="../reference/simulate_longitudinal.html">simulate_longitudinal()</a></code> read a tidy <code>transition</code> table with <code>from</code> and <code>to</code> reversed. A row written as <code>from = "a", to = "b"</code> produced the effect of <code>b</code> on <code>a</code>, the opposite of what it says. <code>from</code> is now the driving variable at <code>t-1</code> and <code>to</code> the driven variable at <code>t</code>, matching the column names and the documented VAR recursion. Callers who compensated for the old behaviour by swapping the columns must stop doing so; the matrix form is unaffected.</li>
+<code><a href="../reference/simulate_longitudinal.html">simulate_longitudinal()</a></code> read a tidy <code>transition</code> table with <code>from</code> and <code>to</code> reversed. A row written as <code>from = "a", to = "b"</code> produced the effect of <code>b</code> on <code>a</code>, the opposite of what it says. <code>from</code> is now the driving variable at <code>t-1</code> and <code>to</code> the driven variable at <code>t</code>, matching the column names and the documented VAR recursion. Callers who compensated for the old behavior by swapping the columns must stop doing so; the matrix form is unaffected.</li>
 <li>
 <code><a href="../reference/simulate_event_log.html">simulate_event_log()</a></code> ignored a fixed <code>sequence_length</code>. Because <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code> reads a length-one numeric as an upper bound, <code>sequence_length = 8</code> drew lengths uniformly from 1 to 8 instead of producing sequences of exactly 8. The same trap affected <code>simulate_sequences(missing_tail = )</code> with a fixed count. Both now draw through a shared range sampler, which leaves seeded output unchanged wherever the range was already non-degenerate.</li>
 <li>

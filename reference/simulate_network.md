@@ -156,4 +156,12 @@ components(result)
 if (requireNamespace("igraph", quietly = TRUE)) {
   head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
 }
+#> <simulab_sim:network> 6 rows x 3 columns
+#>   from to weight
+#> 1    1  2      1
+#> 2    1  3      1
+#> 3    1 59      1
+#> 4    1 60      1
+#> 5    2  3      1
+#> 6    2  4      1
 ```

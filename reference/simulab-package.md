@@ -23,4 +23,4 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Mohammed Saqr <saqr@saqr.me>
+**Maintainer**: Mohammed Saqr <saqr@saqr.me> \[copyright holder\]

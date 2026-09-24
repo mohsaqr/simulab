@@ -11,7 +11,7 @@ compare_networks()."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,6 +116,16 @@ and <code>edges_y</code>. This is not a <code>simulab_sim</code>.</p>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"tna"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">cross_validate_tna</span><span class="op">(</span><span class="va">data</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tna"</span>, <span class="st">"ftna"</span><span class="op">)</span>, iterations <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   iteration model   pearson    cosine         mae        rmse   jaccard edges_x</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1   tna 0.9923218 0.9950624  0.03939268  0.04322439 1.0000000       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1  ftna 0.9916963 0.9945819 29.33333333 32.80582604 1.0000000       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         2   tna 0.9780752 0.9925225  0.04101001  0.04970991 0.8888889       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2  ftna 0.9688537 0.9905214 29.33333333 33.89854143 0.8888889       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   edges_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       8</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

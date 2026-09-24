@@ -1,5 +1,20 @@
 # Changelog
 
+## simulab 0.4.4
+
+### CRAN preparation
+
+- The seed-contract test no longer errors when the suggested `tna`
+  package is unavailable:
+  [`simulate_group_tna()`](https://mohsaqr.github.io/simulab/reference/simulate_group_tna.md)
+  also calls
+  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md)
+  and is now skipped alongside
+  [`simulate_tna_batches()`](https://mohsaqr.github.io/simulab/reference/simulate_tna_batches.md)
+  in that case.
+- Documentation uses US spelling throughout, matching `Language: en-US`.
+- `DESCRIPTION` names the maintainer as copyright holder (`cph`).
+
 ## simulab 0.4.3
 
 ### Two-level latent profile data
@@ -42,7 +57,7 @@ regression test.
   the opposite of what it says. `from` is now the driving variable at
   `t-1` and `to` the driven variable at `t`, matching the column names
   and the documented VAR recursion. Callers who compensated for the old
-  behaviour by swapping the columns must stop doing so; the matrix form
+  behavior by swapping the columns must stop doing so; the matrix form
   is unaffected.
 - [`simulate_event_log()`](https://mohsaqr.github.io/simulab/reference/simulate_event_log.md)
   ignored a fixed `sequence_length`. Because

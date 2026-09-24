@@ -49,4 +49,6 @@ b <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, seed =
 if (requireNamespace("igraph", quietly = TRUE)) {
   compare_centralities(a, b, measures = "degree")
 }
+#>        measure  method correlation      mae nodes
+#> degree  degree pearson  0.03088574 2.866667    30
 ```

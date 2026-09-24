@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,9 +62,13 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p>Install the released version from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"simulab"</span><span class="op">)</span></span></code></pre></div>
+<p>Or the development version from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mohsaqr/simulab"</span><span class="op">)</span></span></code></pre></div>
-<p>Four packages are suggested and none is required at run time. <code>tna</code> (1.2.3 or later) supplies the transition-network estimators used by <code><a href="reference/fit_tna.html">fit_tna()</a></code>. <code>igraph</code> (2.0.0 or later) receives graphs from <code><a href="reference/as_igraph.html">as_igraph()</a></code>. <code>simstudy</code> is used as an equivalence oracle in the test suite. <code>testthat</code>, <code>knitr</code> and <code>rmarkdown</code> build the tests and the vignette.</p>
+<p>Six packages are suggested and none is required at run time. <code>tna</code> (1.2.3 or later) supplies the transition-network estimators used by <code><a href="reference/fit_tna.html">fit_tna()</a></code>. <code>igraph</code> (2.0.0 or later) receives graphs from <code><a href="reference/as_igraph.html">as_igraph()</a></code>. <code>simstudy</code> is used as an equivalence oracle in the test suite. <code>testthat</code>, <code>knitr</code> and <code>rmarkdown</code> build the tests and the vignette.</p>
 </div>
 <div class="section level2">
 <h2 id="the-result-contract">The result contract<a class="anchor" aria-label="anchor" href="#the-result-contract"></a>
@@ -72,7 +76,7 @@
 <p>Every simulator returns a <code>simulab_sim</code> object. The object inherits from <code>data.frame</code> and holds one row per observation, so it can be passed directly to <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, <code><a href="https://rdrr.io/r/base/table.html" class="external-link">table()</a></code>, <code><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate()</a></code> or any function that accepts a data frame. The parameters that generated the data are attached as named tables.</p>
 <p><code><a href="reference/components.html">components()</a></code> lists the tables a result carries. It takes a <code>simulab_sim</code> object and returns a data frame with one row per table and columns <code>table</code>, <code>rows</code> and <code>columns</code>.</p>
 <p><code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> retrieves one table. It takes the object and a <code>what</code> argument naming the table, and returns a base data frame. <code>what = "data"</code> is the default and returns the observations.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_ttest.html">simulate_ttest</a></span><span class="op">(</span>n_a <span class="op">=</span> <span class="fl">40</span>, n_b <span class="op">=</span> <span class="fl">40</span>, mean_a <span class="op">=</span> <span class="fl">0</span>, mean_b <span class="op">=</span> <span class="fl">0.6</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/components.html">components</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        table rows columns</span></span>
@@ -91,7 +95,7 @@
 <p>The <code>parameters</code> table records the population means and standard deviations that were requested. The <code>effects</code> table records the population contrast implied by them: a mean difference of 0.6 with a pooled standard deviation of 1 gives a Cohen’s <em>d</em> of 0.6. Neither table is estimated from the sample. Both state what the generating process was set to.</p>
 <p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> describes the observations. It returns one row per variable with the storage class, the number of observations, the count of missing values, the number of distinct values, and the mean, standard deviation, minimum and maximum for numeric columns.</p>
 <p><code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> shows the first ten rows with a header giving the simulator type and the dimensions of the observation table.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;simulab_sim:ttest&gt; 80 rows x 3 columns</span></span>
 <span><span class="co">#&gt;    id group    outcome</span></span>
@@ -105,7 +109,7 @@
 <h2 id="long-form-input">Long-form input<a class="anchor" aria-label="anchor" href="#long-form-input"></a>
 </h2>
 <p>Every argument that is a matrix, an array or a list of matrices also accepts the equivalent long-form data frame. A transition matrix and its tidy table generate the same data under the same seed.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/simulate_hmm.html">simulate_hmm</a></span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">40</span>, chain_length <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span><span class="op">)</span>,</span>
@@ -124,7 +128,7 @@
 <h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
 </h2>
 <p>Every simulator accepts a <code>seed</code> argument. Passing a seed makes the result reproducible. It also leaves the calling session’s random-number state unchanged, so a seeded simulator does not advance the stream that surrounds it.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">99</span><span class="op">)</span></span>
 <span><span class="va">before</span> <span class="op">&lt;-</span> <span class="va">.Random.seed</span></span>
 <span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_ttest.html">simulate_ttest</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">0</span>, <span class="fl">1</span>, seed <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
@@ -141,7 +145,7 @@
 <h2 id="declarative-studies">Declarative studies<a class="anchor" aria-label="anchor" href="#declarative-studies"></a>
 </h2>
 <p><code><a href="reference/define_variables.html">define_variables()</a></code> states a data-generating process as distribution calls. The variable name is the argument name, and the distribution is a call whose arguments are its parameters.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">specification</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
 <span>  age     <span class="op">=</span> <span class="fu">normal</span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  treated <span class="op">=</span> <span class="fu">binary</span><span class="op">(</span>prob <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
@@ -153,7 +157,7 @@
 <p>Distribution names are never evaluated, so <code><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma()</a></code>, <code><a href="https://rdrr.io/r/base/Special.html" class="external-link">beta()</a></code>, <code><a href="https://rdrr.io/r/base/t.html" class="external-link">t()</a></code> and <code>f()</code> name distributions without reaching the base functions of those names. A parameter that refers to an undefined variable is reported by name rather than silently resolving to a base function.</p>
 <p><code><a href="reference/list_distributions.html">list_distributions()</a></code> reports the catalogue: 79 distributions, all built on base R with no added dependency. Every one is checked against its theoretical mean in <code>tests/testthat/test-distributions.R</code> and in <code>inst/distribution-check.R</code>.</p>
 <p>Mixtures nest distribution calls, and a link is a function in the expression rather than a separate column:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
 <span>  score <span class="op">=</span> <span class="fu">mixture</span><span class="op">(</span><span class="fu">normal</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu">normal</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu">categorical</span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -164,7 +168,7 @@
 <h3 id="the-same-specification-reaches-every-simulator">The same specification reaches every simulator<a class="anchor" aria-label="anchor" href="#the-same-specification-reaches-every-simulator"></a>
 </h3>
 <p>A specification written as distribution calls is accepted wherever one is taken. <code><a href="reference/augment_study.html">augment_study()</a></code> generates it into data that already exists, and a parameter may refer to a column that was already there:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/augment_study.html">augment_study</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, treated <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, each <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  specification <span class="op">=</span> <span class="fu"><a href="reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
@@ -174,7 +178,7 @@
 <span>  seed <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="reference/simulate_copula.html">simulate_copula()</a></code> uses it as the marginals of a Gaussian copula, so each variable keeps its own distribution while the set is correlated:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/simulate_copula.html">simulate_copula</a></span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  specification <span class="op">=</span> <span class="fu"><a href="reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
@@ -190,7 +194,7 @@
 <h3 id="conditions-and-hazards">Conditions and hazards<a class="anchor" aria-label="anchor" href="#conditions-and-hazards"></a>
 </h3>
 <p><code><a href="reference/define_conditions.html">define_conditions()</a></code> states a rule as a condition and a distribution. Repeating the variable name gives it one rule per condition, and every distribution in the catalogue is available:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/apply_conditions.html">apply_conditions</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">200</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  specification <span class="op">=</span> <span class="fu"><a href="reference/define_conditions.html">define_conditions</a></span><span class="op">(</span></span>
@@ -202,7 +206,7 @@
 <span><span class="op">)</span></span></code></pre></div>
 <p>Rules are applied in order, so a later rule may replace what an earlier one wrote, and <code>when(TRUE, ...)</code> is the rule that applies to every row. A row no rule selects is left missing.</p>
 <p><code><a href="reference/define_survivals.html">define_survivals()</a></code> states a process as a hazard, whose log rate is an expression over the covariates. Repeating the event name gives a piecewise hazard, where <code>from</code> is the time the segment begins:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/simulate_survival.html">simulate_survival</a></span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  specification <span class="op">=</span> <span class="fu"><a href="reference/define_survivals.html">define_survivals</a></span><span class="op">(</span></span>
@@ -219,7 +223,7 @@
 </h2>
 <p><code><a href="reference/define_variables.html">define_variables()</a></code> records a data-generating process as a table. It takes the columns of that table as named vectors and returns one row per variable. <code>variable</code> and <code>formula</code> are required. A column given as a single value is recycled across every variable, so <code>variance</code> and <code>distribution</code> are written once when they are shared.</p>
 <p><code>formula</code> is the mean or the linear predictor, written as R source text. It may refer to variables defined earlier in the same specification. <code><a href="reference/simulate_study.html">simulate_study()</a></code> takes a sample size and a specification and generates the variables in the order they appear.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">specification</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
 <span>  variable     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baseline"</span>, <span class="st">"treatment"</span>, <span class="st">"outcome"</span><span class="op">)</span>,</span>
 <span>  formula      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"0.5"</span>, <span class="st">"0.4 * baseline + 0.8 * treatment"</span><span class="op">)</span>,</span>
@@ -323,7 +327,7 @@
 </table>
 <p>The <code>primary_shape</code> column records the layout of the observation table. Most simulators return one row per unit. Sequence simulators return one row per unit per position. Network simulators return one row per edge, except <code>network_matrix</code>, which returns one row per matrix cell.</p>
 <p>Use <code>kind</code>, <code>family</code> or <code>dispatchable</code> to narrow discovery:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/list_simulators.html">list_simulators</a></span><span class="op">(</span>kind <span class="op">=</span> <span class="st">"workflow"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/list_simulators.html">list_simulators</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"network"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/list_simulators.html">list_simulators</a></span><span class="op">(</span>dispatchable <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -440,7 +444,7 @@
 <h2 id="parameter-recovery">Parameter recovery<a class="anchor" aria-label="anchor" href="#parameter-recovery"></a>
 </h2>
 <p>The generating parameters can be recovered from the simulated data by fitting the corresponding model. The script below runs seven such checks and reports the largest absolute discrepancy for each. It uses only base R and the package itself.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mohsaqr/simulab" class="external-link">simulab</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Linear regression coefficients, recovered by lm() on the simulated data.</span></span>
@@ -582,7 +586,7 @@
 <h2 id="calibration">Calibration<a class="anchor" aria-label="anchor" href="#calibration"></a>
 </h2>
 <p><code><a href="reference/calibrate_moments.html">calibrate_moments()</a></code> solves a distribution’s own parameters from a target mean and variance, across 36 distributions. The result names the parameters a distribution call takes, so a moment target becomes a specification.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/calibrate_moments.html">calibrate_moments</a></span><span class="op">(</span><span class="st">"lognormal"</span>, mean <span class="op">=</span> <span class="fl">10</span>, variance <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   distribution mean variance parameter     value</span></span>
 <span><span class="co">#&gt; 1    lognormal   10       25   meanlog 2.1910133</span></span>
@@ -609,7 +613,7 @@
 <h2 id="input-validation">Input validation<a class="anchor" aria-label="anchor" href="#input-validation"></a>
 </h2>
 <p>Argument checks state the contract that was broken and name the argument.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/simulate_clusters.html">simulate_clusters</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, centers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error: `centers` must be a matrix, with at least 2 rows</span></span>
 <span></span>
@@ -689,7 +693,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Mohammed Saqr <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Mohammed Saqr <br><small class="roles"> Author, maintainer, copyright holder </small>   </li>
 </ul>
 </div>
 

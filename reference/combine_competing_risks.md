@@ -5,7 +5,7 @@ observed time is their row-wise minimum and the event code says which
 process won. Naming one of them in `censor` turns that process into
 censoring, so its code is `0` and the remaining processes are coded
 `1, 2, ...` in the order they appear in `events`. Without `censor` every
-row is an event and no code is `0`. Ties are broken in favour of the
+row is an event and no code is `0`. Ties are broken in favor of the
 earlier entry of `events`.
 
 ## Usage

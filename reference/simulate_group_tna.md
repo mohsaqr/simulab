@@ -90,4 +90,11 @@ if (requireNamespace("tna", quietly = TRUE)) {
   head(result)
   components(result)
 }
+#>              table rows columns
+#> 1             data  480       4
+#> 2 true_transitions   18       4
+#> 3  estimated_edges   18       4
+#> 4       model_info    2       5
+#> 5             wide   40      14
+#> 6           groups    2       2
 ```

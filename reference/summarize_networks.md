@@ -12,7 +12,7 @@ summarize_networks(networks, threshold = 0, directed = TRUE)
 
 - networks:
 
-  Named list of supported networks. Unnamed elements are labelled
+  Named list of supported networks. Unnamed elements are labeled
   `Network 1`, `Network 2`, and so on.
 
 - threshold:
@@ -44,4 +44,7 @@ networks <- list(
 if (requireNamespace("igraph", quietly = TRUE)) {
   summarize_networks(networks)
 }
+#>        network nodes edges   density mean_weight components
+#> first    first    25    63 0.1050000           1          1
+#> second  second    25   130 0.2166667           1          1
 ```

@@ -31,8 +31,8 @@ assign_treatment(
 
   Number of treatment groups, as a single whole number of at least 2
   (defaulting to `2`), or an atomic vector of at least two unique
-  labels. A count of 2 is labelled `0` and `1`, and a larger count `1`
-  to `groups`.
+  labels. A count of 2 is labeled `0` and `1`, and a larger count `1` to
+  `groups`.
 
 - balanced:
 

@@ -48,7 +48,7 @@ simulate_sequence_clusters(
 - states:
 
   Optional state labels. When the matrices carry no dimnames and
-  `states` is `NULL`, states are labelled by their row index.
+  `states` is `NULL`, states are labeled by their row index.
 
 - seed:
 

@@ -65,4 +65,12 @@ data <- simulate_sequences(n = 40, n_states = 3, chain_length = 12, seed = 1)
 if (requireNamespace("tna", quietly = TRUE)) {
   head(fit_tna(data, model = "tna"))
 }
+#> <simulab_sim:tna_model> 6 rows x 3 columns
+#>      from      to    weight
+#> 1 State 1 State 1 0.1104651
+#> 2 State 2 State 1 0.5637584
+#> 3 State 3 State 1 0.6386555
+#> 4 State 1 State 2 0.3720930
+#> 5 State 2 State 2 0.3288591
+#> 6 State 3 State 2 0.3277311
 ```

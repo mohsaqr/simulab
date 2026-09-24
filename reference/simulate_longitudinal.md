@@ -52,7 +52,7 @@ simulate_longitudinal(
   deviation from the person mean at every occasion, so a non-zero
   intercept shifts the stationary mean to
   `person_mean + solve(diag(p) - transition) %*% intercept` and the
-  `person_means` component is then no longer the realised process mean.
+  `person_means` component is then no longer the realized process mean.
 
 - innovation_covariance:
 

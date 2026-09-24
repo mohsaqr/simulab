@@ -75,4 +75,10 @@ data <- simulate_sequences(n = 40, n_states = 3, chain_length = 12, seed = 1)
 if (requireNamespace("tna", quietly = TRUE)) {
   assess_tna_reliability(data, model = "tna", iterations = 2, seed = 1)
 }
+#>   iteration model   pearson    cosine        mae       rmse jaccard edges_x
+#> 1         1   tna 0.9932296 0.9976692 0.02105045 0.02770700       1       9
+#> 2         2   tna 0.9806632 0.9937841 0.03506547 0.04483295       1       9
+#>   edges_y
+#> 1       9
+#> 2       9
 ```

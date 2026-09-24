@@ -56,4 +56,12 @@ if (requireNamespace("tna", quietly = TRUE)) {
     repetitions = 2, model = "tna", n = 20, n_states = 3, chain_length = 10, seed = 1
   ))
 }
+#> <simulab_sim:tna_batches> 6 rows x 4 columns
+#>     network    from      to     weight
+#> 1.1       1 State 1 State 1 0.03225806
+#> 1.2       1 State 2 State 1 0.55263158
+#> 1.3       1 State 3 State 1 0.54761905
+#> 1.4       1 State 1 State 2 0.50000000
+#> 1.5       1 State 2 State 2 0.34210526
+#> 1.6       1 State 3 State 2 0.45238095
 ```

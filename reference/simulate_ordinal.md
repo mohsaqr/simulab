@@ -63,7 +63,7 @@ Two tidy tables come from
 columns `variable`, `category` and `probability`; `what = "correlation"`
 has one row per latent correlation-matrix cell with columns `row`,
 `column` and `correlation`. That correlation is the latent Gaussian one,
-not the correlation of the realised categories, which is attenuated by
+not the correlation of the realized categories, which is attenuated by
 the thresholding.
 
 ## Examples

@@ -1,7 +1,7 @@
 # Construct a categorical probability formula
 
 Supply exactly one of `probabilities` and `categories`; supplying both,
-or neither, is an error. Probabilities are normalised to sum to one.
+or neither, is an error. Probabilities are normalized to sum to one.
 
 ## Usage
 
