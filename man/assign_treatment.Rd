@@ -19,7 +19,7 @@ assign_treatment(
 
 \item{groups}{Number of treatment groups, as a single whole number of at
 least 2 (defaulting to \code{2}), or an atomic vector of at least two unique
-labels. A count of 2 is labelled \code{0} and \code{1}, and a larger count \code{1} to
+labels. A count of 2 is labeled \code{0} and \code{1}, and a larger count \code{1} to
 \code{groups}.}
 
 \item{balanced}{Use exact allocation within each stratum. A single flag,

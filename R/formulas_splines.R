@@ -75,7 +75,7 @@ mixture_formula <- function(variables, probabilities = NULL) {
 #' Construct a categorical probability formula
 #'
 #' Supply exactly one of `probabilities` and `categories`; supplying both, or
-#' neither, is an error. Probabilities are normalised to sum to one.
+#' neither, is an error. Probabilities are normalized to sum to one.
 #'
 #' @param probabilities Category probabilities, at least two of them.
 #' @param categories Number of equal-probability categories, used instead of

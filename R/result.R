@@ -76,7 +76,7 @@ components <- function(x) {
 #' @param optional Ignored.
 #' @param what Single string naming the table to return, default `"data"` for
 #'   the primary simulated observations. Use `components(x)` to list the
-#'   available choices; an unrecognised name is an error that lists them.
+#'   available choices; an unrecognized name is an error that lists them.
 #' @param ... Reserved for future methods.
 #'
 #' @return A plain base `data.frame` (the `simulab_sim` class and attributes

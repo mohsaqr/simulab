@@ -44,7 +44,7 @@ one row per variable and category with columns \code{variable}, \code{category} 
 \code{probability}; \code{what = "correlation"} has one row per latent
 correlation-matrix cell with columns \code{row}, \code{column} and \code{correlation}.
 That correlation is the latent Gaussian one, not the correlation of the
-realised categories, which is attenuated by the thresholding.
+realized categories, which is attenuated by the thresholding.
 }
 \description{
 Simulate correlated ordinal variables

@@ -32,7 +32,7 @@ cluster. When \code{NULL}, every sequence starts in the first state.}
 \item{labels}{Optional sequence-cluster labels.}
 
 \item{states}{Optional state labels. When the matrices carry no dimnames and
-\code{states} is \code{NULL}, states are labelled by their row index.}
+\code{states} is \code{NULL}, states are labeled by their row index.}
 
 \item{seed}{Optional random seed.}
 }

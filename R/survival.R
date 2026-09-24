@@ -308,7 +308,7 @@ augment_survival <- function(data, specification, seed = NULL, digits = NULL,
 #' Naming one of them in `censor` turns that process into censoring, so its code
 #' is `0` and the remaining processes are coded `1, 2, ...` in the order they
 #' appear in `events`. Without `censor` every row is an event and no code is
-#' `0`. Ties are broken in favour of the earlier entry of `events`.
+#' `0`. Ties are broken in favor of the earlier entry of `events`.
 #'
 #' @param data Base `data.frame`, or a `simulab_sim`, containing the event-time
 #'   variables, with at least one row.

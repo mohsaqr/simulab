@@ -286,7 +286,7 @@ simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
 #'   the deviation from the person mean at every occasion, so a non-zero
 #'   intercept shifts the stationary mean to
 #'   `person_mean + solve(diag(p) - transition) %*% intercept` and the
-#'   `person_means` component is then no longer the realised process mean.
+#'   `person_means` component is then no longer the realized process mean.
 #' @param innovation_covariance Innovation covariance matrix, or a tidy data
 #'   frame with columns `row`, `column` and `covariance`. Must be symmetric
 #'   and positive semidefinite. `NULL` (the default) uses the identity.

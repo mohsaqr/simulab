@@ -29,7 +29,7 @@ default) or \code{"logit"}, the multinomial-logit link.}
 
 \item{labels}{Optional atomic vector of group labels, one per formula plus
 one for the implicit final group. Defaults to \code{NULL}: \code{c(1, 0)} for a
-single formula, so the modelled group is \code{1} and the implicit reference is
+single formula, so the modeled group is \code{1} and the implicit reference is
 \code{0}, and \code{1} to the number of groups otherwise, the implicit group last.}
 
 \item{name}{Name of the exposure variable, which must not already exist in
@@ -48,7 +48,7 @@ component \code{probabilities}, reached with
 and group, with columns \code{observation}, \code{group} and \code{probability}.
 }
 \description{
-Evaluates one formula per modelled group against every row of \code{data} and
+Evaluates one formula per modeled group against every row of \code{data} and
 draws that row's exposure from the resulting probabilities, so the formulas
 are the propensity model. One group is always implicit: it is listed last and
 takes the remaining probability, which makes it the reference category of the

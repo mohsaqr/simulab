@@ -15,7 +15,7 @@
 
 \item{what}{Single string naming the table to return, default \code{"data"} for
 the primary simulated observations. Use \code{components(x)} to list the
-available choices; an unrecognised name is an error that lists them.}
+available choices; an unrecognized name is an error that lists them.}
 
 \item{...}{Reserved for future methods.}
 }

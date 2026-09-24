@@ -31,7 +31,7 @@
 #' @param data Base `data.frame`, or a `simulab_sim`, with at least one row.
 #' @param groups Number of treatment groups, as a single whole number of at
 #'   least 2 (defaulting to `2`), or an atomic vector of at least two unique
-#'   labels. A count of 2 is labelled `0` and `1`, and a larger count `1` to
+#'   labels. A count of 2 is labeled `0` and `1`, and a larger count `1` to
 #'   `groups`.
 #' @param balanced Use exact allocation within each stratum. A single flag,
 #'   defaulting to `TRUE`. `FALSE` draws each row independently instead, so the
@@ -134,7 +134,7 @@ assign_treatment <- function(data, groups = 2L, balanced = TRUE,
 
 #' Generate observational treatment or exposure groups
 #'
-#' Evaluates one formula per modelled group against every row of `data` and
+#' Evaluates one formula per modeled group against every row of `data` and
 #' draws that row's exposure from the resulting probabilities, so the formulas
 #' are the propensity model. One group is always implicit: it is listed last and
 #' takes the remaining probability, which makes it the reference category of the
@@ -151,7 +151,7 @@ assign_treatment <- function(data, groups = 2L, balanced = TRUE,
 #'   default) or `"logit"`, the multinomial-logit link.
 #' @param labels Optional atomic vector of group labels, one per formula plus
 #'   one for the implicit final group. Defaults to `NULL`: `c(1, 0)` for a
-#'   single formula, so the modelled group is `1` and the implicit reference is
+#'   single formula, so the modeled group is `1` and the implicit reference is
 #'   `0`, and `1` to the number of groups otherwise, the implicit group last.
 #' @param name Name of the exposure variable, which must not already exist in
 #'   `data`. A single non-empty string, defaulting to `"treatment"`.

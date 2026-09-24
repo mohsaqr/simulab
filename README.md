@@ -17,11 +17,19 @@ distribution and requires R 4.1.0 or later.
 
 ## Installation
 
+Install the released version from CRAN:
+
+```r
+install.packages("simulab")
+```
+
+Or the development version from GitHub:
+
 ```r
 remotes::install_github("mohsaqr/simulab")
 ```
 
-Four packages are suggested and none is required at run time. `tna` (1.2.3 or
+Six packages are suggested and none is required at run time. `tna` (1.2.3 or
 later) supplies the transition-network estimators used by `fit_tna()`.
 `igraph` (2.0.0 or later) receives graphs from `as_igraph()`. `simstudy` is
 used as an equivalence oracle in the test suite. `testthat`, `knitr` and

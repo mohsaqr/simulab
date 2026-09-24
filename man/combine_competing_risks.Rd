@@ -52,7 +52,7 @@ time is their row-wise minimum and the event code says which process won.
 Naming one of them in \code{censor} turns that process into censoring, so its code
 is \code{0} and the remaining processes are coded \verb{1, 2, ...} in the order they
 appear in \code{events}. Without \code{censor} every row is an event and no code is
-\code{0}. Ties are broken in favour of the earlier entry of \code{events}.
+\code{0}. Ties are broken in favor of the earlier entry of \code{events}.
 }
 \examples{
 data <- data.frame(id = 1:100, treatment = rep(0:1, each = 50))

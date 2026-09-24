@@ -230,7 +230,7 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
 #'   cluster. When `NULL`, every sequence starts in the first state.
 #' @param labels Optional sequence-cluster labels.
 #' @param states Optional state labels. When the matrices carry no dimnames and
-#'   `states` is `NULL`, states are labelled by their row index.
+#'   `states` is `NULL`, states are labeled by their row index.
 #' @param seed Optional random seed.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with columns `id`,

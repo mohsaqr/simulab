@@ -260,7 +260,7 @@ evaluate_edge_recovery <- function(truth, estimate, threshold = 0) {
 #' Summarize multiple networks
 #'
 #' @param networks Named list of supported networks. Unnamed elements are
-#'   labelled `Network 1`, `Network 2`, and so on.
+#'   labeled `Network 1`, `Network 2`, and so on.
 #' @param threshold Edge-presence threshold, applied as
 #'   `abs(weight) > threshold`. It affects the `edges` and `mean_weight`
 #'   columns only; `density` and `components` are computed from every edge in

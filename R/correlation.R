@@ -377,7 +377,7 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
 #'   `probability`; `what = "correlation"` has one row per latent
 #'   correlation-matrix cell with columns `row`, `column` and `correlation`.
 #'   That correlation is the latent Gaussian one, not the correlation of the
-#'   realised categories, which is attenuated by the thresholding.
+#'   realized categories, which is attenuated by the thresholding.
 #' @export
 #'
 #' @examples

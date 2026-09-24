@@ -36,7 +36,7 @@ occasion, so rows index the \emph{receiving} variable and columns the
 the deviation from the person mean at every occasion, so a non-zero
 intercept shifts the stationary mean to
 \code{person_mean + solve(diag(p) - transition) \%*\% intercept} and the
-\code{person_means} component is then no longer the realised process mean.}
+\code{person_means} component is then no longer the realized process mean.}
 
 \item{innovation_covariance}{Innovation covariance matrix, or a tidy data
 frame with columns \code{row}, \code{column} and \code{covariance}. Must be symmetric

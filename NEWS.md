@@ -1,3 +1,13 @@
+# simulab 0.4.4
+
+## CRAN preparation
+
+- The seed-contract test no longer errors when the suggested `tna` package is
+  unavailable: `simulate_group_tna()` also calls `fit_tna()` and is now skipped
+  alongside `simulate_tna_batches()` in that case.
+- Documentation uses US spelling throughout, matching `Language: en-US`.
+- `DESCRIPTION` names the maintainer as copyright holder (`cph`).
+
 # simulab 0.4.3
 
 ## Two-level latent profile data
@@ -32,7 +42,7 @@ test.
   reversed. A row written as `from = "a", to = "b"` produced the effect of `b`
   on `a`, the opposite of what it says. `from` is now the driving variable at
   `t-1` and `to` the driven variable at `t`, matching the column names and the
-  documented VAR recursion. Callers who compensated for the old behaviour by
+  documented VAR recursion. Callers who compensated for the old behavior by
   swapping the columns must stop doing so; the matrix form is unaffected.
 - `simulate_event_log()` ignored a fixed `sequence_length`. Because `sample()`
   reads a length-one numeric as an upper bound, `sequence_length = 8` drew

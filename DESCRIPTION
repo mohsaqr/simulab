@@ -1,9 +1,7 @@
 Package: simulab
 Title: Unified Simulation of Statistical and Study Data
-Version: 0.4.3
-Authors@R: person("Mohammed", "Saqr", email = "saqr@saqr.me", role = c("aut", "cre"))
-Author: Mohammed Saqr [aut, cre]
-Maintainer: Mohammed Saqr <saqr@saqr.me>
+Version: 0.4.4
+Authors@R: person("Mohammed", "Saqr", email = "saqr@saqr.me", role = c("aut", "cre", "cph"))
 Description: Provides a consistent interface for simulating tidy data with
     known ground truth. Supported designs include declarative variable
     definitions, correlated and clustered data, treatment assignment,

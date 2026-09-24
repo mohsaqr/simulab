@@ -8,7 +8,7 @@ summarize_networks(networks, threshold = 0, directed = TRUE)
 }
 \arguments{
 \item{networks}{Named list of supported networks. Unnamed elements are
-labelled \verb{Network 1}, \verb{Network 2}, and so on.}
+labeled \verb{Network 1}, \verb{Network 2}, and so on.}
 
 \item{threshold}{Edge-presence threshold, applied as
 \code{abs(weight) > threshold}. It affects the \code{edges} and \code{mean_weight}
