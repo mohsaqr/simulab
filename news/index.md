@@ -1,5 +1,10 @@
 # Changelog
 
+## simulab 0.4.5
+
+- Adds the R-hub v2 check workflow (`.github/workflows/rhub.yaml`). No
+  change to package code.
+
 ## simulab 0.4.4
 
 ### CRAN preparation
