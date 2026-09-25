@@ -1,5 +1,13 @@
 # Changelog
 
+## simulab 0.4.6
+
+- `VignetteBuilder` now lists `rmarkdown` as well as `knitr`. Under
+  CRAN’s no-Suggests check (`_R_CHECK_DEPENDS_ONLY_=true`) only the
+  `VignetteBuilder` packages stay available, so the `knitr::rmarkdown`
+  vignette failed to re-build without `rmarkdown`. Found by the R-hub
+  `nosuggests` platform.
+
 ## simulab 0.4.5
 
 - Adds the R-hub v2 check workflow (`.github/workflows/rhub.yaml`). No

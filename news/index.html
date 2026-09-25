@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,11 @@
       <small>Source: <a href="https://github.com/mohsaqr/simulab/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.6" id="simulab-046">simulab 0.4.6<a class="anchor" aria-label="anchor" href="#simulab-046"></a></h2>
+<ul><li>
+<code>VignetteBuilder</code> now lists <code>rmarkdown</code> as well as <code>knitr</code>. Under CRAN’s no-Suggests check (<code>_R_CHECK_DEPENDS_ONLY_=true</code>) only the <code>VignetteBuilder</code> packages stay available, so the <code>knitr::rmarkdown</code> vignette failed to re-build without <code>rmarkdown</code>. Found by the R-hub <code>nosuggests</code> platform.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.5" id="simulab-045">simulab 0.4.5<a class="anchor" aria-label="anchor" href="#simulab-045"></a></h2>
 <ul><li>Adds the R-hub v2 check workflow (<code>.github/workflows/rhub.yaml</code>). No change to package code.</li>
