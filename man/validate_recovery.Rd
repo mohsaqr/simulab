@@ -33,8 +33,10 @@ the key the two frames are merged on.}
 recovery, default \code{0.1}.}
 }
 \value{
-A base \code{data.frame} with one row per term appearing in either frame
-(the merge keeps unmatched terms) and the columns \code{term}, \code{estimate},
+A base \code{data.frame} with one row per row of \code{estimates}, in the same
+order, plus one row for each term found only in \code{truth}. Every column of
+\code{estimates} other than \code{term} and \code{estimate} (for example the \code{batch_id}
+of \code{\link[=apply_batch]{apply_batch()}}) comes first, then the columns \code{term}, \code{estimate},
 \code{truth}, \code{bias} (estimate minus truth), \code{absolute_error},
 \code{relative_error} (\code{NA} where truth is zero) and \code{recovered}, a logical
 that is \code{TRUE} when \code{absolute_error} is at most \code{tolerance}.

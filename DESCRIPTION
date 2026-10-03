@@ -1,6 +1,6 @@
 Package: simulab
 Title: Unified Simulation of Statistical and Study Data
-Version: 0.4.6
+Version: 0.4.7
 Authors@R: person("Mohammed", "Saqr", email = "saqr@saqr.me", role = c("aut", "cre", "cph"))
 Description: Provides a consistent interface for simulating tidy data with
     known ground truth. Supported designs include declarative variable
@@ -29,6 +29,7 @@ Suggests:
     igraph (>= 2.0.0),
     rmarkdown,
     simstudy,
+    survival,
     tna (>= 1.2.3)
 Config/testthat/edition: 3
 VignetteBuilder: knitr, rmarkdown

@@ -389,9 +389,10 @@ sample_tna <- function(data, fraction = 0.3, replace = FALSE, seed = NULL,
 #'   the default, selects every numeric non-grouping column.
 #'
 #' @return A plain base `data.frame` with one row per group and variable: the
-#'   `by` columns (or a single `.group` column holding `"all"` when `by` is
-#'   `NULL`), then `variable`, `observations` (the non-missing count), `mean`,
-#'   `sd`, `minimum` and `maximum`.
+#'   `by` columns (none when `by` is `NULL`), then `variable`, `observations`
+#'   (the non-missing count), `mean`, `sd`, `minimum` and `maximum`. Missing
+#'   values are left out of the statistics; a group with none left reports
+#'   `NA` statistics.
 #' @export
 #'
 #' @examples
@@ -417,18 +418,30 @@ summarize_simulations <- function(data, by = NULL, variables = NULL) {
   }
   groups <- if (is.null(by)) list(all = seq_len(nrow(source))) else
     split(seq_len(nrow(source)), interaction(source[, by, drop = FALSE], drop = TRUE))
-  do.call(rbind, lapply(groups, function(indices) {
-    group_values <- if (is.null(by)) data.frame(.group = "all") else
-      source[indices[1L], by, drop = FALSE]
-    do.call(rbind, lapply(variables, function(variable) data.frame(
-      group_values, variable = variable, observations = sum(!is.na(source[[variable]][indices])),
-      mean = mean(source[[variable]][indices], na.rm = TRUE),
-      sd = stats::sd(source[[variable]][indices], na.rm = TRUE),
-      minimum = min(source[[variable]][indices], na.rm = TRUE),
-      maximum = max(source[[variable]][indices], na.rm = TRUE),
-      row.names = NULL
-    )))
+  summary <- do.call(rbind, lapply(groups, function(indices) {
+    group_values <- if (is.null(by)) NULL else source[indices[1L], by, drop = FALSE]
+    do.call(rbind, lapply(variables, function(variable) {
+      # Missing values are counted in `observations` and left out of the
+      # statistics; a group with none left reports NA rather than the NaN,
+      # Inf and warnings that mean(), min() and max() give an empty vector.
+      values <- source[[variable]][indices]
+      values <- values[!is.na(values)]
+      present <- length(values) > 0L
+      statistics <- data.frame(
+        variable = variable, observations = length(values),
+        mean = if (present) mean(values) else NA_real_,
+        sd = if (length(values) > 1L) stats::sd(values) else NA_real_,
+        minimum = if (present) min(values) else NA_real_,
+        maximum = if (present) max(values) else NA_real_,
+        row.names = NULL
+      )
+      if (is.null(group_values)) statistics else
+        data.frame(group_values, statistics, row.names = NULL, check.names = FALSE)
+    }))
   }))
+  # rbind() over the named `groups` list would otherwise label rows by group.
+  rownames(summary) <- NULL
+  summary
 }
 
 #' Export a simulation component

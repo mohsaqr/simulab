@@ -387,5 +387,7 @@ list_distributions <- function(pattern = NULL, copula = NULL) {
     stringsAsFactors = FALSE, row.names = NULL
   )
   if (!is.null(copula)) result <- result[result$copula == copula, , drop = FALSE]
-  result[order(result$distribution), , drop = FALSE]
+  result <- result[order(result$distribution), , drop = FALSE]
+  rownames(result) <- NULL
+  result
 }

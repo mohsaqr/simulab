@@ -11,7 +11,8 @@ simulate_lpa(
   proportions = NULL,
   correlations = NULL,
   labels = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -20,8 +21,8 @@ simulate_lpa(
 \item{means}{Profile-by-variable mean matrix (one row per profile, one
 column per indicator, at least 2 rows), or a tidy data frame with columns
 \code{profile}, \code{variable} and \code{mean}. Column names become the indicator
-columns of the returned data; row names are ignored, profile names come
-from \code{labels}.}
+columns of the returned data; row names, or the \code{profile} values of a
+tidy table, name the profiles unless \code{labels} is given.}
 
 \item{sds}{Scalar (the default, \code{1}), per-variable vector,
 profile-by-variable matrix, or a tidy data frame with columns \code{profile},
@@ -37,9 +38,19 @@ one per profile, or a tidy data frame with columns \code{profile}, \code{row},
 uncorrelated within every profile.}
 
 \item{labels}{Optional profile labels, one unique value per profile.
-Defaults to \code{"Profile 1"}, \code{"Profile 2"} and so on.}
+Defaults to the profile names given with \code{means} (the \code{profile} values of
+a tidy table, or the row names of a matrix), else \code{"Profile 1"},
+\code{"Profile 2"} and so on.}
 
 \item{seed}{Optional random seed.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per observation and

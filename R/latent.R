@@ -17,6 +17,21 @@
 ##
 ## Shared by the profile simulators so that scalar, per-variable and
 ## per-profile standard deviations are accepted identically everywhere.
+## Match profile standard deviations and within-profile correlations to the
+## profiles and indicators that `means` names, so a differently ordered table
+## or named matrix cannot attach its values to the wrong profile.
+.align_profile_inputs <- function(means, sds, correlations) {
+  if (!is.matrix(means)) return(list(sds = sds, correlations = correlations))
+  sds <- .align_matrix(sds, rownames(means), colnames(means), "sds")
+  sds <- .align_vector(sds, colnames(means), "sds")
+  correlations <- .align_list(correlations, rownames(means), "correlations")
+  if (is.list(correlations)) {
+    correlations <- lapply(correlations, .align_matrix, rows = colnames(means),
+                           columns = colnames(means), what = "correlations")
+  }
+  list(sds = sds, correlations = correlations)
+}
+
 .profile_sd_matrix <- function(sds, means) {
   stopifnot(
     "`means` must be a numeric matrix" =
@@ -47,8 +62,8 @@
 #' @param means Profile-by-variable mean matrix (one row per profile, one
 #'   column per indicator, at least 2 rows), or a tidy data frame with columns
 #'   `profile`, `variable` and `mean`. Column names become the indicator
-#'   columns of the returned data; row names are ignored, profile names come
-#'   from `labels`.
+#'   columns of the returned data; row names, or the `profile` values of a
+#'   tidy table, name the profiles unless `labels` is given.
 #' @param sds Scalar (the default, `1`), per-variable vector,
 #'   profile-by-variable matrix, or a tidy data frame with columns `profile`,
 #'   `variable` and `sd`. All values must be positive.
@@ -60,7 +75,9 @@
 #'   `column` and `correlation`. `NULL` (the default) makes the indicators
 #'   uncorrelated within every profile.
 #' @param labels Optional profile labels, one unique value per profile.
-#'   Defaults to `"Profile 1"`, `"Profile 2"` and so on.
+#'   Defaults to the profile names given with `means` (the `profile` values of
+#'   a tidy table, or the row names of a matrix), else `"Profile 1"`,
+#'   `"Profile 2"` and so on.
 #' @param seed Optional random seed.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
@@ -68,6 +85,7 @@
 #'   per indicator. A `parameters` component holds one row per
 #'   profile-by-variable combination with columns `profile`, `variable`,
 #'   `mean`, `sd` and `proportion`.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -81,7 +99,9 @@
 #' head(result)
 #' as.data.frame(result, what = "parameters")
 simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
-                         correlations = NULL, labels = NULL, seed = NULL) {
+                         correlations = NULL, labels = NULL, seed = NULL,
+                         batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   means <- .tidy_to_matrix(means, "means", "profile", "variable", "mean")
   if (is.data.frame(sds)) {
     sds <- .tidy_to_matrix(sds, "sds", "profile", "variable", "sd")
@@ -90,6 +110,9 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
     correlations, "correlations", "profile", "row", "column", "correlation",
     symmetric = TRUE, diagonal = 1
   )
+  aligned <- .align_profile_inputs(means, sds, correlations)
+  sds <- aligned$sds
+  correlations <- aligned$correlations
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&
@@ -113,7 +136,9 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
   profiles <- nrow(means)
   variables <- ncol(means)
   proportions <- .normalize_proportions(proportions, profiles)
-  if (is.null(labels)) labels <- sprintf("Profile %d", seq_len(profiles))
+  # The profile names given with `means` (tidy `profile` values or matrix row
+  # names) are the labels unless `labels` overrides them.
+  if (is.null(labels)) labels <- rownames(means) %||% sprintf("Profile %d", seq_len(profiles))
   if (length(labels) != profiles || anyDuplicated(labels)) {
     stop("labels must contain one unique value per profile.", call. = FALSE)
   }
@@ -173,8 +198,8 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
 #' @param means Profile-by-variable mean matrix (one row per profile, one
 #'   column per indicator, at least 2 rows), or a tidy data frame with columns
 #'   `profile`, `variable` and `mean`. Column names become the indicator
-#'   columns of the returned data; row names are ignored, profile names come
-#'   from `labels`.
+#'   columns of the returned data; row names, or the `profile` values of a
+#'   tidy table, name the profiles unless `labels` is given.
 #' @param profile_probabilities Cluster-class-by-profile matrix of profile
 #'   prevalences (one row per cluster class, one column per profile), or a tidy
 #'   data frame with columns `cluster_class`, `profile` and `probability`. Every
@@ -193,7 +218,9 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
 #'   and `correlation`. `NULL` (the default) makes the indicators uncorrelated
 #'   within every profile, the conditional-independence measurement model.
 #' @param labels Optional profile labels, one unique value per profile.
-#'   Defaults to `"Profile 1"`, `"Profile 2"` and so on.
+#'   Defaults to the profile names given with `means` (the `profile` values of
+#'   a tidy table, or the row names of a matrix), else `"Profile 1"`,
+#'   `"Profile 2"` and so on.
 #' @param cluster_class_labels Optional cluster-class labels, one unique value
 #'   per cluster class. Defaults to `"Class 1"`, `"Class 2"` and so on.
 #' @param seed Optional random seed.
@@ -212,6 +239,7 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
 #' @references Vermunt, J. K. (2003). Multilevel latent class models.
 #'   *Sociological Methodology*, 33, 213--239.
 #'   \doi{10.1111/j.0081-1750.2003.t01-1-00131.x}
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -242,7 +270,9 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
 simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities,
                             sds = 1, cluster_class_proportions = NULL,
                             correlations = NULL, labels = NULL,
-                            cluster_class_labels = NULL, seed = NULL) {
+                            cluster_class_labels = NULL, seed = NULL,
+                            batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   means <- .tidy_to_matrix(means, "means", "profile", "variable", "mean")
   profile_probabilities <- .tidy_to_matrix(
     profile_probabilities, "profile_probabilities",
@@ -255,6 +285,13 @@ simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities
     correlations, "correlations", "profile", "row", "column", "correlation",
     symmetric = TRUE, diagonal = 1
   )
+  aligned <- .align_profile_inputs(means, sds, correlations)
+  sds <- aligned$sds
+  correlations <- aligned$correlations
+  if (is.matrix(means)) {
+    profile_probabilities <- .align_matrix(profile_probabilities, NULL, rownames(means),
+                                           "profile_probabilities")
+  }
   stopifnot(
     "`clusters` must be a single whole number of at least 2" =
       is.numeric(clusters) &&
@@ -302,12 +339,15 @@ simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities
     cluster_class_proportions, cluster_classes, "cluster_class_proportions"
   )
   prevalence <- profile_probabilities / rowSums(profile_probabilities)
-  if (is.null(labels)) labels <- sprintf("Profile %d", seq_len(profiles))
+  # The profile names given with `means` (tidy `profile` values or matrix row
+  # names) are the labels unless `labels` overrides them.
+  if (is.null(labels)) labels <- rownames(means) %||% sprintf("Profile %d", seq_len(profiles))
   if (length(labels) != profiles || anyDuplicated(labels)) {
     stop("labels must contain one unique value per profile.", call. = FALSE)
   }
   if (is.null(cluster_class_labels)) {
-    cluster_class_labels <- sprintf("Class %d", seq_len(cluster_classes))
+    cluster_class_labels <- rownames(profile_probabilities) %||%
+      sprintf("Class %d", seq_len(cluster_classes))
   }
   if (length(cluster_class_labels) != cluster_classes ||
       anyDuplicated(cluster_class_labels)) {
@@ -400,17 +440,17 @@ simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities
 #' @param probabilities Item probabilities as an array with dimensions class,
 #'   indicator and category, or as a tidy data frame with columns `class`,
 #'   `indicator`, `category` and `probability`. Category probabilities must
-#'   sum to one within each class and indicator. Only the `indicator` dimnames
-#'   are used, to name the indicator columns; any class and category dimnames
-#'   are ignored, so class and category labels must be supplied through
-#'   `class_labels` and `category_labels`.
+#'   sum to one within each class and indicator. The dimnames (the `class`,
+#'   `indicator` and `category` values of a tidy table) name the classes, the
+#'   indicator columns and the categories.
 #' @param proportions Latent-class proportions, one positive value per class;
 #'   they are rescaled to sum to one. `NULL` (the default) makes every class
 #'   equally likely.
 #' @param class_labels,category_labels Optional labels, one unique value per
-#'   class and per category. `class_labels` defaults to `"Class 1"`,
-#'   `"Class 2"` and so on; `category_labels` defaults to the integers
-#'   `1:categories`, which are the values written into the indicator columns.
+#'   class and per category, overriding the names given in `probabilities`.
+#'   Without names there, `class_labels` defaults to `"Class 1"`, `"Class 2"`
+#'   and so on, and `category_labels` to the integers `1:categories`. The
+#'   category labels are the values written into the indicator columns.
 #' @param seed Optional random seed.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
@@ -419,6 +459,7 @@ simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities
 #'   component holds one row per class-by-indicator-by-category combination
 #'   with columns `latent_class`, `indicator`, `category`, `probability` and
 #'   `proportion`.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -449,7 +490,9 @@ simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities
 #' as.data.frame(result, what = "parameters")
 simulate_lca <- function(n, probabilities, proportions = NULL,
                          class_labels = NULL, category_labels = NULL,
-                         seed = NULL) {
+                         seed = NULL,
+                         batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   probabilities <- .tidy_to_array(
     probabilities, "probabilities", "class", "indicator", "category", "probability"
   )
@@ -476,8 +519,12 @@ simulate_lca <- function(n, probabilities, proportions = NULL,
     stop("Category probabilities must sum to one for each class and indicator.", call. = FALSE)
   }
   proportions <- .normalize_proportions(proportions, classes)
-  if (is.null(class_labels)) class_labels <- sprintf("Class %d", seq_len(classes))
-  if (is.null(category_labels)) category_labels <- seq_len(categories)
+  if (is.null(class_labels)) {
+    class_labels <- dimnames(probabilities)[[1L]] %||% sprintf("Class %d", seq_len(classes))
+  }
+  if (is.null(category_labels)) {
+    category_labels <- dimnames(probabilities)[[3L]] %||% seq_len(categories)
+  }
   if (length(class_labels) != classes || anyDuplicated(class_labels) ||
       length(category_labels) != categories || anyDuplicated(category_labels)) {
     stop("Class and category labels must match their dimensions and be unique.", call. = FALSE)
@@ -547,6 +594,7 @@ simulate_lca <- function(n, probabilities, proportions = NULL,
 #'   `loading`, `uniqueness` and `intercept`; a `covariance` component holds
 #'   the implied population covariance in tidy form, one row per variable
 #'   pair, with columns `row`, `column` and `covariance`.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -561,12 +609,22 @@ simulate_lca <- function(n, probabilities, proportions = NULL,
 #' as.data.frame(result, what = "parameters")
 simulate_factors <- function(n, loadings, uniquenesses = NULL,
                              factor_correlation = NULL, intercepts = 0,
-                             include_scores = FALSE, seed = NULL) {
+                             include_scores = FALSE, seed = NULL,
+                             batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   loadings <- .tidy_to_matrix(loadings, "loadings", "item", "factor", "loading")
   factor_correlation <- .tidy_to_symmetric(
     factor_correlation, "factor_correlation", "row", "column", "correlation",
     diagonal = 1
   )
+  # The factor correlation is matched to the loading matrix's factor names, and
+  # named uniquenesses and intercepts to its item names, not by position.
+  if (is.matrix(loadings)) {
+    factor_correlation <- .align_matrix(factor_correlation, colnames(loadings),
+                                        colnames(loadings), "factor_correlation")
+    uniquenesses <- .align_vector(uniquenesses, rownames(loadings), "uniquenesses")
+    intercepts <- .align_vector(intercepts, rownames(loadings), "intercepts")
+  }
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&

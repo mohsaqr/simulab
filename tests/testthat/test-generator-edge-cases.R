@@ -113,3 +113,15 @@ test_that("sample_tna honours non-default sequence column names", {
   )
   expect_equal(explicit, sampled)
 })
+
+test_that("simulate_bipartite_network() returns an empty edge list for an edgeless draw", {
+  # Seed 791412246 draws no actor-event edge at the default probability. The
+  # scalar mode columns used to fail data.frame() with "differing number of
+  # rows: 0, 1"; 94 of seeds 1..300 hit this.
+  empty <- simulate_bipartite_network(actors = 4, events = 3, seed = 791412246)
+  expect_s3_class(empty, "simulab_sim")
+  expect_identical(nrow(empty), 0L)
+  expect_named(as.data.frame(empty),
+               c("from", "to", "weight", "from_mode", "to_mode"))
+  expect_identical(nrow(as.data.frame(empty, what = "nodes")), 7L)
+})

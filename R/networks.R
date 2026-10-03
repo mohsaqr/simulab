@@ -29,6 +29,7 @@
 #'   `probability`, row-stochastic in `from`), `initial_probabilities`
 #'   (`state`, `probability`), `wide` (one row per sequence, columns `id`,
 #'   `S1`, `S2`, ...), and a one-row `settings` table.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -54,7 +55,9 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
                                instability = c("none", "random_jump", "perturb", "unlikely_jump"),
                                instability_probability = 0.4,
                                perturbation = 0.5, unlikely_threshold = 0.1,
-                               seed = NULL) {
+                               seed = NULL,
+                               batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   instability <- match.arg(instability)
   stopifnot(
     "`n` must be a single positive whole number" =
@@ -144,7 +147,7 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
       c(1, rep(0, length(states) - 1L))
     } else if (length(initial) == 1L && initial %in% states) {
       as.numeric(states == initial)
-    } else as.numeric(initial)
+    } else as.numeric(.align_vector(initial, states, "initial"))
     if (length(initial_probabilities) != length(states) ||
         any(initial_probabilities < 0) ||
         abs(sum(initial_probabilities) - 1) > 1e-8) {
@@ -237,6 +240,7 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
 #'   `period`, `state`, and the true `sequence_cluster`, one row per sequence
 #'   position. A `transitions` table (`sequence_cluster`, `from`, `to`,
 #'   `probability`) is available through `as.data.frame()`.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -255,9 +259,11 @@ simulate_sequences <- function(n, transition = NULL, chain_length,
 simulate_sequence_clusters <- function(n, transitions, chain_length,
                                        proportions = NULL, initial = NULL,
                                        labels = NULL, states = NULL,
-                                       seed = NULL) {
+                                       seed = NULL,
+                                       batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   transitions <- .tidy_to_matrix_list(
-    transitions, "transitions", "cluster", "from", "to", "probability"
+    transitions, "transitions", "cluster", "from", "to", "probability", square = TRUE
   )
   stopifnot(
     "`n` must be a single whole number of at least 2" =
@@ -280,12 +286,23 @@ simulate_sequence_clusters <- function(n, transitions, chain_length,
   clusters <- length(transitions)
   proportions <- .normalize_proportions(proportions, clusters)
   resolved <- lapply(transitions, .transition_input, states = states)
+  # Named systems are put in the first system's state order, so clusters that
+  # list the same states in another order are matched by state, not position.
+  reference <- resolved[[1L]]$states
+  resolved <- lapply(resolved, function(system) {
+    if (setequal(system$states, reference) && !is.numeric(reference)) {
+      system$matrix <- .align_matrix(system$matrix, reference, reference, "transitions")
+      system$states <- reference
+    }
+    system
+  })
   state_sets <- lapply(resolved, function(value) value$states)
   if (!all(vapply(state_sets, identical, logical(1), state_sets[[1L]]))) {
     stop("Every transition system must use the same states.", call. = FALSE)
   }
   states <- state_sets[[1L]]
-  if (is.null(labels)) labels <- sprintf("Sequence cluster %d", seq_len(clusters))
+  initial <- .align_vector(initial, states, "initial")
+  if (is.null(labels)) labels <- names(transitions) %||% sprintf("Sequence cluster %d", seq_len(clusters))
   if (length(labels) != clusters || anyDuplicated(labels)) {
     stop("labels must contain one unique value per sequence cluster.", call. = FALSE)
   }
@@ -362,7 +379,9 @@ summarize_transitions <- function(data, id = "id", period = "period",
   names(counts)[3L] <- "count"
   totals <- ave(counts$count, counts$from, FUN = sum)
   counts$probability <- if (normalize) counts$count / totals else NA_real_
-  counts[order(counts$from, counts$to), , drop = FALSE]
+  counts <- counts[order(counts$from, counts$to), , drop = FALSE]
+  rownames(counts) <- NULL
+  counts
 }
 
 #' Simulate a network from common graph models
@@ -402,6 +421,7 @@ summarize_transitions <- function(data, id = "id", period = "period",
 #'   table covering all `nodes^2` ordered pairs, symmetric when the generated
 #'   graph is undirected), and a one-row `settings` table. Use `as_igraph()`
 #'   for native graph workflows.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -430,8 +450,10 @@ simulate_network <- function(nodes,
                              blocks = 3L, within_probability = 0.3,
                              between_probability = 0.05, degree = 4L,
                              radius = 0.25, forward_probability = 0.35,
-                             backward_probability = 0.32, seed = NULL) {
-  probability <- .tidy_to_matrix(probability, "probability", "from", "to",
+                             backward_probability = 0.32, seed = NULL,
+                             batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
+  probability <- .tidy_to_square(probability, "probability", "from", "to",
                                  "probability")
   model <- match.arg(model)
   weight <- match.arg(weight)
@@ -528,10 +550,13 @@ simulate_network <- function(nodes,
       probability_matrix <- if (length(probability) == 1L) {
         matrix(probability, count, count)
       } else if (is.matrix(probability) && all(dim(probability) == count)) {
-        probability
+        # A named matrix is matched to the node labels by name.
+        .align_matrix(probability, as.character(labels), as.character(labels), "probability")
       } else if (is.matrix(probability) && all(dim(probability) == length(types))) {
+        type_probability <- .align_matrix(probability, as.character(types),
+                                          as.character(types), "probability")
         type_index <- match(node_type, types)
-        probability[type_index, type_index, drop = FALSE]
+        type_probability[type_index, type_index, drop = FALSE]
       } else stop("probability must be scalar, node-by-node, or type-by-type.", call. = FALSE)
       if (any(probability_matrix < 0 | probability_matrix > 1)) {
         stop("Edge probabilities must be between zero and one.", call. = FALSE)

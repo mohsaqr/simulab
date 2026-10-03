@@ -129,7 +129,7 @@ test_that("simulate_sequence_clusters accepts one table instead of a list", {
   )
   expect_equal(
     as.data.frame(simulate_sequence_clusters(
-      40, list(first, second), chain_length = 8, seed = 1)),
+      40, list(a = first, b = second), chain_length = 8, seed = 1)),
     as.data.frame(simulate_sequence_clusters(40, tidy, chain_length = 8, seed = 1))
   )
 })
@@ -143,7 +143,7 @@ test_that("grouped sequence simulators accept one table instead of a list", {
     cbind(group = "g2", long_form(second, "from", "to", "probability"))
   )
   expect_equal(
-    as.data.frame(simulate_group_sequences(2, 10, list(first, second),
+    as.data.frame(simulate_group_sequences(2, 10, list(g1 = first, g2 = second),
                                            chain_length = 8, seed = 1)),
     as.data.frame(simulate_group_sequences(2, 10, tidy, chain_length = 8, seed = 1))
   )

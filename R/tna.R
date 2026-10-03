@@ -250,6 +250,7 @@ compare_tna_models <- function(data, models = c("tna", "ftna", "ctna", "atna"),
 #'   `as.data.frame(x, what = )` also returns `transitions` (`group`, `from`,
 #'   `to`, `probability`), `wide` (one row per actor: `id`, `S1`, `S2`, ...,
 #'   `group`), and `groups` (`group`, `actors`).
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -262,11 +263,13 @@ simulate_group_sequences <- function(groups, actors, transitions = NULL,
                                      chain_length, initial = NULL,
                                      group_names = NULL, states = NULL,
                                      n_states = 5L, state_categories = NULL,
-                                     seed = NULL, ...) {
+                                     seed = NULL, ...,
+                                     batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   initial <- .tidy_to_vector_list(initial, "initial", "group", "probability",
                                   name = "state")
   transitions <- .tidy_to_matrix_list(
-    transitions, "transitions", "group", "from", "to", "probability"
+    transitions, "transitions", "group", "from", "to", "probability", square = TRUE
   )
   stopifnot(
     "`groups` must be a single whole number of at least 2" =
@@ -291,10 +294,17 @@ simulate_group_sequences <- function(groups, actors, transitions = NULL,
   groups <- as.integer(groups)
   if (length(actors) == 1L) actors <- rep(actors, groups)
   if (length(actors) != groups) stop("actors must be scalar or one value per group.", call. = FALSE)
-  if (is.null(group_names)) group_names <- sprintf("Group %d", seq_len(groups))
+  # Group names default to the names the tidy `transitions` or `initial`
+  # table gives, and per-group inputs are matched to the groups by name.
+  if (is.null(group_names)) {
+    group_names <- (if (is.list(transitions)) names(transitions)) %||%
+      (if (is.list(initial)) names(initial)) %||% sprintf("Group %d", seq_len(groups))
+  }
   if (length(group_names) != groups || anyDuplicated(group_names)) {
     stop("group_names must contain one unique label per group.", call. = FALSE)
   }
+  if (is.list(transitions)) transitions <- .align_list(transitions, group_names, "transitions")
+  if (is.list(initial)) initial <- .align_list(initial, group_names, "initial")
   transition_list <- if (is.null(transitions) || is.matrix(transitions)) {
     rep(list(transitions), groups)
   } else transitions
@@ -345,6 +355,7 @@ simulate_group_sequences <- function(groups, actors, transitions = NULL,
 #'   generating probabilities), `estimated_edges` (the fitted TNA weights),
 #'   `model_info`, `wide`, and `groups`. The native `group_tna` model is
 #'   accessible through `as_tna_model()`. Requires the suggested `tna` package.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -360,11 +371,13 @@ simulate_group_tna <- function(groups, actors, transitions = NULL,
                                group_names = NULL, states = NULL,
                                n_states = 5L, state_categories = NULL,
                                model = c("tna", "ftna", "ctna", "atna"),
-                               seed = NULL, ...) {
+                               seed = NULL, ...,
+                               batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   initial <- .tidy_to_vector_list(initial, "initial", "group", "probability",
                                   name = "state")
   transitions <- .tidy_to_matrix_list(
-    transitions, "transitions", "group", "from", "to", "probability"
+    transitions, "transitions", "group", "from", "to", "probability", square = TRUE
   )
   model <- match.arg(model)
   sequences <- simulate_group_sequences(
@@ -408,6 +421,7 @@ simulate_group_tna <- function(groups, actors, transitions = NULL,
 #'   the underlying directed Bernoulli graph), and `transitions` (the full
 #'   `nodes^2`-row transition table including zeros). The transition matrix is
 #'   row-stochastic: every `from` node's probabilities sum to one.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -418,7 +432,9 @@ simulate_tna_network <- function(groups, nodes_per_group,
                                  group_names = NULL,
                                  within_probability = 0.4,
                                  between_probability = 0.15,
-                                 loops = FALSE, seed = NULL) {
+                                 loops = FALSE, seed = NULL,
+                                 batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`groups` must be a single whole number of at least 2" =
       is.numeric(groups) &&

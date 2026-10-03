@@ -14,6 +14,7 @@
 #'   row with columns `contrast`, `mean_difference`, `pooled_sd` and `cohens_d`,
 #'   the population Cohen's d formed from the sample-size-weighted pooled
 #'   standard deviation.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -22,7 +23,9 @@
 #' as.data.frame(result, what = "parameters")
 simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
                            labels = c("A", "B"), outcome = "outcome",
-                           seed = NULL) {
+                           seed = NULL,
+                           batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n_a` must be a single whole number of at least 2" =
       is.numeric(n_a) &&
@@ -117,6 +120,7 @@ simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
 #'   degrees of freedom `n - 1` rather than `n`, `eta_squared` is the
 #'   design's sum-of-squares eta-squared and differs slightly from the
 #'   variance-ratio population eta-squared.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -124,7 +128,9 @@ simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
 #' head(result)
 #' as.data.frame(result, what = "parameters")
 simulate_anova <- function(n, means, sds = 1, labels = NULL,
-                           outcome = "outcome", seed = NULL) {
+                           outcome = "outcome", seed = NULL,
+                           batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a numeric vector, of whole numbers, with at least one element, each at least 2" =
       is.numeric(n) &&
@@ -214,6 +220,7 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
 #'   `signal_variance / (signal_variance + residual_variance)`;
 #'   `what = "predictor_correlation"` has one row per correlation-matrix cell
 #'   with columns `row`, `column` and `correlation`.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -229,7 +236,9 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
 simulate_regression <- function(n, coefficients, predictor_means = 0,
                                 predictor_sds = 1, correlation = NULL,
                                 error_sd = 1, outcome = "outcome",
-                                seed = NULL) {
+                                seed = NULL,
+                                batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&
@@ -268,12 +277,17 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
       length(predictor_sds) != length(slopes) || any(predictor_sds <= 0)) {
     stop("Predictor means and standard deviations must match coefficients.", call. = FALSE)
   }
+  # Named predictor means and standard deviations, and a named or tidy
+  # correlation, are matched to the coefficient names rather than by position.
+  predictor_means <- .align_vector(predictor_means, predictor_names, "predictor_means")
+  predictor_sds <- .align_vector(predictor_sds, predictor_names, "predictor_sds")
   if (is.null(correlation)) correlation <- diag(length(slopes))
   if (is.data.frame(correlation)) correlation <- .table_to_square_matrix(correlation, "correlation")
   correlation <- .validate_correlation_matrix(correlation)
   if (nrow(correlation) != length(slopes)) {
     stop("Predictor correlation dimensions must match coefficients.", call. = FALSE)
   }
+  correlation <- .align_matrix(correlation, predictor_names, predictor_names, "correlation")
   dimnames(correlation) <- list(predictor_names, predictor_names)
   generated <- .with_seed(seed, {
     predictors <- .draw_multivariate_normal(
@@ -334,6 +348,7 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
 #'   variable. One tidy table comes from `as.data.frame()`:
 #'   `what = "parameters"` has one row per cluster-variable combination with
 #'   columns `cluster`, `variable`, `center`, `sd` and `proportion`.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -347,11 +362,16 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
 #' head(result)
 #' as.data.frame(result, what = "parameters")
 simulate_clusters <- function(n, centers, sds = 1, proportions = NULL,
-                              labels = NULL, seed = NULL) {
+                              labels = NULL, seed = NULL,
+                              batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   centers <- .tidy_to_matrix(centers, "centers", "cluster", "variable", "center")
   if (is.data.frame(sds)) {
     sds <- .tidy_to_matrix(sds, "sds", "cluster", "variable", "sd")
   }
+  # `sds` is matched to `centers` by cluster and variable name, not position.
+  sds <- .align_matrix(sds, rownames(centers), colnames(centers), "sds")
+  if (is.matrix(centers)) sds <- .align_vector(sds, colnames(centers), "sds")
   stopifnot(
     "`n` must be a single whole number of at least 2" =
       is.numeric(n) &&

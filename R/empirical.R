@@ -10,6 +10,7 @@
 #' @return A `simulab_sim` base `data.frame` with `n` rows of jointly resampled
 #'   values, the identifier column first. `as.data.frame(x, what = "provenance")`
 #'   gives the source row each synthetic row was drawn from.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -17,7 +18,9 @@
 #' result <- simulate_synthetic(source_data, n = 50, seed = 1)
 #' head(result)
 simulate_synthetic <- function(data, n = nrow(data), variables = NULL,
-                               id = "id", seed = NULL) {
+                               id = "id", seed = NULL,
+                               batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`data` must be a data frame, with at least one row" =
       is.data.frame(data) &&
@@ -161,6 +164,7 @@ augment_synthetic <- function(data, source, variables = NULL, seed = NULL) {
 #'   `variable`, one generated density value per row.
 #'   `as.data.frame(x, what = "source")` gives a one-row summary of the source
 #'   values.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -168,7 +172,9 @@ augment_synthetic <- function(data, source, variables = NULL, seed = NULL) {
 #' result <- simulate_density(n = 100, values = values, variable = "score", seed = 1)
 #' head(result)
 simulate_density <- function(n, values, variable = "value", use_limits = FALSE,
-                             keep_missing = FALSE, id = "id", seed = NULL) {
+                             keep_missing = FALSE, id = "id", seed = NULL,
+                             batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&

@@ -42,6 +42,7 @@
 #'   `residual_variance` and `r_squared`). `signal_variance` is the *realized*
 #'   variance of the simulated linear predictor, so `r_squared` is the realized
 #'   proportion of outcome variance it explains, not a population value.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -58,7 +59,9 @@ simulate_prediction <- function(n, coefficients,
                                 category_probabilities = NULL,
                                 predictor_means = 0, predictor_sds = 1,
                                 error_sd = 1, outcome = "outcome",
-                                seed = NULL) {
+                                seed = NULL,
+                                batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   if (.is_tidy_input(categorical_levels)) {
     ## One tidy table carries the levels, and optionally their effects and
     ## sampling probabilities, so three parallel lists collapse into one input.
@@ -222,6 +225,7 @@ simulate_prediction <- function(n, coefficients,
 #'   holding the coefficients followed by `baseline_rate`, `shape` and the
 #'   solved `censoring_rate`) and `diagnostics` (one row, columns
 #'   `target_censoring`, `realized_censoring` and `baseline`).
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -239,7 +243,9 @@ simulate_proportional_survival <- function(n, coefficients,
                                            rate = 0.1, shape = 1,
                                            censoring = 0.3,
                                            covariate_distribution = c("normal", "binary"),
-                                           seed = NULL) {
+                                           seed = NULL,
+                                           batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   baseline <- match.arg(baseline)
   covariate_distribution <- match.arg(covariate_distribution)
   stopifnot(

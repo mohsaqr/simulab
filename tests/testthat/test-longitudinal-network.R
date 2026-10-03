@@ -49,3 +49,28 @@ test_that("network simulation returns edges, nodes, and adjacency tables", {
   expect_equal(nrow(as.data.frame(network, what = "nodes")), 30L)
   expect_equal(nrow(as.data.frame(network, what = "adjacency")), 900L)
 })
+
+test_that("beeps_per_day resets carryover at the first beep of each day and keeps the intercept", {
+  # Near-zero noise makes the process deterministic: x_t = 1 + 0.9 * x_{t-1},
+  # restarting from the intercept (person mean 0 + intercept 1) at each new day.
+  run <- function(burn_in) {
+    simulate_longitudinal(
+      n = 1, occasions = 12, transition = matrix(0.9), intercept = 1,
+      innovation_covariance = matrix(1e-12), initial_covariance = matrix(1e-12),
+      beeps_per_day = 4, burn_in = burn_in, seed = 7
+    )
+  }
+  within_day <- c(1, 1.9, 2.71, 3.439)
+
+  no_burn <- as.data.frame(run(0))
+  expect_equal(no_burn$variable_1[no_burn$day > 1],
+               rep(within_day, 2), tolerance = 1e-4)
+  expect_equal(no_burn$variable_1[no_burn$day == 1][-1],
+               within_day[-4], tolerance = 1e-4)
+
+  burned <- as.data.frame(run(25))
+  expect_equal(burned$variable_1[burned$day > 1],
+               rep(within_day, 2), tolerance = 1e-4)
+  # Day one continues from the burn-in, so its first beep is not a reset.
+  expect_gt(burned$variable_1[1], 5)
+})

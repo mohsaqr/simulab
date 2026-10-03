@@ -8,7 +8,7 @@ network_centrality(
   network,
   measures = c("degree", "strength", "betweenness", "closeness", "eigenvector",
     "pagerank"),
-  directed = TRUE
+  directed = NULL
 )
 }
 \arguments{
@@ -16,7 +16,8 @@ network_centrality(
 
 \item{measures}{Centrality measures.}
 
-\item{directed}{Treat edges as directed. This governs the graph conversion
+\item{directed}{Treat edges as directed. \code{NULL} (the default) takes it from
+the network's \code{settings} table, as \code{\link[=as_igraph]{as_igraph()}} does. This governs the graph conversion
 and the \code{betweenness}, \code{eigenvector}, and \code{pagerank} measures only;
 \code{degree}, \code{strength}, and \code{closeness} always combine incoming and outgoing
 ties. \code{betweenness} and \code{closeness} use \verb{1 / |weight|} as the edge

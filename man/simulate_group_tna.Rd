@@ -16,7 +16,8 @@ simulate_group_tna(
   state_categories = NULL,
   model = c("tna", "ftna", "ctna", "atna"),
   seed = NULL,
-  ...
+  ...,
+  batch = NULL
 )
 }
 \arguments{
@@ -45,6 +46,14 @@ gives one vector per group.}
 used without leaking RNG state.}
 
 \item{...}{Advanced sequence arguments.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A long-form \code{simulab_sim} base \code{data.frame} of grouped sequences with

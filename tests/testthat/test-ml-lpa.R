@@ -212,3 +212,27 @@ test_that("a seeded call reproduces itself and leaves the caller's stream alone"
   expect_identical(as.data.frame(first), as.data.frame(second))
   expect_identical(before, after)
 })
+
+test_that("profile names given with `means` become the profile labels", {
+  tidy_means <- data.frame(profile = rep(c("low", "high"), each = 2),
+                           variable = rep(c("y1", "y2"), 2), mean = c(0, 0, 2, 2))
+  matrix_means <- matrix(c(0, 0, 2, 2), nrow = 2, byrow = TRUE,
+                         dimnames = list(c("low", "high"), c("y1", "y2")))
+  unnamed_means <- matrix(c(0, 0, 2, 2), nrow = 2, byrow = TRUE,
+                          dimnames = list(NULL, c("y1", "y2")))
+  lpa_tidy <- simulate_lpa(n = 50, means = tidy_means, seed = 1)
+  expect_setequal(as.data.frame(lpa_tidy, what = "parameters")$profile, c("low", "high"))
+  expect_identical(lpa_tidy, simulate_lpa(n = 50, means = matrix_means, seed = 1))
+  expect_identical(
+    as.data.frame(lpa_tidy)$profile,
+    c("low", "high")[match(as.data.frame(simulate_lpa(n = 50, means = unnamed_means,
+                                                        seed = 1))$profile,
+                           c("Profile 1", "Profile 2"))]
+  )
+  ml <- simulate_ml_lpa(clusters = 4, cluster_size = 5, means = matrix_means,
+                        profile_probabilities = matrix(c(0.8, 0.2, 0.3, 0.7), 2),
+                        seed = 1)
+  expect_setequal(as.data.frame(ml)$profile, c("low", "high"))
+  relabelled <- simulate_lpa(n = 50, means = tidy_means, labels = c("A", "B"), seed = 1)
+  expect_setequal(as.data.frame(relabelled)$profile, c("A", "B"))
+})

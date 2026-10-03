@@ -11,11 +11,13 @@ simulate_data(type, ...)
 of \code{\link[=list_simulators]{list_simulators()}}. An unknown name, or a name whose \code{dispatchable}
 entry is \code{FALSE}, is an error.}
 
-\item{...}{Arguments passed on to the selected canonical simulation verb.}
+\item{...}{Arguments passed on to the selected canonical simulation verb,
+including \code{batch} for every verb that produces one dataset.}
 }
 \value{
 Whatever the selected verb returns, which for every dispatchable
-entry is a \code{simulab_sim} base \code{data.frame}.
+entry is a \code{simulab_sim} base \code{data.frame}, or a plain \code{list} of them when
+\code{batch} is given.
 }
 \description{
 \code{simulate_data()} is a discoverable dispatcher. Direct verbs remain the
@@ -24,4 +26,8 @@ preferred interface because they provide explicit, documented arguments.
 \examples{
 result <- simulate_data("ttest", n_a = 30, n_b = 30, mean_a = 0, mean_b = 0.5, seed = 1)
 head(result)
+# Five independent datasets from one call.
+datasets <- simulate_data("ttest", n_a = 30, n_b = 30, mean_a = 0,
+                          mean_b = 0.5, seed = 1, batch = 5)
+length(datasets)
 }

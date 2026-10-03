@@ -14,7 +14,8 @@ simulate_prediction(
   predictor_sds = 1,
   error_sd = 1,
   outcome = "outcome",
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -50,6 +51,14 @@ defaulting to \code{1}.}
 \code{"outcome"}.}
 
 \item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 When \code{categorical_levels} is \code{NULL}, whatever \code{\link[=simulate_regression]{simulate_regression()}}

@@ -111,8 +111,13 @@
 
 ## Split a long-form table by a grouping column and pivot each group into its
 ## own matrix, so a list of matrices is expressible as one table.
+## With `square = TRUE` (a from/to table) each group's matrix uses one state
+## order, its own order of first appearance, for both rows and columns, so the
+## diagonal holds the self-transitions. Groups may use different state sets;
+## downstream code matches states by their labels.
 .tidy_to_matrix_list <- function(x, what, group, row, column, value,
-                                 symmetric = FALSE, diagonal = NA_real_) {
+                                 symmetric = FALSE, diagonal = NA_real_,
+                                 square = FALSE) {
   if (!.is_tidy_input(x)) return(x)
   .require_columns(x, c(group, row, column, value), what)
 
@@ -122,6 +127,8 @@
   lapply(pieces, function(piece) {
     if (symmetric) {
       .tidy_to_symmetric(piece, what, row, column, value, diagonal = diagonal)
+    } else if (square) {
+      .tidy_to_square(piece, what, row, column, value)
     } else {
       .tidy_to_matrix(piece, what, row, column, value)
     }
@@ -141,4 +148,62 @@
     if (!is.null(name)) names(values) <- as.character(piece[[name]])
     values
   })
+}
+
+## Match a secondary input to the names its primary input defines.
+##
+## Several simulators take two inputs that describe the same things: `means`
+## and `sds` both have one row per profile, a hidden-state `transition` and an
+## `emission` matrix both have one row per state. Each tidy table is pivoted in
+## its own order of first appearance, and a named matrix keeps its own row
+## order, so without this step the two would be joined by position and a
+## differently ordered second table would silently attach its values to the
+## wrong profile or state. When both sides carry names the secondary input is
+## reordered to the primary's names, and differing name sets are an error.
+## When either side is unnamed, matching stays positional, as documented for
+## plain matrices and vectors.
+.align_names <- function(current, target, what) {
+  if (is.null(target) || is.null(current)) return(NULL)
+  if (anyDuplicated(current) || !setequal(current, target)) {
+    stop(errorCondition(
+      sprintf(paste0("`%s` names %s, which do not match the names %s given by the ",
+                     "primary input."),
+              what, paste(current, collapse = ", "), paste(target, collapse = ", ")),
+      class = "simulab_mismatched_names", call = NULL
+    ))
+  }
+  match(target, current)
+}
+
+.align_matrix <- function(x, rows = NULL, columns = NULL, what) {
+  if (!is.matrix(x)) return(x)
+  row_index <- .align_names(rownames(x), rows, what)
+  if (!is.null(row_index)) x <- x[row_index, , drop = FALSE]
+  column_index <- .align_names(colnames(x), columns, what)
+  if (!is.null(column_index)) x <- x[, column_index, drop = FALSE]
+  x
+}
+
+.align_vector <- function(x, target, what) {
+  if (is.null(x) || is.matrix(x) || is.list(x) || length(x) != length(target)) return(x)
+  index <- .align_names(names(x), target, what)
+  if (is.null(index)) x else x[index]
+}
+
+.align_list <- function(x, target, what) {
+  if (!is.list(x) || is.data.frame(x)) return(x)
+  index <- .align_names(names(x), target, what)
+  if (is.null(index)) x else x[index]
+}
+
+## Pivot a square from/to table so rows and columns share one state order.
+## Taking the two orders separately would put a table whose `to` column first
+## names a different state than its `from` column off the diagonal.
+.tidy_to_square <- function(x, what, row, column, value, levels = NULL) {
+  if (!.is_tidy_input(x)) return(x)
+  .require_columns(x, c(row, column, value), what)
+  if (is.null(levels)) {
+    levels <- unique(c(as.character(x[[row]]), as.character(x[[column]])))
+  }
+  .tidy_to_matrix(x, what, row, column, value, row_levels = levels, column_levels = levels)
 }

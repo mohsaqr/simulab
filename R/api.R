@@ -18,6 +18,13 @@
 #'   `correlation` and `covariance` components hold the requested means and
 #'   standard deviations and the tidy correlation and covariance matrices; use
 #'   `components()` to list them.
+#' @param batch Optional single positive whole number. When given, the
+#'   simulator runs `batch` times and returns a plain `list` of `batch`
+#'   results, each exactly what the same call without `batch` returns. With a
+#'   `seed`, every dataset gets its own seed drawn from `seed`, so the whole
+#'   batch is reproducible; without one the datasets are consecutive draws
+#'   from the session's random-number stream. The default `NULL` returns a
+#'   single result.
 #' @export
 #'
 #' @examples
@@ -28,7 +35,9 @@
 simulate_correlation <- function(n, means = 0, sds = 1, rho = 0,
                                  structure = c("independent", "exchangeable", "ar1", "custom"),
                                  correlation = NULL, variable_names = NULL,
-                                 seed = NULL) {
+                                 seed = NULL,
+                                 batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   # Forward `structure` only when the caller supplied it, so
   # simulate_correlated() can tell a default apart from an explicit choice.
   arguments <- list(n = n, means = means, sds = sds, rho = rho,
@@ -52,6 +61,7 @@ simulate_correlation <- function(n, means = 0, sds = 1, rho = 0,
 #'   subject: the identifier (or the supplied covariates) followed by one
 #'   column per event defined in `specification`. The `survival_definitions`
 #'   component holds the specification that generated it.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -70,7 +80,9 @@ simulate_correlation <- function(n, means = 0, sds = 1, rho = 0,
 #' ))
 simulate_survival <- function(n, specification, covariates = NULL, id = "id",
                               seed = NULL, digits = NULL,
-                              envir = parent.frame()) {
+                              envir = parent.frame(),
+                              batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&
@@ -258,15 +270,21 @@ list_simulators <- function(family = NULL, kind = NULL, dispatchable = NULL) {
 #' @param type Dispatchable simulator name, taken from the `simulator` column
 #'   of [list_simulators()]. An unknown name, or a name whose `dispatchable`
 #'   entry is `FALSE`, is an error.
-#' @param ... Arguments passed on to the selected canonical simulation verb.
+#' @param ... Arguments passed on to the selected canonical simulation verb,
+#'   including `batch` for every verb that produces one dataset.
 #'
 #' @return Whatever the selected verb returns, which for every dispatchable
-#'   entry is a `simulab_sim` base `data.frame`.
+#'   entry is a `simulab_sim` base `data.frame`, or a plain `list` of them when
+#'   `batch` is given.
 #' @export
 #'
 #' @examples
 #' result <- simulate_data("ttest", n_a = 30, n_b = 30, mean_a = 0, mean_b = 0.5, seed = 1)
 #' head(result)
+#' # Five independent datasets from one call.
+#' datasets <- simulate_data("ttest", n_a = 30, n_b = 30, mean_a = 0,
+#'                           mean_b = 0.5, seed = 1, batch = 5)
+#' length(datasets)
 simulate_data <- function(type, ...) {
   stopifnot(
     "`type` must be a single non-empty string" =
@@ -303,8 +321,10 @@ simulate_data <- function(type, ...) {
 #' @param tolerance Single non-negative absolute-error tolerance for successful
 #'   recovery, default `0.1`.
 #'
-#' @return A base `data.frame` with one row per term appearing in either frame
-#'   (the merge keeps unmatched terms) and the columns `term`, `estimate`,
+#' @return A base `data.frame` with one row per row of `estimates`, in the same
+#'   order, plus one row for each term found only in `truth`. Every column of
+#'   `estimates` other than `term` and `estimate` (for example the `batch_id`
+#'   of [apply_batch()]) comes first, then the columns `term`, `estimate`,
 #'   `truth`, `bias` (estimate minus truth), `absolute_error`,
 #'   `relative_error` (`NA` where truth is zero) and `recovered`, a logical
 #'   that is `TRUE` when `absolute_error` is at most `tolerance`.
@@ -329,9 +349,19 @@ validate_recovery <- function(estimates, truth, term = "term", estimate = "estim
         length(tolerance) == 1L &&
         all(tolerance >= 0)
   )
-  merged <- merge(estimates[, c(term, estimate), drop = FALSE],
-                  truth[, c(term, true_value), drop = FALSE], by = term, all = TRUE)
-  names(merged) <- c("term", "estimate", "truth")
+  # Every other column of `estimates` (a batch or scenario identifier, say) is
+  # carried through, and the rows keep the order of `estimates`; merge() alone
+  # would drop the identifiers and sort by term. Terms found only in `truth`
+  # follow at the end.
+  identifiers <- setdiff(names(estimates), c(term, estimate))
+  keyed <- estimates[, c(identifiers, term, estimate), drop = FALSE]
+  keyed$.row <- seq_len(nrow(keyed))
+  merged <- merge(keyed, truth[, c(term, true_value), drop = FALSE],
+                  by = term, all = TRUE, sort = FALSE)
+  merged <- merged[order(merged$.row, merged[[term]], na.last = TRUE),
+                   c(identifiers, term, estimate, true_value), drop = FALSE]
+  names(merged) <- c(identifiers, "term", "estimate", "truth")
+  rownames(merged) <- NULL
   if (!is.numeric(merged$estimate) || !is.numeric(merged$truth)) {
     stop("Estimate and truth columns must be numeric.", call. = FALSE)
   }

@@ -29,11 +29,12 @@ Or the development version from GitHub:
 remotes::install_github("mohsaqr/simulab")
 ```
 
-Six packages are suggested and none is required at run time. `tna` (1.2.3 or
+Seven packages are suggested and none is required at run time. `tna` (1.2.3 or
 later) supplies the transition-network estimators used by `fit_tna()`.
 `igraph` (2.0.0 or later) receives graphs from `as_igraph()`. `simstudy` is
-used as an equivalence oracle in the test suite. `testthat`, `knitr` and
-`rmarkdown` build the tests and the vignette.
+used as an equivalence oracle in the test suite. `survival` fits the Cox
+model in the vignette. `testthat`, `knitr` and `rmarkdown` build the tests
+and the vignette.
 
 ## The result contract
 
@@ -717,6 +718,24 @@ target that no coefficient can produce raises an error of class
 `simulab_no_convergence`. Neither returns an approximate answer silently.
 
 ## Scenario studies, batches and export
+
+Every simulator that produces one dataset takes `batch`. Given a number, it
+returns a plain list of that many results, each exactly what the same call
+without `batch` returns. With a `seed`, every dataset gets its own seed drawn
+from it, so the whole batch is reproducible and the caller's random-number
+stream is left untouched.
+
+```r
+datasets <- simulate_ttest(n_a = 40, n_b = 40, mean_a = 0, mean_b = 0.6,
+                           seed = 1, batch = 100)
+length(datasets)
+#> [1] 100
+```
+
+The per-dataset seeds are drawn rather than counted up from `seed`, because
+several simulators already give their groups or layers the seeds `seed`,
+`seed + 1`, and so on. Consecutive seeds would make one dataset's second group
+repeat the next dataset's first group.
 
 `scenario_grid()` builds a scenario table from named vectors, with
 replications. `simulate_scenarios()` runs one simulator across every row of

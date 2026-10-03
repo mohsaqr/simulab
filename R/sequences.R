@@ -110,6 +110,7 @@
 #'   (`from`, `to`, `probability`), `initial_probabilities` (`state`,
 #'   `probability`), and `wide` (one row per chain, columns `id`, `S1`, `S2`,
 #'   ...).
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -134,7 +135,9 @@
 simulate_markov <- function(n, transition, chain_length, initial = NULL,
                             states = NULL, trim_state = NULL,
                             id = "id", period = "period", state = "state",
-                            seed = NULL) {
+                            seed = NULL,
+                            batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&
@@ -174,7 +177,8 @@ simulate_markov <- function(n, transition, chain_length, initial = NULL,
   } else if (length(initial) == 1L && initial %in% states) {
     as.numeric(states == initial)
   } else {
-    as.numeric(initial)
+    # A named vector is matched to the states by name, not position.
+    as.numeric(.align_vector(initial, states, "initial"))
   }
   if (length(initial_probabilities) != length(states) ||
       any(initial_probabilities < 0) ||
@@ -404,6 +408,7 @@ trim_events <- function(data, id, period, event, occurrence = 1L,
 #'
 #' @return A `simulab_sim` base `data.frame` with the generated event indicator
 #'   and records through the requested occurrence.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -420,7 +425,9 @@ trim_events <- function(data, id, period, event, occurrence = 1L,
 #' head(result)
 simulate_until_event <- function(data, definition, occurrence = 1L,
                                  id = "id", period = "period", seed = NULL,
-                                 envir = parent.frame()) {
+                                 envir = parent.frame(),
+                                 batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`data` must be a data frame" =
       is.data.frame(data),

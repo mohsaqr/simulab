@@ -51,6 +51,7 @@
 #'   `discrimination` and `guessing`; for `model = "graded"` it holds one row
 #'   per item-by-threshold combination, with `parameter` equal to
 #'   `"threshold"`, `category` the threshold index, and no `guessing` column.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -75,7 +76,9 @@
 simulate_irt <- function(n, discrimination = 1, difficulty,
                          dimensions = NULL, ability_correlation = NULL,
                          model = c("2pl", "rasch", "3pl", "graded"),
-                         guessing = 0.2, seed = NULL) {
+                         guessing = 0.2, seed = NULL,
+                         batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   if (is.data.frame(difficulty)) {
     difficulty <- .tidy_to_matrix(difficulty, "difficulty", "item", "dimension",
                                   "difficulty")
@@ -86,6 +89,17 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
     ability_correlation, "ability_correlation", "row", "column", "correlation",
     diagonal = 1
   )
+  # `difficulty` names the items; `dimensions`, `discrimination` and
+  # `guessing` are matched to those names, and `ability_correlation` to the
+  # dimension names, rather than by position.
+  item_order <- if (is.matrix(difficulty)) rownames(difficulty) else names(difficulty)
+  dimensions <- .align_matrix(dimensions, item_order, NULL, "dimensions")
+  discrimination <- .align_vector(discrimination, item_order, "discrimination")
+  guessing <- .align_vector(guessing, item_order, "guessing")
+  if (is.matrix(dimensions)) {
+    ability_correlation <- .align_matrix(ability_correlation, colnames(dimensions),
+                                         colnames(dimensions), "ability_correlation")
+  }
   model <- match.arg(model)
   stopifnot(
     "`n` must be a single whole number of at least 2" =
@@ -147,7 +161,7 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
       any(apply(difficulty, 1L, function(values) is.unsorted(values, strictly = TRUE)))) {
     stop("Graded thresholds must increase within item.", call. = FALSE)
   }
-  item_names <- if (!is.null(rownames(dimensions))) rownames(dimensions) else sprintf("item_%d", seq_len(items))
+  item_names <- item_order %||% rownames(dimensions) %||% sprintf("item_%d", seq_len(items))
   ability_names <- if (!is.null(colnames(dimensions))) colnames(dimensions) else sprintf("theta_%d", seq_len(dimensions_count))
   generated <- .with_seed(seed, {
     abilities <- .draw_multivariate_normal(as.integer(n), rep(0, dimensions_count),
@@ -226,6 +240,7 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
 #'   `probability`), `emissions` (columns `state`, `observation`,
 #'   `probability`) and `initial_probabilities` (columns `state`,
 #'   `probability`) hold the generating parameters in tidy form.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -240,11 +255,20 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
 #' components(result)
 simulate_hmm <- function(n, transition, chain_length, emission, initial = NULL,
                          state_labels = NULL, observation_labels = NULL,
-                         seed = NULL) {
-  transition <- .tidy_to_matrix(transition, "transition", "from", "to",
+                         seed = NULL,
+                         batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
+  transition <- .tidy_to_square(transition, "transition", "from", "to",
                                 "probability")
   emission <- .tidy_to_matrix(emission, "emission", "state", "observation",
                               "probability")
+  # Emission rows and named initial probabilities are matched to the hidden
+  # states by name, and a named transition's columns to its rows.
+  if (is.matrix(transition)) {
+    transition <- .align_matrix(transition, NULL, rownames(transition), "transition")
+    emission <- .align_matrix(emission, rownames(transition), NULL, "emission")
+    initial <- .align_vector(initial, rownames(transition), "initial")
+  }
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&
@@ -278,9 +302,11 @@ simulate_hmm <- function(n, transition, chain_length, emission, initial = NULL,
   if (length(initial) != states || any(initial < 0) || abs(sum(initial) - 1) > 1e-8) {
     stop("initial must contain one probability per hidden state.", call. = FALSE)
   }
-  if (is.null(state_labels)) state_labels <- sprintf("State %d", seq_len(states))
+  if (is.null(state_labels)) state_labels <- rownames(transition) %||% sprintf("State %d", seq_len(states))
   observed <- ncol(emission)
-  if (is.null(observation_labels)) observation_labels <- sprintf("Observation %d", seq_len(observed))
+  if (is.null(observation_labels)) {
+    observation_labels <- colnames(emission) %||% sprintf("Observation %d", seq_len(observed))
+  }
   if (length(state_labels) != states || anyDuplicated(state_labels) ||
       length(observation_labels) != observed || anyDuplicated(observation_labels)) {
     stop("State and observation labels must match their matrices and be unique.", call. = FALSE)

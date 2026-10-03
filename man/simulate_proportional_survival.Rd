@@ -12,7 +12,8 @@ simulate_proportional_survival(
   shape = 1,
   censoring = 0.3,
   covariate_distribution = c("normal", "binary"),
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -44,6 +45,14 @@ independently, one of \code{"normal"} (the default, standard normal) or
 \code{"binary"} (Bernoulli with probability 0.5).}
 
 \item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per unit and columns

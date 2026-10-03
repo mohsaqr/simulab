@@ -196,19 +196,21 @@ correlation_structure <- function(n_variables, rho = 0,
       all(c(value, row, column) %in% names(table))
   )
 
-  row_names <- unique(table[[row]])
-  column_names <- unique(table[[column]])
+  row_names <- unique(as.character(table[[row]]))
+  column_names <- unique(as.character(table[[column]]))
   if (!setequal(row_names, column_names)) {
     stop("Correlation table row and column names must match.", call. = FALSE)
   }
+  # Rows and columns share the row order, so a table listing its `column`
+  # values in another order still puts each variable's 1 on the diagonal.
   result <- matrix(
     NA_real_,
     nrow = length(row_names),
-    ncol = length(column_names),
-    dimnames = list(row_names, column_names)
+    ncol = length(row_names),
+    dimnames = list(row_names, row_names)
   )
-  row_index <- match(table[[row]], row_names)
-  column_index <- match(table[[column]], column_names)
+  row_index <- match(as.character(table[[row]]), row_names)
+  column_index <- match(as.character(table[[column]]), row_names)
   result[cbind(row_index, column_index)] <- table[[value]]
   if (anyNA(result)) stop("Correlation table must contain every matrix cell.", call. = FALSE)
   .validate_correlation_matrix(result)
@@ -269,6 +271,7 @@ correlation_structure <- function(n_variables, rho = 0,
 #'   `row`, `column` and `correlation` or `covariance`. The covariance is the
 #'   correlation matrix scaled by `sds` on both sides, so `sds` are standard
 #'   deviations rather than variances.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -284,7 +287,9 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
                                 structure = c("independent", "exchangeable", "ar1", "custom"),
                                 correlation = NULL,
                                 variable_names = NULL,
-                                seed = NULL) {
+                                seed = NULL,
+                                batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&
@@ -313,14 +318,19 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
   if (length(sds) != length(means) || any(sds < 0)) {
     stop("sds must be non-negative and contain one value per mean.", call. = FALSE)
   }
+  if (is.data.frame(correlation)) {
+    correlation <- .table_to_square_matrix(correlation, "correlation")
+  }
+  # Names come from `variable_names`, then named `means`, then a named
+  # `correlation`; the correlation is matched to them by name, not position.
   if (is.null(variable_names)) variable_names <- names(means)
+  if (is.null(variable_names) && is.matrix(correlation)) variable_names <- rownames(correlation)
   if (is.null(variable_names)) variable_names <- sprintf("V%d", seq_along(means))
   if (length(variable_names) != length(means) || anyDuplicated(variable_names)) {
     stop("variable_names must contain one unique name per variable.", call. = FALSE)
   }
-  if (is.data.frame(correlation)) {
-    correlation <- .table_to_square_matrix(correlation, "correlation")
-  }
+  correlation <- .align_matrix(correlation, variable_names, variable_names, "correlation")
+  sds <- .align_vector(sds, variable_names, "sds")
   if (!is.null(correlation)) structure <- "custom"
   correlation_matrix <- .correlation_matrix(length(means), rho, structure, correlation)
   dimnames(correlation_matrix) <- list(variable_names, variable_names)
@@ -378,6 +388,7 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
 #'   correlation-matrix cell with columns `row`, `column` and `correlation`.
 #'   That correlation is the latent Gaussian one, not the correlation of the
 #'   realized categories, which is attenuated by the thresholding.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -389,7 +400,9 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
 simulate_ordinal <- function(n, probabilities, n_variables = 1L, rho = 0,
                              structure = c("independent", "exchangeable", "ar1", "custom"),
                              correlation = NULL, labels = NULL,
-                             variable_names = NULL, seed = NULL) {
+                             variable_names = NULL, seed = NULL,
+                             batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&
@@ -428,13 +441,17 @@ simulate_ordinal <- function(n, probabilities, n_variables = 1L, rho = 0,
   if (length(labels) != ncol(probabilities)) {
     stop("labels must contain one value per ordinal category.", call. = FALSE)
   }
+  if (is.data.frame(correlation)) {
+    correlation <- .table_to_square_matrix(correlation, "correlation")
+  }
+  # A named `correlation` names the variables when `variable_names` does not,
+  # and is matched to `variable_names` by name when both are given.
+  if (is.null(variable_names) && is.matrix(correlation)) variable_names <- rownames(correlation)
   if (is.null(variable_names)) variable_names <- sprintf("V%d", seq_len(n_variables))
   if (length(variable_names) != n_variables || anyDuplicated(variable_names)) {
     stop("variable_names must contain one unique name per variable.", call. = FALSE)
   }
-  if (is.data.frame(correlation)) {
-    correlation <- .table_to_square_matrix(correlation, "correlation")
-  }
+  correlation <- .align_matrix(correlation, variable_names, variable_names, "correlation")
   if (!is.null(correlation)) structure <- "custom"
   correlation_matrix <- .correlation_matrix(n_variables, rho, structure, correlation)
   dimnames(correlation_matrix) <- list(variable_names, variable_names)

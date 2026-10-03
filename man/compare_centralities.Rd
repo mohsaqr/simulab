@@ -9,7 +9,7 @@ compare_centralities(
   y,
   measures = c("degree", "betweenness", "closeness"),
   method = c("pearson", "spearman", "kendall"),
-  directed = TRUE
+  directed = NULL
 )
 }
 \arguments{
@@ -19,7 +19,8 @@ compare_centralities(
 
 \item{method}{Correlation method.}
 
-\item{directed}{Treat networks as directed.}
+\item{directed}{Treat networks as directed. \code{NULL} (the default) takes it
+from each network's \code{settings} table.}
 }
 \value{
 A tidy base \code{data.frame} with one row per measure and columns

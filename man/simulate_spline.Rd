@@ -13,7 +13,8 @@ simulate_spline(
   degree = 3L,
   output_range = NULL,
   noise_variance = 0,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -37,6 +38,14 @@ pair. Values outside \verb{[0, 1]} are rescaled the same way, not clipped.}
 to each value has standard deviation \code{sqrt(noise_variance)}.}
 
 \item{seed}{Optional random seed.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} holding \code{data} with the spline

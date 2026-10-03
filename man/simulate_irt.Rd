@@ -12,7 +12,8 @@ simulate_irt(
   ability_correlation = NULL,
   model = c("2pl", "rasch", "3pl", "graded"),
   guessing = 0.2,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -46,6 +47,14 @@ recycled across items (the default, \code{0.2}) or one value per item. It is
 silently reset to zero unless \code{model = "3pl"}.}
 
 \item{seed}{Optional random seed.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per respondent and

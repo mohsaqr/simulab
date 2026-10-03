@@ -37,6 +37,7 @@
 #'   supplied as arguments), and `random_effects` (one row per cluster,
 #'   columns `cluster`, `random_intercept` and `random_slope`; the
 #'   `random_slope` column is present but zero when `random_slope_sd = 0`).
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -57,7 +58,9 @@ simulate_multilevel <- function(clusters, cluster_size, intercept = 0,
                                 predictor_sds = 1, random_intercept_sd = 1,
                                 random_slope_sd = 0,
                                 random_effect_correlation = 0,
-                                residual_sd = 1, seed = NULL) {
+                                residual_sd = 1, seed = NULL,
+                                batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`clusters` must be a single whole number of at least 2" =
       is.numeric(clusters) &&
@@ -190,6 +193,7 @@ simulate_multilevel <- function(clusters, cluster_size, intercept = 0,
 #'   holds one row per unit with columns `id`, `intercept`, `slope` and, when
 #'   `random_sd` has three elements, `quadratic`, giving each unit's deviation
 #'   from the fixed coefficients.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -200,7 +204,9 @@ simulate_multilevel <- function(clusters, cluster_size, intercept = 0,
 #' as.data.frame(result, what = "parameters")
 simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
                             random_sd = c(1, 0.25), random_correlation = NULL,
-                            residual_sd = 1, seed = NULL) {
+                            residual_sd = 1, seed = NULL,
+                            batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   random_correlation <- .tidy_to_symmetric(
     random_correlation, "random_correlation", "row", "column", "correlation",
     diagonal = 1
@@ -314,6 +320,7 @@ simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
 #'   `between_covariance` (tidy matrix tables with columns `row`, `column` and
 #'   `coefficient` or `covariance`), and `person_means` (one row per unit with
 #'   columns `id` and one per variable).
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -331,7 +338,9 @@ simulate_longitudinal <- function(n, occasions, transition, intercept = 0,
                                   initial_covariance = NULL,
                                   between_covariance = NULL, grand_means = 0,
                                   beeps_per_day = NULL, burn_in = 50L,
-                                  seed = NULL) {
+                                  seed = NULL,
+                                  batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   ## `from` is the driving variable at t-1 and `to` the driven variable at t.
   ## The recursion below is `transition %*% (previous - unit_mean)`, so the ROW
   ## indexes the driven variable: `to` supplies rows and `from` supplies
@@ -354,6 +363,20 @@ simulate_longitudinal <- function(n, occasions, transition, intercept = 0,
   between_covariance <- .tidy_to_symmetric(
     between_covariance, "between_covariance", "row", "column", "covariance"
   )
+  # Covariances and named per-variable vectors are matched to the transition
+  # matrix's variables by name, not position.
+  if (is.matrix(transition) && !is.null(rownames(transition))) {
+    variable_order <- rownames(transition)
+    transition <- .align_matrix(transition, NULL, variable_order, "transition")
+    innovation_covariance <- .align_matrix(innovation_covariance, variable_order,
+                                           variable_order, "innovation_covariance")
+    initial_covariance <- .align_matrix(initial_covariance, variable_order,
+                                        variable_order, "initial_covariance")
+    between_covariance <- .align_matrix(between_covariance, variable_order,
+                                        variable_order, "between_covariance")
+    grand_means <- .align_vector(grand_means, variable_order, "grand_means")
+    intercept <- .align_vector(intercept, variable_order, "intercept")
+  }
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&
@@ -423,10 +446,14 @@ simulate_longitudinal <- function(n, occasions, transition, intercept = 0,
       innovation <- as.vector(.draw_multivariate_covariance(
         1L, rep(0, variables), innovation_covariance
       ))
+      # Step `occasion` produces retained occasion `occasion - burn_in + 1`, so
+      # the first beep of each day after the first is a multiple of
+      # `beeps_per_day` past the burn-in. A day break drops only the carryover
+      # term; the intercept is still added, as on every other occasion.
       day_break <- !is.null(beeps_per_day) && occasion > burn_in &&
-        ((occasion - burn_in - 1L) %% beeps_per_day == 0L)
-      if (day_break) as.vector(unit_mean + innovation) else
-        as.vector(unit_mean + intercept + transition %*% (previous - unit_mean) + innovation)
+        ((occasion - burn_in) %% beeps_per_day == 0L)
+      carryover <- if (day_break) 0 else transition %*% (previous - unit_mean)
+      as.vector(unit_mean + intercept + carryover + innovation)
     }, seq_len(total - 1L), init = as.vector(initial), accumulate = TRUE)
     matrix(unlist(states, use.names = FALSE), ncol = variables, byrow = TRUE)
     })

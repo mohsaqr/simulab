@@ -27,12 +27,27 @@
   stop("Unsupported network representation.", call. = FALSE)
 }
 
+## Resolve `directed = NULL` from the network itself. A simulab network records
+## in its `settings` table whether it was generated directed; an undirected
+## edge list stores each tie once, so reading it as directed would keep only
+## one direction of every tie and distort betweenness, eigenvector and
+## PageRank centrality. Anything without that record is treated as directed.
+.resolve_directed <- function(x, directed) {
+  if (!is.null(directed)) return(directed)
+  if (inherits(x, "simulab_sim") && "settings" %in% components(x)$table) {
+    settings <- as.data.frame(x, what = "settings")
+    if ("directed" %in% names(settings)) return(isTRUE(settings$directed[[1L]]))
+  }
+  TRUE
+}
+
 #' Convert tidy network data to an igraph object
 #'
 #' @param x A simulab network, tidy edge list, matrix, or native TNA model.
-#' @param directed Whether the resulting graph is directed. It is not inferred
-#'   from `x`, so a network generated with `directed = FALSE` must be converted
-#'   with `directed = FALSE` as well.
+#' @param directed Whether the resulting graph is directed. `NULL` (the
+#'   default) takes it from the `settings` table of a simulab network, so a
+#'   network generated with `directed = FALSE` converts to an undirected graph,
+#'   and treats any other input as directed.
 #'
 #' @return A native `igraph` object carrying a `weight` edge attribute. When `x`
 #'   is a `simulab_sim` with a `nodes` component, that node set supplies the
@@ -46,7 +61,8 @@
 #'   graph <- as_igraph(network)
 #'   igraph::vcount(graph)
 #' }
-as_igraph <- function(x, directed = TRUE) {
+as_igraph <- function(x, directed = NULL) {
+  directed <- .resolve_directed(x, directed)
   stopifnot(
     "`directed` must be a single flag" =
       is.logical(directed) &&
@@ -68,7 +84,8 @@ as_igraph <- function(x, directed = TRUE) {
 #'
 #' @param network A supported network representation.
 #' @param measures Centrality measures.
-#' @param directed Treat edges as directed. This governs the graph conversion
+#' @param directed Treat edges as directed. `NULL` (the default) takes it from
+#'   the network's `settings` table, as [as_igraph()] does. This governs the graph conversion
 #'   and the `betweenness`, `eigenvector`, and `pagerank` measures only;
 #'   `degree`, `strength`, and `closeness` always combine incoming and outgoing
 #'   ties. `betweenness` and `closeness` use `1 / |weight|` as the edge
@@ -87,7 +104,8 @@ as_igraph <- function(x, directed = TRUE) {
 network_centrality <- function(network,
                                measures = c("degree", "strength", "betweenness",
                                             "closeness", "eigenvector", "pagerank"),
-                               directed = TRUE) {
+                               directed = NULL) {
+  directed <- .resolve_directed(network, directed)
   stopifnot(
     "`measures` must be a character vector, with at least one element, naming one of `degree`, `strength`, `betweenness`, `closeness`, `eigenvector`, `pagerank`" =
       is.character(measures) &&
@@ -108,10 +126,12 @@ network_centrality <- function(network,
                                             weights = weights)$vector,
     pagerank = igraph::page_rank(graph, directed = directed, weights = weights)$vector
   ))
-  do.call(rbind, Map(function(measure, value) {
+  result <- do.call(rbind, Map(function(measure, value) {
     data.frame(node = names(value), measure = measure, value = as.numeric(value),
                stringsAsFactors = FALSE, row.names = NULL)
   }, measures, values))
+  rownames(result) <- NULL
+  result
 }
 
 .aligned_network_edges <- function(x, y) {
@@ -175,7 +195,8 @@ compare_networks <- function(x, y, threshold = 0) {
 #' @param x,y Supported network representations.
 #' @param measures Centralities passed to `network_centrality()`.
 #' @param method Correlation method.
-#' @param directed Treat networks as directed.
+#' @param directed Treat networks as directed. `NULL` (the default) takes it
+#'   from each network's `settings` table.
 #'
 #' @return A tidy base `data.frame` with one row per measure and columns
 #'   `measure`, `method`, `correlation`, `mae`, and `nodes`. Nodes present in
@@ -192,7 +213,7 @@ compare_networks <- function(x, y, threshold = 0) {
 #' }
 compare_centralities <- function(x, y, measures = c("degree", "betweenness", "closeness"),
                                  method = c("pearson", "spearman", "kendall"),
-                                 directed = TRUE) {
+                                 directed = NULL) {
   method <- match.arg(method)
   first <- network_centrality(x, measures, directed)
   second <- network_centrality(y, measures, directed)

@@ -10,7 +10,8 @@ simulate_lca(
   proportions = NULL,
   class_labels = NULL,
   category_labels = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -19,21 +20,29 @@ simulate_lca(
 \item{probabilities}{Item probabilities as an array with dimensions class,
 indicator and category, or as a tidy data frame with columns \code{class},
 \code{indicator}, \code{category} and \code{probability}. Category probabilities must
-sum to one within each class and indicator. Only the \code{indicator} dimnames
-are used, to name the indicator columns; any class and category dimnames
-are ignored, so class and category labels must be supplied through
-\code{class_labels} and \code{category_labels}.}
+sum to one within each class and indicator. The dimnames (the \code{class},
+\code{indicator} and \code{category} values of a tidy table) name the classes, the
+indicator columns and the categories.}
 
 \item{proportions}{Latent-class proportions, one positive value per class;
 they are rescaled to sum to one. \code{NULL} (the default) makes every class
 equally likely.}
 
 \item{class_labels, category_labels}{Optional labels, one unique value per
-class and per category. \code{class_labels} defaults to \code{"Class 1"},
-\code{"Class 2"} and so on; \code{category_labels} defaults to the integers
-\code{1:categories}, which are the values written into the indicator columns.}
+class and per category, overriding the names given in \code{probabilities}.
+Without names there, \code{class_labels} defaults to \code{"Class 1"}, \code{"Class 2"}
+and so on, and \code{category_labels} to the integers \code{1:categories}. The
+category labels are the values written into the indicator columns.}
 
 \item{seed}{Optional random seed.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per observation and

@@ -1,3 +1,96 @@
+# simulab 0.4.7
+
+## Inputs are matched by name, not position
+
+Several simulators take two inputs that describe the same things, such as
+`means` and `sds` for the same profiles, or `transition` and `emission` for the
+same hidden states. The second input was matched to the first by position. A
+tidy table listed in another order, or a named matrix or vector in another
+order, silently attached its values to the wrong profile, state or variable,
+and the parameter tables reported those wrong values as the truth. The second
+input is now matched by name, and names that do not match raise
+`simulab_mismatched_names`. Unnamed matrices and vectors are still matched by
+position. Affected: `simulate_lpa()`, `simulate_ml_lpa()`,
+`simulate_clusters()`, `simulate_hmm()`, `simulate_irt()`,
+`simulate_factors()`, `simulate_regression()`, `simulate_correlated()`,
+`simulate_ordinal()`, `simulate_copula()`, `simulate_network()`,
+`simulate_markov()`, `simulate_sequences()`, `simulate_group_sequences()`,
+`simulate_group_tna()`, `simulate_sequence_clusters()` and
+`simulate_longitudinal()`.
+
+- A square `from`/`to` table whose `to` column lists states in a different
+  order from its `from` column was pivoted with mismatched rows and columns,
+  so self-transitions were off the diagonal (`simulate_hmm()`,
+  `simulate_network()`, grouped and clustered sequence transitions).
+- Names given with an input now label the output: profiles
+  (`simulate_lpa()`, `simulate_ml_lpa()`), cluster classes
+  (`simulate_ml_lpa()`), latent classes and categories (`simulate_lca()`),
+  hidden states and observations (`simulate_hmm()`), items
+  (`simulate_irt()`), groups (`simulate_group_sequences()`) and sequence
+  clusters (`simulate_sequence_clusters()`). They were replaced by
+  `Profile 1`, `Class 1`, `State 1` and similar.
+
+## Batches from every simulator
+
+- Every simulator that produces one dataset (39 verbs, including
+  `generate_transition_system()` and `simulate_until_event()`) takes
+  `batch = NULL`. Given a positive whole number, it returns a plain `list` of
+  that many results, each exactly what the call without `batch` returns. The
+  argument also passes through `simulate_data()`. The four verbs that already
+  replicate (`simulate_sequence_batches()`, `simulate_tna_batches()`,
+  `simulate_network_batches()`, `simulate_scenarios()`) keep their own
+  `repetitions` or replication arguments.
+- With a `seed`, each dataset gets its own seed drawn from it, so a batch is
+  reproducible and the caller's random-number stream is unchanged. Seeds are
+  drawn rather than consecutive because several verbs already seed their
+  groups or layers with `seed + k - 1`.
+- An invalid `batch` raises a `simulab_invalid_batch` condition.
+
+## Monte Carlo recovery
+
+- `validate_recovery()` keeps every other column of `estimates`, such as the
+  `batch_id` from `apply_batch()`, and returns rows in the order of
+  `estimates`. It previously dropped identifiers and sorted by term, so a
+  recovery table from a batch could not be traced back to its datasets.
+- `summarize_simulations()` numbers its rows 1 to n instead of labeling them
+  by group, and a group with no non-missing values reports `NA` statistics
+  rather than `NaN`, `Inf` and two warnings.
+- `simulate_lpa()` and `simulate_ml_lpa()` label profiles with the names given
+  in `means` (the `profile` values of a tidy table, or matrix row names). They
+  previously replaced them with `Profile 1`, `Profile 2`, and so on.
+- `list_distributions()` numbers its rows 1 to n after sorting.
+- `summarize_simulations()` without `by` no longer adds a `.group` column
+  holding `"all"`.
+- `summarize_transitions()` and `network_centrality()` number their rows 1 to
+  n.
+- `as_igraph()`, `network_centrality()` and `compare_centralities()` take
+  `directed = NULL` by default and read the direction from the network's
+  `settings` table. The default was `TRUE`, which read an undirected network
+  (whose edge list stores each tie once) as directed and distorted
+  betweenness, eigenvector and PageRank centrality unless `directed = FALSE`
+  was passed by hand.
+- `survival` is suggested, for the Cox model in the vignette.
+- The vignette is rewritten as a methodological guide: the model behind each
+  family of simulators, with its references, a simulation from it, its
+  parameter tables, and a recovery check where one is short.
+
+## Bug fixes found by the batch sweep
+
+- `simulate_bipartite_network()` failed with "arguments imply differing number
+  of rows: 0, 1" whenever a probability draw produced no edges (94 of seeds
+  1 to 300 at the defaults). It now returns an empty edge list.
+- `simulate_proportional_survival()` occasionally raised
+  `simulab_no_convergence` when solving for the censoring rate (24 of seeds
+  1 to 2000 at `n = 10`). The shared root solver now refines to machine
+  precision, so convergence is decided by the residual alone.
+- `simulate_longitudinal(beeps_per_day = )` reset the carryover one occasion
+  late, at the second beep of each day (and at the second beep of day one),
+  so the first beep of every later day still carried over the previous
+  evening. The reset also dropped `intercept`, setting the value to the person
+  mean instead of the person mean plus the intercept. The carryover now
+  resets at the first beep of each day after the first, and only the lagged
+  term is removed.
+
 # simulab 0.4.6
 
 - `VignetteBuilder` now lists `rmarkdown` as well as `knitr`. Under CRAN's

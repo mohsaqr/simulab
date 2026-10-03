@@ -73,6 +73,7 @@
 #'   is supplied). `as.data.frame(x, what = )` also returns `nodes`
 #'   (`node`, `type`), `adjacency` (a long `row`/`column`/`weight` table over
 #'   all ordered node pairs), and a one-row `settings` table.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -85,7 +86,9 @@ simulate_edge_list <- function(nodes, edges = NULL, probability = 0.1,
                                weight_mean = 1, weight_sd = 1,
                                weight_range = c(0.1, 1), node_type = NULL,
                                edge_classes = NULL,
-                               class_probabilities = NULL, seed = NULL) {
+                               class_probabilities = NULL, seed = NULL,
+                               batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   labels <- .network_node_labels(nodes)
   weight <- match.arg(weight)
   .network_weight_arguments(weight, weight_mean, weight_sd, weight_range)
@@ -145,6 +148,7 @@ simulate_edge_list <- function(nodes, edges = NULL, probability = 0.1,
 #'   `event` -- `"formation"` or `"dissolution"` -- and `weight`, ordered by
 #'   time), `snapshots` (one row per active dyad per period: `period`, `from`,
 #'   `to`, `weight`), `nodes` (`node`, `type`), and a one-row `settings` table.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -161,7 +165,9 @@ simulate_temporal_network <- function(nodes, periods,
                                       weight = c("binary", "uniform", "normal", "poisson"),
                                       weight_mean = 1, weight_sd = 1,
                                       weight_range = c(0.1, 1),
-                                      node_type = NULL, seed = NULL) {
+                                      node_type = NULL, seed = NULL,
+                                      batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   labels <- .network_node_labels(nodes)
   weight_arguments <- .network_weight_arguments(
     weight, weight_mean, weight_sd, weight_range
@@ -312,6 +318,7 @@ simulate_temporal_network <- function(nodes, periods,
 #'   `directed` field reports whether the generated matrix is asymmetric.
 #'   The `transition` type is row-stochastic: every `from` state's `value`
 #'   entries sum to one.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -324,7 +331,9 @@ simulate_network_matrix <- function(nodes,
                                     probability = 0.2, directed = TRUE,
                                     loops = FALSE, weighted = TRUE,
                                     weight_range = c(0.1, 1),
-                                    frequency_mean = 10, seed = NULL) {
+                                    frequency_mean = 10, seed = NULL,
+                                    batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   type <- match.arg(type)
   labels <- .network_node_labels(nodes)
   stopifnot(
@@ -422,6 +431,7 @@ simulate_network_matrix <- function(nodes,
 #'   occur. `as.data.frame(x, what = )` also returns `nodes` (`node`, `mode`),
 #'   `incidence` (the wide actor-by-event incidence table: an `actor` column
 #'   followed by one column per event), and a one-row `settings` table.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -432,7 +442,9 @@ simulate_bipartite_network <- function(actors, events, edges = NULL,
                                        probability = 0.1,
                                        weight = c("binary", "uniform", "normal", "poisson"),
                                        weight_mean = 1, weight_sd = 1,
-                                       weight_range = c(0.1, 1), seed = NULL) {
+                                       weight_range = c(0.1, 1), seed = NULL,
+                                       batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   actor_labels <- .network_node_labels(actors, "Actor", minimum = 1L)
   event_labels <- .network_node_labels(events, "Event", minimum = 1L)
   if (length(intersect(actor_labels, event_labels))) {
@@ -473,7 +485,11 @@ simulate_bipartite_network <- function(actors, events, edges = NULL,
   data <- data.frame(
     from = actor_labels[generated$selected$from_index],
     to = event_labels[generated$selected$to_index],
-    weight = generated$weights, from_mode = "actor", to_mode = "event",
+    weight = generated$weights,
+    # rep(), not a scalar: data.frame() will not recycle a scalar to zero rows,
+    # and a probability draw with no edges is a legitimate empty network.
+    from_mode = rep("actor", nrow(generated$selected)),
+    to_mode = rep("event", nrow(generated$selected)),
     stringsAsFactors = FALSE, row.names = NULL
   )
   incidence <- matrix(0, length(actor_labels), length(event_labels),
@@ -517,6 +533,7 @@ simulate_bipartite_network <- function(actors, events, edges = NULL,
 #'   `layers` (`layer`, `probability`), `adjacency` (a long
 #'   `layer`/`row`/`column`/`weight` table over all ordered node pairs in every
 #'   layer), and a one-row `settings` table.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -529,7 +546,9 @@ simulate_multiplex_network <- function(nodes, layers, edges = NULL,
                                        weight = c("binary", "uniform", "normal", "poisson"),
                                        weight_mean = 1, weight_sd = 1,
                                        weight_range = c(0.1, 1),
-                                       node_type = NULL, seed = NULL) {
+                                       node_type = NULL, seed = NULL,
+                                       batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   weight_distribution <- match.arg(weight)
   .network_weight_arguments(
     weight_distribution, weight_mean, weight_sd, weight_range

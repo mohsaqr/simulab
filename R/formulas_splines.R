@@ -242,6 +242,7 @@ spline_curves <- function(coefficients, knots = c(0.25, 0.5, 0.75),
 #'   table, one row per observation/basis combination, and
 #'   `as.data.frame(x, what = "parameters")` gives one row per basis
 #'   coefficient.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -254,7 +255,9 @@ spline_curves <- function(coefficients, knots = c(0.25, 0.5, 0.75),
 #' head(result)
 simulate_spline <- function(data, predictor, variable, coefficients,
                             knots = c(0.25, 0.5, 0.75), degree = 3L,
-                            output_range = NULL, noise_variance = 0, seed = NULL) {
+                            output_range = NULL, noise_variance = 0, seed = NULL,
+                            batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`data` must be a data frame, with at least one row" =
       is.data.frame(data) &&

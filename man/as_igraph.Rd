@@ -4,14 +4,15 @@
 \alias{as_igraph}
 \title{Convert tidy network data to an igraph object}
 \usage{
-as_igraph(x, directed = TRUE)
+as_igraph(x, directed = NULL)
 }
 \arguments{
 \item{x}{A simulab network, tidy edge list, matrix, or native TNA model.}
 
-\item{directed}{Whether the resulting graph is directed. It is not inferred
-from \code{x}, so a network generated with \code{directed = FALSE} must be converted
-with \code{directed = FALSE} as well.}
+\item{directed}{Whether the resulting graph is directed. \code{NULL} (the
+default) takes it from the \code{settings} table of a simulab network, so a
+network generated with \code{directed = FALSE} converts to an undirected graph,
+and treats any other input as directed.}
 }
 \value{
 A native \code{igraph} object carrying a \code{weight} edge attribute. When \code{x}

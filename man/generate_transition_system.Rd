@@ -10,7 +10,8 @@ generate_transition_system(
   concentration = 1,
   diagonal_concentration = 0,
   state_categories = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -29,6 +30,14 @@ self-transitions no more likely than any other transition.}
 \code{states} is \code{NULL}, to draw state labels with \code{sample_learning_states()}.}
 
 \item{seed}{Optional random seed.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A tidy transition-edge \code{simulab_sim} base \code{data.frame} with

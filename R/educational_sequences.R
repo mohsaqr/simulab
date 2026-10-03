@@ -15,6 +15,7 @@
 #'   `n_states^2` rows and columns `from`, `to`, and `probability`; every
 #'   `from` state's probabilities sum to one. An `initial_probabilities` table
 #'   (`state`, `probability`) is available through `as.data.frame()`.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -23,7 +24,9 @@
 generate_transition_system <- function(n_states = 8L, states = NULL,
                                        concentration = 1,
                                        diagonal_concentration = 0,
-                                       state_categories = NULL, seed = NULL) {
+                                       state_categories = NULL, seed = NULL,
+                                       batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n_states` must be a single whole number of at least 2" =
       is.numeric(n_states) &&
@@ -134,6 +137,7 @@ encode_sequences <- function(data, id = "id", period = "period", state = "state"
 #'   (`group`, `id`, `course`, `achievement`), `groups` (`group`, `actors`),
 #'   `wide` (one row per actor, columns `id`, `S1`, ..., plus actor metadata),
 #'   and `one_hot` (the event log with `state` replaced by indicator columns).
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @examples
@@ -149,7 +153,9 @@ simulate_event_log <- function(groups = 5L, actors = 10L, courses = 1L,
                                start_time = as.POSIXct("2020-01-01", tz = "UTC"),
                                interval_range = c(60, 600),
                                transitions = NULL, initial = NULL,
-                               seed = NULL, ...) {
+                               seed = NULL, ...,
+                               batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`groups` must be a single number of at least 2" =
       is.numeric(groups) &&

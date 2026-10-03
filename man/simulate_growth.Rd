@@ -13,7 +13,8 @@ simulate_growth(
   random_sd = c(1, 0.25),
   random_correlation = NULL,
   residual_sd = 1,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -39,6 +40,14 @@ effects uncorrelated.}
 defaulting to \code{1}.}
 
 \item{seed}{Optional random seed.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A long-form \code{simulab_sim} base \code{data.frame} with one row per

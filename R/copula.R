@@ -191,6 +191,7 @@
 #'   That matrix is the correlation of the latent Gaussian variables, not of
 #'   the generated margins, which are pulled apart by their own quantile
 #'   transforms.
+#' @inheritParams simulate_correlation
 #' @export
 #'
 #' @section Conditions:
@@ -221,7 +222,9 @@
 simulate_copula <- function(n, specification, rho = 0, tau = NULL,
                             structure = c("independent", "exchangeable", "ar1", "custom"),
                             correlation = NULL, id = "id", seed = NULL,
-                            envir = parent.frame()) {
+                            envir = parent.frame(),
+                            batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single positive whole number" =
       is.numeric(n) &&
@@ -254,6 +257,10 @@ simulate_copula <- function(n, specification, rho = 0, tau = NULL,
   n_variables <- length(variable_names)
   structure <- .resolve_correlation_structure(
     structure, rho != 0 || !is.null(tau), correlation, !missing(structure))
+  # A named or tidy correlation is matched to the specification's variables by
+  # name, not by position.
+  if (is.data.frame(correlation)) correlation <- .table_to_square_matrix(correlation, "correlation")
+  correlation <- .align_matrix(correlation, variable_names, variable_names, "correlation")
   correlation_matrix <- .copula_correlation(
     n_variables, rho, tau, structure, correlation
   )

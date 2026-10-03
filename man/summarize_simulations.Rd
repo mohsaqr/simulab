@@ -17,9 +17,10 @@ the default, selects every numeric non-grouping column.}
 }
 \value{
 A plain base \code{data.frame} with one row per group and variable: the
-\code{by} columns (or a single \code{.group} column holding \code{"all"} when \code{by} is
-\code{NULL}), then \code{variable}, \code{observations} (the non-missing count), \code{mean},
-\code{sd}, \code{minimum} and \code{maximum}.
+\code{by} columns (none when \code{by} is \code{NULL}), then \code{variable}, \code{observations}
+(the non-missing count), \code{mean}, \code{sd}, \code{minimum} and \code{maximum}. Missing
+values are left out of the statistics; a group with none left reports
+\code{NA} statistics.
 }
 \description{
 Summarize simulated numeric variables

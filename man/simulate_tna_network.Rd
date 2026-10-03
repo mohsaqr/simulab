@@ -11,7 +11,8 @@ simulate_tna_network(
   within_probability = 0.4,
   between_probability = 0.15,
   loops = FALSE,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -29,6 +30,14 @@ node left with no outgoing edge is nevertheless given a self transition of
 probability one, so self-loops can appear even when \code{loops} is \code{FALSE}.}
 
 \item{seed}{Optional random seed.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A tidy \code{simulab_sim} base \code{data.frame} holding the non-zero

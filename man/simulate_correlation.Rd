@@ -12,7 +12,8 @@ simulate_correlation(
   structure = c("independent", "exchangeable", "ar1", "custom"),
   correlation = NULL,
   variable_names = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 }
 \arguments{
@@ -22,6 +23,14 @@ simulate_correlation(
 to \code{\link[=simulate_correlated]{simulate_correlated()}}. Unlike that function, \code{means} defaults to \code{0}.
 One variable is generated per element of \code{means}; \code{sds} must be a single
 value, which is recycled, or one value per mean.}
+
+\item{batch}{Optional single positive whole number. When given, the
+simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
+results, each exactly what the same call without \code{batch} returns. With a
+\code{seed}, every dataset gets its own seed drawn from \code{seed}, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default \code{NULL} returns a
+single result.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per observation and

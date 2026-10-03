@@ -85,3 +85,13 @@ test_that("an unattainable risk difference is refused, not approximated", {
     class = "simulab_no_solution"
   )
 })
+
+test_that("the censoring-rate solve converges when its objective is steep", {
+  # With an x tolerance of sqrt(eps) this seed stopped at a residual of
+  # 2.6e-08 against a residual tolerance of 1.5e-08 and raised
+  # simulab_no_convergence; 24 of seeds 1..2000 did at n = 10.
+  result <- simulate_proportional_survival(n = 10, coefficients = c(x = 0.4),
+                                           seed = 690037725)
+  expect_s3_class(result, "simulab_sim")
+  expect_identical(nrow(result), 10L)
+})

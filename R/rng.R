@@ -59,11 +59,15 @@
 ## where pmin() saturates, converges to a residual of exactly zero with a
 ## bracket still 0.5 wide). `what` names the quantity being solved for so the
 ## condition says which calibration failed.
-## The default `tol` is deliberately tighter than uniroot's own
-## (.Machine$double.eps^0.25). uniroot's tolerance bounds x, not f, and on the
-## censoring-rate objective the looser default stops one iteration early at a
-## residual of 1.6e-07 where one more iteration reaches 3.2e-14.
-.solve_root <- function(f, interval, what, tol = .Machine$double.eps^0.5,
+## The default `tol` runs the search in x to machine precision (uniroot's
+## Brent step is floored at 2 * eps * |x| internally, so this is the tightest
+## meaningful value). uniroot's tolerance bounds x, not f, while convergence is
+## judged on the residual: with an x tolerance of sqrt(eps) the residual is
+## about slope * sqrt(eps), which exceeds the residual tolerance whenever the
+## objective is steeper than 1 near the root. The censoring-rate objective of
+## simulate_proportional_survival() is, for small samples with long event
+## times, so 24 of 2000 seeds failed at n = 10.
+.solve_root <- function(f, interval, what, tol = .Machine$double.eps,
                         maxiter = 1000L) {
   stopifnot(
     "`f` must be a function" = is.function(f),
