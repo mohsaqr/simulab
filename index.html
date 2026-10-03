@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/getting-started.html">Getting started with simulab</a></li>
+<li><a class="dropdown-item" href="articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -68,7 +68,7 @@
 <p>Or the development version from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mohsaqr/simulab"</span><span class="op">)</span></span></code></pre></div>
-<p>Six packages are suggested and none is required at run time. <code>tna</code> (1.2.3 or later) supplies the transition-network estimators used by <code><a href="reference/fit_tna.html">fit_tna()</a></code>. <code>igraph</code> (2.0.0 or later) receives graphs from <code><a href="reference/as_igraph.html">as_igraph()</a></code>. <code>simstudy</code> is used as an equivalence oracle in the test suite. <code>testthat</code>, <code>knitr</code> and <code>rmarkdown</code> build the tests and the vignette.</p>
+<p>Seven packages are suggested and none is required at run time. <code>tna</code> (1.2.3 or later) supplies the transition-network estimators used by <code><a href="reference/fit_tna.html">fit_tna()</a></code>. <code>igraph</code> (2.0.0 or later) receives graphs from <code><a href="reference/as_igraph.html">as_igraph()</a></code>. <code>simstudy</code> is used as an equivalence oracle in the test suite. <code>survival</code> fits the Cox model in the vignette. <code>testthat</code>, <code>knitr</code> and <code>rmarkdown</code> build the tests and the vignette.</p>
 </div>
 <div class="section level2">
 <h2 id="the-result-contract">The result contract<a class="anchor" aria-label="anchor" href="#the-result-contract"></a>
@@ -604,6 +604,13 @@
 <div class="section level2">
 <h2 id="scenario-studies-batches-and-export">Scenario studies, batches and export<a class="anchor" aria-label="anchor" href="#scenario-studies-batches-and-export"></a>
 </h2>
+<p>Every simulator that produces one dataset takes <code>batch</code>. Given a number, it returns a plain list of that many results, each exactly what the same call without <code>batch</code> returns. With a <code>seed</code>, every dataset gets its own seed drawn from it, so the whole batch is reproducible and the caller’s random-number stream is left untouched.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">datasets</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_ttest.html">simulate_ttest</a></span><span class="op">(</span>n_a <span class="op">=</span> <span class="fl">40</span>, n_b <span class="op">=</span> <span class="fl">40</span>, mean_a <span class="op">=</span> <span class="fl">0</span>, mean_b <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>                           seed <span class="op">=</span> <span class="fl">1</span>, batch <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">datasets</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 100</span></span></code></pre></div>
+<p>The per-dataset seeds are drawn rather than counted up from <code>seed</code>, because several simulators already give their groups or layers the seeds <code>seed</code>, <code>seed + 1</code>, and so on. Consecutive seeds would make one dataset’s second group repeat the next dataset’s first group.</p>
 <p><code><a href="reference/scenario_grid.html">scenario_grid()</a></code> builds a scenario table from named vectors, with replications. <code><a href="reference/simulate_scenarios.html">simulate_scenarios()</a></code> runs one simulator across every row of such a table, giving each row a deterministic seed offset, and returns the pooled results with a scenario identifier.</p>
 <p><code><a href="reference/parameter_grid.html">parameter_grid()</a></code> builds parameter designs by full factorial expansion, random sampling or Latin hypercube sampling. Its own arguments are named <code>n</code>, <code>method</code> and <code>seed</code>, so a grid parameter cannot use those three names.</p>
 <p><code><a href="reference/apply_batch.html">apply_batch()</a></code> applies a function across a named list of inputs and stacks the results with a batch identifier. <code><a href="reference/simulate_sequence_batches.html">simulate_sequence_batches()</a></code>, <code><a href="reference/simulate_network_batches.html">simulate_network_batches()</a></code> and <code><a href="reference/simulate_tna_batches.html">simulate_tna_batches()</a></code> repeat a simulator a fixed number of times with independent seeds.</p>
@@ -613,7 +620,7 @@
 <h2 id="input-validation">Input validation<a class="anchor" aria-label="anchor" href="#input-validation"></a>
 </h2>
 <p>Argument checks state the contract that was broken and name the argument.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/simulate_clusters.html">simulate_clusters</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, centers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error: `centers` must be a matrix, with at least 2 rows</span></span>
 <span></span>

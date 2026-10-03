@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Getting started with simulab • simulab</title>
+<title>Simulating Data with Known Parameters in simulab • simulab</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting started with simulab">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulating Data with Known Parameters in simulab">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with simulab</a></li>
+<li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -56,102 +56,1347 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Getting started with simulab</h1>
-            
-      
-      <small class="dont-index">Source: <a href="https://github.com/mohsaqr/simulab/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
+      <h1>Simulating Data with Known Parameters in simulab</h1>
+                        <h4 data-toc-skip class="author">Mohammed
+Saqr</h4>
+            <address class="author_afil">
+      University of Eastern Finland<br><small class="dont-index">Source: <a href="https://github.com/mohsaqr/simulab/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started.Rmd</code></div>
-    </div>
+    </address>
+</div>
 
     
     
-<p><code>simulab</code> separates a simulation into three ideas: define
-the data-generating process, generate primary observations, and retrieve
-known truth as tidy tables.</p>
-<div class="section level2">
-<h2 id="a-declarative-study">A declarative study<a class="anchor" aria-label="anchor" href="#a-declarative-study"></a>
-</h2>
+<p>A simulation study evaluates statistical methods using data generated
+under a specified model. Because the generating parameters are known,
+estimates can be compared with their target values across repeated
+samples. A study therefore requires a defined aim, a data-generating
+mechanism, estimands, methods, and performance measures.</p>
+<p><code>simulab</code> generates data for a range of statistical models
+and study designs. Each simulation result contains the generated data
+together with component tables describing its parameters, design, and,
+where available, derived population quantities. These components support
+comparisons between fitted results and the corresponding generating
+values.</p>
+<p>The package uses four conventions:</p>
+<ul>
+<li>
+<strong>Tidy results.</strong> A single-dataset simulation returns a
+data frame that can be passed directly to compatible analysis functions
+such as <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, <code><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm()</a></code>, and
+<code><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate()</a></code>.</li>
+<li>
+<strong>Accessible generating information.</strong>
+<code><a href="../reference/components.html">components()</a></code> lists the tables attached to a result, and
+<code>as.data.frame(x, what = ...)</code> extracts a selected
+component.</li>
+<li>
+<strong>Local seeds.</strong> Supplying <code>seed</code> makes the
+call reproducible under the same random-number settings and restores the
+session’s previous random-number state on return.</li>
+<li>
+<strong>Replication.</strong> Supplying <code>batch</code> requests
+a list of replicate datasets generated with the same model
+arguments.</li>
+</ul>
+<p>Inputs such as transition matrices, factor loadings, and profile
+means can be supplied as matrices or tidy tables. Named inputs
+describing the same variables, states, or profiles are aligned by their
+names where supported. Unnamed inputs follow the positional conventions
+of the relevant function.</p>
+<p>This vignette introduces the simulation workflow and then describes
+the supported model families. Examples specify generating parameters,
+inspect the resulting components, and compare selected sample estimates
+with their targets. Individual fitted examples illustrate sampling
+variation; repeated simulations are needed to evaluate estimator
+performance.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mohsaqr/simulab" class="external-link">simulab</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">specification</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
-<span>  variable     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"baseline"</span>, <span class="st">"treatment"</span>, <span class="st">"outcome"</span><span class="op">)</span>,</span>
-<span>  formula      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"0.5"</span>, <span class="st">"0.5 * baseline + treatment"</span><span class="op">)</span>,</span>
-<span>  variance     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"0"</span>, <span class="st">"1"</span><span class="op">)</span>,</span>
-<span>  distribution <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"binary"</span>, <span class="st">"normal"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mohsaqr/simulab" class="external-link">simulab</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="part-i-the-simulation-workflow">Part I: The simulation workflow<a class="anchor" aria-label="anchor" href="#part-i-the-simulation-workflow"></a>
+</h2>
+<div class="section level3">
+<h3 id="data-and-parameters">Data and parameters<a class="anchor" aria-label="anchor" href="#data-and-parameters"></a>
+</h3>
+<p><code><a href="../reference/simulate_regression.html">simulate_regression()</a></code> generates data from the linear
+model</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mi>i</mi></msub><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msubsup><mi>𝐱</mi><mi>i</mi><mi>⊤</mi></msubsup><mi>𝛃</mi><mo>+</mo><msub><mi>ε</mi><mi>i</mi></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">y_i = \beta_0 + \mathbf{x}_i^\top\boldsymbol\beta + \varepsilon_i,</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐱</mi><mi>i</mi></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><mi>𝚺</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{x}_i \sim N(\boldsymbol\mu, \boldsymbol\Sigma)</annotation></semantics></math>
+and the errors are independent normal draws with variance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math>.
+<code>coefficients</code> supplies the named intercept and slopes.
+<code>predictor_means</code>, <code>predictor_sds</code>, and
+<code>correlation</code> specify the predictor distribution, while
+<code>error_sd</code> specifies
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>.
+The defaults give independent standard normal predictors and residual
+standard deviation 1.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">regression</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_regression.html">simulate_regression</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  coefficients <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(Intercept)"</span> <span class="op">=</span> <span class="fl">1</span>, x1 <span class="op">=</span> <span class="fl">0.5</span>, x2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
+<span><span class="va">regression</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:regression&gt; 100 rows x 4 columns</span></span>
+<span><span class="co">#&gt;    id         x1          x2    outcome</span></span>
+<span><span class="co">#&gt; 1   1 -0.6264538 -0.62036668  1.2822849</span></span>
+<span><span class="co">#&gt; 2   2  0.1836433  0.04211587  2.7680602</span></span>
+<span><span class="co">#&gt; 3   3 -0.8356286 -0.91092165  2.4420506</span></span>
+<span><span class="co">#&gt; 4   4  1.5952808  0.15802877  1.4193240</span></span>
+<span><span class="co">#&gt; 5   5  0.3295078 -0.65458464 -0.9241063</span></span>
+<span><span class="co">#&gt; 6   6 -0.8204684  1.76728727  2.5572412</span></span>
+<span><span class="co">#&gt; 7   7  0.4874291  0.71670748  1.6957685</span></span>
+<span><span class="co">#&gt; 8   8  0.7383247  0.91017423  1.6374374</span></span>
+<span><span class="co">#&gt; 9   9  0.5757814  0.38418536  1.1592355</span></span>
+<span><span class="co">#&gt; 10 10 -0.3053884  1.68217608  0.8527614</span></span>
+<span><span class="co">#&gt; ... 90 more rows</span></span>
+<span><span class="fu"><a href="../reference/components.html">components</a></span><span class="op">(</span><span class="va">regression</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                   table rows columns</span></span>
+<span><span class="co">#&gt; 1                  data  100       4</span></span>
+<span><span class="co">#&gt; 2          coefficients    3       2</span></span>
+<span><span class="co">#&gt; 3               effects    1       3</span></span>
+<span><span class="co">#&gt; 4 predictor_correlation    4       3</span></span></code></pre></div>
+<p>The generated data contain <code>id</code>, the named predictors, and
+<code>outcome</code>. The <code>coefficients</code> component records
+the generating coefficients. <code>effects</code> contains the signal
+variance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>𝛃</mi><mi>⊤</mi></msup><mi>𝚺</mi><mi>𝛃</mi></mrow><annotation encoding="application/x-tex">\boldsymbol\beta^\top\boldsymbol\Sigma\boldsymbol\beta</annotation></semantics></math>,
+residual variance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math>,
+and population
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>,
+calculated as signal variance divided by total outcome variance.
+<code>predictor_correlation</code> stores the predictor correlation
+matrix in tidy format.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">regression</span>, what <span class="op">=</span> <span class="st">"coefficients"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          term coefficient</span></span>
+<span><span class="co">#&gt; 1 (Intercept)         1.0</span></span>
+<span><span class="co">#&gt; 2          x1         0.5</span></span>
+<span><span class="co">#&gt; 3          x2        -0.3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">regression</span>, what <span class="op">=</span> <span class="st">"effects"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   signal_variance residual_variance r_squared</span></span>
+<span><span class="co">#&gt; 1            0.34                 1 0.2537313</span></span></code></pre></div>
+<p>With slopes 0.5 and −0.3 and independent standard normal predictors,
+signal variance is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>0.5</mn><mn>2</mn></msup><mo>+</mo><msup><mn>0.3</mn><mn>2</mn></msup><mo>=</mo><mn>0.34</mn></mrow><annotation encoding="application/x-tex">0.5^2 + 0.3^2 = 0.34</annotation></semantics></math>.
+Residual variance is 1, giving population
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo>=</mo><mn>0.34</mn><mi>/</mi><mn>1.34</mn><mo>≈</mo><mn>0.254</mn></mrow><annotation encoding="application/x-tex">R^2 = 0.34/1.34 \approx 0.254</annotation></semantics></math>.</p>
+</div>
+<div class="section level3">
+<h3 id="seeds">Seeds<a class="anchor" aria-label="anchor" href="#seeds"></a>
+</h3>
+<p>A call with the same arguments and <code>seed</code> reproduces the
+dataset under the same random-number settings. The seeded call restores
+the preceding random-number state, so subsequent draws continue from
+that state.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2024</span><span class="op">)</span></span>
+<span><span class="va">state_before</span> <span class="op">&lt;-</span> <span class="va">.Random.seed</span></span>
+<span><span class="va">again</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_regression.html">simulate_regression</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  coefficients <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(Intercept)"</span> <span class="op">=</span> <span class="fl">1</span>, x1 <span class="op">=</span> <span class="fl">0.5</span>, x2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">again</span>, <span class="va">regression</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">state_before</span>, <span class="va">.Random.seed</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>The two checks return <code>TRUE</code>: <code>again</code> matches
+<code>regression</code>, and the session’s random-number state is
+unchanged by the call. With <code>seed = NULL</code>, simulations use
+and advance the session’s current random-number stream.</p>
+</div>
+<div class="section level3">
+<h3 id="replication-and-performance-measures">Replication and performance measures<a class="anchor" aria-label="anchor" href="#replication-and-performance-measures"></a>
+</h3>
+<p>Estimator performance concerns behavior across repeated samples.
+<code>batch = 500</code> requests 500 replicate datasets with the same
+sample size and generating parameters. When <code>seed</code> is
+supplied, the batch mechanism draws a separate seed for each dataset.
+With <code>seed = NULL</code>, datasets use successive draws from the
+current random-number stream.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">datasets</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_regression.html">simulate_regression</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  coefficients <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(Intercept)"</span> <span class="op">=</span> <span class="fl">1</span>, x1 <span class="op">=</span> <span class="fl">0.5</span>, x2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  batch <span class="op">=</span> <span class="fl">500</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">datasets</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 500</span></span></code></pre></div>
+<p><code><a href="../reference/apply_batch.html">apply_batch()</a></code> applies an analysis function to each
+dataset and combines its data-frame outputs, adding
+<code>batch_id</code> to identify the replication. Additional arguments
+are passed to the analysis function. Here,
+<code>estimate_coefficients()</code> fits a linear model and returns its
+coefficient estimates in tidy format.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">estimate_coefficients</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">formula</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">formula</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>term <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span>, estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_study.html">simulate_study</a></span><span class="op">(</span><span class="fl">200</span>, <span class="va">specification</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">study</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;simulab_sim:study&gt; 6 rows x 4 columns</span></span>
-<span><span class="co">#&gt;   id   baseline treatment    outcome</span></span>
-<span><span class="co">#&gt; 1  1  1.3709584         0  0.6808585</span></span>
-<span><span class="co">#&gt; 2  2 -0.5646982         1  1.4778931</span></span>
-<span><span class="co">#&gt; 3  3  0.3631284         1  1.2205551</span></span>
-<span><span class="co">#&gt; 4  4  0.6328626         0  1.0515034</span></span>
-<span><span class="co">#&gt; 5  5  0.4042683         1  1.0556615</span></span>
-<span><span class="co">#&gt; 6  6 -0.1061245         0 -0.1109496</span></span>
-<span><span class="fu"><a href="../reference/components.html">components</a></span><span class="op">(</span><span class="va">study</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         table rows columns</span></span>
-<span><span class="co">#&gt; 1        data  200       4</span></span>
-<span><span class="co">#&gt; 2 definitions    3       5</span></span>
-<span><span class="co">#&gt; 3    metadata    1       3</span></span></code></pre></div>
+<span><span class="va">estimates</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/apply_batch.html">apply_batch</a></span><span class="op">(</span><span class="va">datasets</span>, <span class="va">estimate_coefficients</span>, formula <span class="op">=</span> <span class="va">outcome</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">estimates</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   batch_id        term   estimate</span></span>
+<span><span class="co">#&gt; 1        1 (Intercept)  0.9921637</span></span>
+<span><span class="co">#&gt; 2        1          x1  0.4973782</span></span>
+<span><span class="co">#&gt; 3        1          x2 -0.4061121</span></span>
+<span><span class="co">#&gt; 4        2 (Intercept)  1.0071737</span></span>
+<span><span class="co">#&gt; 5        2          x1  0.5316143</span></span>
+<span><span class="co">#&gt; 6        2          x2 -0.4862266</span></span></code></pre></div>
+<p><code><a href="../reference/validate_recovery.html">validate_recovery()</a></code> matches estimates to their
+generating values by <code>term</code>. It reports the signed estimation
+error in <code>bias</code>, its magnitude in
+<code>absolute_error</code>, and whether that magnitude is within
+<code>tolerance</code> in <code>recovered</code>. The <code>bias</code>
+column contains individual estimation errors; their mean across
+replications estimates statistical bias.
+<code>true_value = "coefficient"</code> identifies the generating-value
+column in <code>truth</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">regression</span>, what <span class="op">=</span> <span class="st">"coefficients"</span><span class="op">)</span></span>
+<span><span class="va">recovery</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/validate_recovery.html">validate_recovery</a></span><span class="op">(</span><span class="va">estimates</span>, <span class="va">truth</span>, true_value <span class="op">=</span> <span class="st">"coefficient"</span>, tolerance <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">recovery</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   batch_id        term   estimate truth         bias absolute_error</span></span>
+<span><span class="co">#&gt; 1        1 (Intercept)  0.9921637   1.0 -0.007836287    0.007836287</span></span>
+<span><span class="co">#&gt; 2        1          x1  0.4973782   0.5 -0.002621787    0.002621787</span></span>
+<span><span class="co">#&gt; 3        1          x2 -0.4061121  -0.3 -0.106112128    0.106112128</span></span>
+<span><span class="co">#&gt; 4        2 (Intercept)  1.0071737   1.0  0.007173665    0.007173665</span></span>
+<span><span class="co">#&gt; 5        2          x1  0.5316143   0.5  0.031614277    0.031614277</span></span>
+<span><span class="co">#&gt; 6        2          x2 -0.4862266  -0.3 -0.186226618    0.186226618</span></span>
+<span><span class="co">#&gt;   relative_error recovered</span></span>
+<span><span class="co">#&gt; 1   -0.007836287      TRUE</span></span>
+<span><span class="co">#&gt; 2   -0.005243574      TRUE</span></span>
+<span><span class="co">#&gt; 3    0.353707094      TRUE</span></span>
+<span><span class="co">#&gt; 4    0.007173665      TRUE</span></span>
+<span><span class="co">#&gt; 5    0.063228554      TRUE</span></span>
+<span><span class="co">#&gt; 6    0.620755393      TRUE</span></span></code></pre></div>
+<p><code><a href="../reference/summarize_simulations.html">summarize_simulations()</a></code> reports the non-missing count,
+mean, standard deviation, minimum, and maximum of selected numeric
+variables. Grouping by <code>term</code> summarizes each coefficient
+across replications. The mean of <code>bias</code> estimates bias, and
+the standard deviation of <code>estimate</code> estimates the sampling
+standard deviation, often called the empirical standard error.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="va">recovery</span>, by <span class="op">=</span> <span class="st">"term"</span>, variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"estimate"</span>, <span class="st">"bias"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          term variable observations         mean        sd    minimum   maximum</span></span>
+<span><span class="co">#&gt; 1 (Intercept) estimate          500  1.004524666 0.1003488  0.6869128 1.3106459</span></span>
+<span><span class="co">#&gt; 2 (Intercept)     bias          500  0.004524666 0.1003488 -0.3130872 0.3106459</span></span>
+<span><span class="co">#&gt; 3          x1 estimate          500  0.501262413 0.1018302  0.2149156 0.8985527</span></span>
+<span><span class="co">#&gt; 4          x1     bias          500  0.001262413 0.1018302 -0.2850844 0.3985527</span></span>
+<span><span class="co">#&gt; 5          x2 estimate          500 -0.301266961 0.1003781 -0.5668912 0.0682355</span></span>
+<span><span class="co">#&gt; 6          x2     bias          500 -0.001266961 0.1003781 -0.2668912 0.3682355</span></span></code></pre></div>
+<p>The mean slope estimates are approximately 0.501 and −0.301. Their
+estimated biases are 0.0013 and −0.0013. The Monte Carlo standard error
+of each estimated bias is the corresponding empirical standard error
+divided by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mn>500</mn></msqrt><annotation encoding="application/x-tex">\sqrt{500}</annotation></semantics></math>,
+approximately 0.0045. The estimated biases are small relative to this
+simulation uncertainty.</p>
+<p>The empirical standard errors are 0.102 and 0.100. These are close to
+the approximation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mi>/</mi><msqrt><mi>n</mi></msqrt><mo>=</mo><mn>0.1</mn></mrow><annotation encoding="application/x-tex">\sigma/\sqrt{n} = 0.1</annotation></semantics></math>
+for independent unit-variance predictors; exact model-based standard
+errors also depend on the realized predictor values.</p>
+<p>Increasing the sample size from 100 to 400 provides a second
+simulation condition. Under the same generating model, standard errors
+are expected to decrease by approximately half.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">larger</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_regression.html">simulate_regression</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">400</span>,</span>
+<span>  coefficients <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(Intercept)"</span> <span class="op">=</span> <span class="fl">1</span>, x1 <span class="op">=</span> <span class="fl">0.5</span>, x2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  batch <span class="op">=</span> <span class="fl">500</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">larger_recovery</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/validate_recovery.html">validate_recovery</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/apply_batch.html">apply_batch</a></span><span class="op">(</span><span class="va">larger</span>, <span class="va">estimate_coefficients</span>, formula <span class="op">=</span> <span class="va">outcome</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span><span class="op">)</span>,</span>
+<span>  <span class="va">truth</span>,</span>
+<span>  true_value <span class="op">=</span> <span class="st">"coefficient"</span>,</span>
+<span>  tolerance <span class="op">=</span> <span class="fl">0.2</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="va">larger_recovery</span>, by <span class="op">=</span> <span class="st">"term"</span>, variables <span class="op">=</span> <span class="st">"bias"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          term variable observations         mean         sd    minimum</span></span>
+<span><span class="co">#&gt; 1 (Intercept)     bias          500 -0.002911290 0.05148512 -0.1463768</span></span>
+<span><span class="co">#&gt; 2          x1     bias          500  0.001310449 0.04983413 -0.2022521</span></span>
+<span><span class="co">#&gt; 3          x2     bias          500  0.003157642 0.04863093 -0.1472518</span></span>
+<span><span class="co">#&gt;     maximum</span></span>
+<span><span class="co">#&gt; 1 0.1553902</span></span>
+<span><span class="co">#&gt; 2 0.1385956</span></span>
+<span><span class="co">#&gt; 3 0.1412823</span></span></code></pre></div>
+<p>The resulting slope standard errors are approximately 0.050 and
+0.049. Because the generating coefficient is fixed across replications,
+the standard deviation of <code>bias</code> equals that of
+<code>estimate</code> for each term. <code><a href="../reference/scenario_grid.html">scenario_grid()</a></code>
+constructs designs that vary several arguments, and
+<code><a href="../reference/simulate_scenarios.html">simulate_scenarios()</a></code> applies a simulator to the resulting
+conditions.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="specialized-data-with-ground-truth">Specialized data with ground truth<a class="anchor" aria-label="anchor" href="#specialized-data-with-ground-truth"></a>
+<h2 id="part-ii-specifying-a-mechanism">Part II: Specifying a mechanism<a class="anchor" aria-label="anchor" href="#part-ii-specifying-a-mechanism"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="variables-as-distributions">Variables as distributions<a class="anchor" aria-label="anchor" href="#variables-as-distributions"></a>
+</h3>
+<p><code><a href="../reference/define_variables.html">define_variables()</a></code> specifies variables through named
+distribution calls. Distribution parameters may depend on variables
+defined earlier in the specification. This permits conditional models
+with explicit links between variables.</p>
+<p>In the following example, age is normally distributed. Treatment
+uptake follows a logistic model of age, visit counts follow a Poisson
+model with a log link, and the outcome mean depends on age and
+treatment. <code><a href="../reference/simulate_study.html">simulate_study()</a></code> generates observations from the
+specification.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">specification</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
+<span>  age     <span class="op">=</span> <span class="fu">normal</span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  treated <span class="op">=</span> <span class="fu">binary</span><span class="op">(</span>prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">0.04</span> <span class="op">*</span> <span class="va">age</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  visits  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span>lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">+</span> <span class="fl">0.02</span> <span class="op">*</span> <span class="va">age</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  outcome <span class="op">=</span> <span class="fu">normal</span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">10</span> <span class="op">+</span> <span class="fl">0.2</span> <span class="op">*</span> <span class="va">age</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">treated</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_study.html">simulate_study</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, specification <span class="op">=</span> <span class="va">specification</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">study</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:study&gt; 6 rows x 5 columns</span></span>
+<span><span class="co">#&gt;   id      age treated visits  outcome</span></span>
+<span><span class="co">#&gt; 1  1 63.70958       0      4 23.24307</span></span>
+<span><span class="co">#&gt; 2  2 44.35302       0      7 18.31476</span></span>
+<span><span class="co">#&gt; 3  3 53.63128       0      4 17.27679</span></span>
+<span><span class="co">#&gt; 4  4 56.32863       0      5 17.25232</span></span>
+<span><span class="co">#&gt; 5  5 54.04268       0      3 18.22492</span></span>
+<span><span class="co">#&gt; 6  6 48.93875       1      5 22.51943</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">study</span>, what <span class="op">=</span> <span class="st">"definitions"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   variable distribution parameter                        value</span></span>
+<span><span class="co">#&gt; 1      age       normal      mean                           50</span></span>
+<span><span class="co">#&gt; 2      age       normal        sd                           10</span></span>
+<span><span class="co">#&gt; 3  treated       binary      prob      plogis(-2 + 0.04 * age)</span></span>
+<span><span class="co">#&gt; 4   visits      poisson    lambda        exp(0.5 + 0.02 * age)</span></span>
+<span><span class="co">#&gt; 5  outcome       normal      mean 10 + 0.2 * age + 2 * treated</span></span>
+<span><span class="co">#&gt; 6  outcome       normal        sd                            2</span></span></code></pre></div>
+<p>The <code>definitions</code> component records the supplied parameter
+expressions. The following models estimate the coefficients used to
+generate treatment uptake and visit counts.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">treated</span> <span class="op">~</span> <span class="va">age</span>, family <span class="op">=</span> <span class="va">binomial</span>, data <span class="op">=</span> <span class="va">study</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Intercept)         age </span></span>
+<span><span class="co">#&gt; -1.78449485  0.03678837</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">visits</span> <span class="op">~</span> <span class="va">age</span>, family <span class="op">=</span> <span class="va">poisson</span>, data <span class="op">=</span> <span class="va">study</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Intercept)         age </span></span>
+<span><span class="co">#&gt;  0.48526262  0.02077051</span></span></code></pre></div>
+<p>The estimated age coefficient is approximately 0.037 for treatment
+uptake, compared with the generating value 0.04. The estimated
+log-linear coefficient for visits is 0.021, compared with 0.02. These
+differences reflect sampling variation in this dataset.</p>
+<p><code><a href="../reference/list_distributions.html">list_distributions()</a></code> lists the available distributions
+and their parameters, including the parameter order used in positional
+calls.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/list_distributions.html">list_distributions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    distribution            parameters n_parameters copula</span></span>
+<span><span class="co">#&gt; 1        anglit       location, scale            2   TRUE</span></span>
+<span><span class="co">#&gt; 2       arcsine              min, max            2   TRUE</span></span>
+<span><span class="co">#&gt; 3        benini shape1, shape2, scale            3   TRUE</span></span>
+<span><span class="co">#&gt; 4          beta        shape1, shape2            2   TRUE</span></span>
+<span><span class="co">#&gt; 5 beta_binomial  size, shape1, shape2            3  FALSE</span></span>
+<span><span class="co">#&gt; 6    beta_prime        shape1, shape2            2   TRUE</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="missing-data">Missing data<a class="anchor" aria-label="anchor" href="#missing-data"></a>
+</h3>
+<p>Missingness is classified by its dependence on the data. Under
+missing completely at random (MCAR), missingness is independent of data
+values. Under missing at random (MAR), missingness can depend on
+observed values but is conditionally independent of missing values given
+the observed data. Missing not at random (MNAR) allows dependence on
+values that are unobserved.</p>
+<p><code><a href="../reference/inject_missingness.html">inject_missingness()</a></code> replaces selected values with
+<code>NA</code> under these mechanisms. For its MAR option, a fully
+observed <code>predictor</code> determines missingness probabilities
+through its ranked values. The probabilities are calibrated to average
+<code>proportion</code>; the realized proportion varies because removal
+is stochastic.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">incomplete</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inject_missingness.html">inject_missingness</a></span><span class="op">(</span></span>
+<span>  <span class="va">study</span>,</span>
+<span>  mechanism <span class="op">=</span> <span class="st">"MAR"</span>,</span>
+<span>  proportion <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  variables <span class="op">=</span> <span class="st">"outcome"</span>,</span>
+<span>  predictor <span class="op">=</span> <span class="st">"age"</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">7</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">incomplete</span>, what <span class="op">=</span> <span class="st">"missingness_summary"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   variable realized_proportion target_proportion</span></span>
+<span><span class="co">#&gt; 1  outcome               0.308               0.3</span></span>
+<span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="va">study</span>, variables <span class="op">=</span> <span class="st">"outcome"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   variable observations     mean       sd  minimum  maximum</span></span>
+<span><span class="co">#&gt; 1  outcome         1000 20.96394 3.111055 10.46787 30.26189</span></span>
+<span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="va">incomplete</span>, variables <span class="op">=</span> <span class="st">"outcome"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   variable observations    mean       sd  minimum  maximum</span></span>
+<span><span class="co">#&gt; 1  outcome          692 20.3551 3.077688 10.46787 29.75574</span></span></code></pre></div>
+<p>The realized missing proportion is 30.8%, compared with the target of
+30%. Older participants have higher missingness probabilities, and age
+is positively associated with the generated outcome. The mean among
+observed outcomes is consequently lower in this sample: 20.36 compared
+with 20.96 before removal. This example illustrates how an unadjusted
+observed-data mean can be biased under MAR; MAR alone does not make
+every complete-case analysis unbiased.</p>
+<p>The <code>missingness</code> component records each targeted cell’s
+probability and missingness indicator. <code>missingness_summary</code>
+reports target and realized proportions.
+<code><a href="../reference/define_missingness.html">define_missingness()</a></code> and <code><a href="../reference/missingness_matrix.html">missingness_matrix()</a></code>
+support specifications expressed through formulas.</p>
+</div>
+<div class="section level3">
+<h3 id="treatment-assignment">Treatment assignment<a class="anchor" aria-label="anchor" href="#treatment-assignment"></a>
+</h3>
+<p><code><a href="../reference/assign_treatment.html">assign_treatment()</a></code> randomly allocates observations to
+treatment groups, optionally within strata. Random allocation controls
+the assignment mechanism; finite samples can still differ in their
+covariate distributions.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assign_treatment.html">assign_treatment</a></span><span class="op">(</span><span class="va">study</span>, groups <span class="op">=</span> <span class="fl">2</span>, strata <span class="op">=</span> <span class="st">"treated"</span>, name <span class="op">=</span> <span class="st">"arm"</span>, seed <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">trial</span>, what <span class="op">=</span> <span class="st">"allocation"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   stratum treatment observations</span></span>
+<span><span class="co">#&gt; 1       0         0          245</span></span>
+<span><span class="co">#&gt; 2       1         0          256</span></span>
+<span><span class="co">#&gt; 3       0         1          244</span></span>
+<span><span class="co">#&gt; 4       1         1          255</span></span></code></pre></div>
+<p>With the default balanced allocation and equal group ratios,
+observations are divided as evenly as possible within each
+<code>treated</code> stratum. The new assignment is stored in
+<code>arm</code>, and the <code>allocation</code> component records the
+allocation.</p>
+<p><code><a href="../reference/observe_treatment.html">observe_treatment()</a></code> generates exposure from specified
+probabilities. With <code>link = "logit"</code>, the supplied expression
+defines log odds. Here, exposure becomes more likely with increasing
+age.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">observed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/observe_treatment.html">observe_treatment</a></span><span class="op">(</span></span>
+<span>  <span class="va">study</span>,</span>
+<span>  formulas <span class="op">=</span> <span class="st">"-3 + 0.05 * age"</span>,</span>
+<span>  link <span class="op">=</span> <span class="st">"logit"</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"exposed"</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="va">observed</span>, by <span class="op">=</span> <span class="st">"exposed"</span>, variables <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   exposed variable observations     mean        sd  minimum  maximum</span></span>
+<span><span class="co">#&gt; 1       0      age          613 48.03767  9.494049 19.82067 76.23495</span></span>
+<span><span class="co">#&gt; 2       1      age          387 52.44100 10.260949 16.28261 84.95304</span></span></code></pre></div>
+<p>Exposed participants have mean age 52.4 years, compared with 48.0
+among unexposed participants. This covariate imbalance is relevant when
+age also predicts the outcome, as it does in <code>study</code>. The
+<code>probabilities</code> component retains the generating exposure
+probabilities for evaluating propensity-score estimation. Adding
+<code>exposed</code> does not regenerate the existing outcome or
+introduce an exposure effect into it.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="part-iii-group-comparisons-and-correlated-data">Part III: Group comparisons and correlated data<a class="anchor" aria-label="anchor" href="#part-iii-group-comparisons-and-correlated-data"></a>
+</h2>
+<div class="section level3">
+<h3 id="group-designs">Group designs<a class="anchor" aria-label="anchor" href="#group-designs"></a>
+</h3>
+<p><code><a href="../reference/simulate_ttest.html">simulate_ttest()</a></code> and <code><a href="../reference/simulate_anova.html">simulate_anova()</a></code>
+generate normal outcomes for groups with specified sample sizes, means,
+and standard deviations. Their component tables record the group
+parameters and derived effect summaries.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_anova.html">simulate_anova</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">40</span><span class="op">)</span>,</span>
+<span>  means <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">11</span>, <span class="fl">12.5</span><span class="op">)</span>,</span>
+<span>  sds <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"control"</span>, <span class="st">"low"</span>, <span class="st">"high"</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">groups</span>, what <span class="op">=</span> <span class="st">"effects"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   grand_mean between_sum_squares within_sum_squares eta_squared</span></span>
+<span><span class="co">#&gt; 1   11.16667            126.6667                468   0.2130045</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">groups</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;              Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">#&gt; group         2  131.3   65.64   20.77 1.91e-08 ***</span></span>
+<span><span class="co">#&gt; Residuals   117  369.8    3.16                     </span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>For this design, <code>effects</code> reports
+<code>eta_squared = 0.213</code>. The package calculates this quantity
+from the specified group sizes and parameters as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>B</mi><mo>+</mo><mi>W</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">B/(B+W)</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>=</mo><msub><mo>∑</mo><mi>g</mi></msub><msub><mi>n</mi><mi>g</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mi>g</mi></msub><mo>−</mo><mover><mi>μ</mi><mo accent="true">‾</mo></mover><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">B = \sum_g n_g(\mu_g-\bar\mu)^2</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>=</mo><msub><mo>∑</mo><mi>g</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mi>g</mi></msub><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><msubsup><mi>σ</mi><mi>g</mi><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">W = \sum_g(n_g-1)\sigma_g^2</annotation></semantics></math>.
+Here,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math>
+is approximately 126.7 and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>W</mi><annotation encoding="application/x-tex">W</annotation></semantics></math>
+is 468. This is the function’s design-based effect summary; its use of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>g</mi></msub><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n_g-1</annotation></semantics></math>
+distinguishes it from a population variance ratio weighted by group
+proportions.</p>
+<p>The fitted ANOVA gives sample sums of squares of approximately 131.3
+between groups and 369.8 within groups. Their ratio gives sample
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>η</mi><mn>2</mn></msup><mo>≈</mo><mn>0.262</mn></mrow><annotation encoding="application/x-tex">\eta^2 \approx 0.262</annotation></semantics></math>.</p>
+</div>
+<div class="section level3">
+<h3 id="correlation-structures">Correlation structures<a class="anchor" aria-label="anchor" href="#correlation-structures"></a>
+</h3>
+<p><code><a href="../reference/simulate_correlated.html">simulate_correlated()</a></code> generates multivariate normal
+observations with specified means, standard deviations, and correlation
+structure. With <code>structure = "ar1"</code>, correlations follow
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>ρ</mi><mrow><mo stretchy="false" form="prefix">|</mo><mi>i</mi><mo>−</mo><mi>j</mi><mo stretchy="false" form="prefix">|</mo></mrow></msup><annotation encoding="application/x-tex">\rho^{|i-j|}</annotation></semantics></math>,
+decreasing with the separation between variable positions when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>&lt;</mo><mi>ρ</mi><mo>&lt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0 &lt; \rho &lt; 1</annotation></semantics></math>.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">correlated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_correlated.html">simulate_correlated</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  means <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>t1 <span class="op">=</span> <span class="fl">0</span>, t2 <span class="op">=</span> <span class="fl">0</span>, t3 <span class="op">=</span> <span class="fl">0</span>, t4 <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  rho <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  structure <span class="op">=</span> <span class="st">"ar1"</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">correlated</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">id</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      t1   t2   t3   t4</span></span>
+<span><span class="co">#&gt; t1 1.00 0.61 0.34 0.18</span></span>
+<span><span class="co">#&gt; t2 0.61 1.00 0.55 0.33</span></span>
+<span><span class="co">#&gt; t3 0.34 0.55 1.00 0.59</span></span>
+<span><span class="co">#&gt; t4 0.18 0.33 0.59 1.00</span></span></code></pre></div>
+<p>With
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>0.6</mn></mrow><annotation encoding="application/x-tex">\rho = 0.6</annotation></semantics></math>,
+generating correlations are 0.6, 0.36, and 0.216 at separations of one,
+two, and three positions. Sample correlations range from 0.55 to 0.61 at
+separation one, are 0.33 and 0.34 at separation two, and are 0.18 at
+separation three.
+<code>as.data.frame(correlated, what = "correlation")</code> extracts
+the generating correlation matrix in tidy format.</p>
+</div>
+<div class="section level3">
+<h3 id="non-normal-margins-with-a-gaussian-copula">Non-normal margins with a Gaussian copula<a class="anchor" aria-label="anchor" href="#non-normal-margins-with-a-gaussian-copula"></a>
+</h3>
+<p>A copula represents dependence separately from marginal
+distributions. <code><a href="../reference/simulate_copula.html">simulate_copula()</a></code> generates latent normal
+variables
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐳</mi><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><mi>𝐑</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{z} \sim N(\mathbf{0}, \mathbf{R})</annotation></semantics></math>,
+transforms them to uniform variables using the standard normal
+distribution function
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Φ</mi><annotation encoding="application/x-tex">\Phi</annotation></semantics></math>,
+and applies each specified marginal quantile function.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">copula</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_copula.html">simulate_copula</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  specification <span class="op">=</span> <span class="fu"><a href="../reference/define_variables.html">define_variables</a></span><span class="op">(</span></span>
+<span>    score  <span class="op">=</span> <span class="fu">normal</span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    visits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">poisson</a></span><span class="op">(</span>lambda <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
+<span>    rate   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">beta</a></span><span class="op">(</span>shape1 <span class="op">=</span> <span class="fl">2</span>, shape2 <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  rho <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">copula</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:copula&gt; 3 rows x 4 columns</span></span>
+<span><span class="co">#&gt;   id    score visits       rate</span></span>
+<span><span class="co">#&gt; 1  1 7.706109      2 0.07629022</span></span>
+<span><span class="co">#&gt; 2  2 9.679819      1 0.30106191</span></span>
+<span><span class="co">#&gt; 3  3 9.711422      7 0.40336193</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">copula</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">id</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"spearman"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        score visits rate</span></span>
+<span><span class="co">#&gt; score   1.00   0.58 0.57</span></span>
+<span><span class="co">#&gt; visits  0.58   1.00 0.52</span></span>
+<span><span class="co">#&gt; rate    0.57   0.52 1.00</span></span></code></pre></div>
+<p><code>rho = 0.6</code> specifies correlation between the latent
+normal variables. The <code>latent_correlation</code> component records
+this matrix. Correlations among the generated variables depend on their
+marginal distributions and need not equal the latent correlations.</p>
+<p>For continuous margins, latent normal correlation 0.6 implies
+Spearman correlation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>6</mn><mi>/</mi><mi>π</mi><mo stretchy="false" form="postfix">)</mo><mrow><mi mathvariant="normal">arcsin</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0.3</mn><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mn>0.58</mn></mrow><annotation encoding="application/x-tex">(6/\pi)\arcsin(0.3) \approx 0.58</annotation></semantics></math>.
+The sample correlation between the normal and beta variables is 0.57.
+Correlations involving the Poisson variable are 0.58 and 0.52. Because
+the Poisson margin is discrete, ties affect rank correlation and the
+continuous-margin formula does not apply directly.</p>
+</div>
+<div class="section level3">
+<h3 id="ordinal-variables">Ordinal variables<a class="anchor" aria-label="anchor" href="#ordinal-variables"></a>
+</h3>
+<p><code><a href="../reference/simulate_ordinal.html">simulate_ordinal()</a></code> generates correlated latent normal
+variables and divides their values into categories using thresholds
+determined by the requested category probabilities. This corresponds to
+the latent-variable model used for polychoric correlation.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ordinal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_ordinal.html">simulate_ordinal</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  probabilities <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>  n_variables <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  rho <span class="op">=</span> <span class="fl">0.7</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ordinal</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:ordinal&gt; 3 rows x 3 columns</span></span>
+<span><span class="co">#&gt;   id V1 V2</span></span>
+<span><span class="co">#&gt; 1  1  1  1</span></span>
+<span><span class="co">#&gt; 2  2  2  1</span></span>
+<span><span class="co">#&gt; 3  3  2  4</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">ordinal</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;           V1        V2</span></span>
+<span><span class="co">#&gt; V1 1.0000000 0.6583364</span></span>
+<span><span class="co">#&gt; V2 0.6583364 1.0000000</span></span></code></pre></div>
+<p>The generating latent correlation is 0.7, while the sample Pearson
+correlation of the category codes is 0.658. These correlations describe
+different quantities: one concerns latent continuous variables, and the
+other concerns their observed ordinal codes. A polychoric estimator
+targets the latent correlation under the model’s assumptions.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="part-iv-latent-variable-and-measurement-models">Part IV: Latent variable and measurement models<a class="anchor" aria-label="anchor" href="#part-iv-latent-variable-and-measurement-models"></a>
+</h2>
+<div class="section level3">
+<h3 id="common-factors">Common factors<a class="anchor" aria-label="anchor" href="#common-factors"></a>
+</h3>
+<p><code><a href="../reference/simulate_factors.html">simulate_factors()</a></code> generates observations from the
+common factor model</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐱</mi><mo>=</mo><mi>𝛕</mi><mo>+</mo><mi>𝚲</mi><mi>𝛈</mi><mo>+</mo><mi>𝛆</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">\mathbf{x} = \boldsymbol\tau + \boldsymbol\Lambda\boldsymbol\eta + \boldsymbol\varepsilon.</annotation></semantics></math></p>
+<p>Factors have unit variance and correlation matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚽</mi><annotation encoding="application/x-tex">\boldsymbol\Phi</annotation></semantics></math>.
+With independent measurement errors having covariance matrix
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝚿</mi><annotation encoding="application/x-tex">\boldsymbol\Psi</annotation></semantics></math>,
+the implied observation covariance is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝚲</mi><mi>𝚽</mi><msup><mi>𝚲</mi><mi>⊤</mi></msup><mo>+</mo><mi>𝚿</mi></mrow><annotation encoding="application/x-tex">\boldsymbol\Lambda\boldsymbol\Phi\boldsymbol\Lambda^\top + \boldsymbol\Psi</annotation></semantics></math>.</p>
+<p>By default, the function sets each uniqueness to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><msub><mo>∑</mo><mi>k</mi></msub><msubsup><mi>λ</mi><mrow><mi>j</mi><mi>k</mi></mrow><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">1-\sum_k\lambda_{jk}^2</annotation></semantics></math>.
+This gives unit indicator variances in the simple structure below, where
+each indicator loads on only one factor. It does not generally produce
+unit variances when an indicator loads on multiple correlated
+factors.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">loadings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>,</span>
+<span>    <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"item_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"verbal"</span>, <span class="st">"numeric"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">factor_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_factors.html">simulate_factors</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  loadings <span class="op">=</span> <span class="va">loadings</span>,</span>
+<span>  factor_correlation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">factor_data</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   variable factor loading uniqueness intercept</span></span>
+<span><span class="co">#&gt; 1   item_1 verbal     0.8       0.36         0</span></span>
+<span><span class="co">#&gt; 2   item_2 verbal     0.7       0.51         0</span></span>
+<span><span class="co">#&gt; 3   item_3 verbal     0.6       0.64         0</span></span>
+<span><span class="co">#&gt; 4   item_4 verbal     0.0       0.51         0</span></span></code></pre></div>
+<p>The <code>parameters</code> component records loadings, uniquenesses,
+and intercepts. Maximum-likelihood factor analysis with an oblique
+rotation can then be used to examine recovery of the loading
+pattern.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/factanal.html" class="external-link">factanal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">factor_data</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">id</span><span class="op">)</span>, factors <span class="op">=</span> <span class="fl">2</span>, rotation <span class="op">=</span> <span class="st">"promax"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">unclass</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/loadings.html" class="external-link">loadings</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        Factor1 Factor2</span></span>
+<span><span class="co">#&gt; item_1    0.78    0.01</span></span>
+<span><span class="co">#&gt; item_2    0.75   -0.03</span></span>
+<span><span class="co">#&gt; item_3    0.58    0.00</span></span>
+<span><span class="co">#&gt; item_4   -0.02    0.72</span></span>
+<span><span class="co">#&gt; item_5    0.00    0.61</span></span>
+<span><span class="co">#&gt; item_6    0.03    0.47</span></span></code></pre></div>
+<p>Estimated primary loadings are approximately 0.78, 0.75, and 0.58 on
+the first factor and 0.72, 0.61, and 0.47 on the second. The generating
+values are 0.8, 0.7, and 0.6, and 0.7, 0.6, and 0.5, respectively.
+Estimated cross-loadings are within 0.03 of zero. Comparisons of factor
+solutions should account for arbitrary factor ordering and signs.</p>
+</div>
+<div class="section level3">
+<h3 id="item-response-theory">Item response theory<a class="anchor" aria-label="anchor" href="#item-response-theory"></a>
+</h3>
+<p><code><a href="../reference/simulate_irt.html">simulate_irt()</a></code> generates latent abilities and item
+responses. In the unidimensional two-parameter logistic model,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta \sim N(0,1)</annotation></semantics></math>
+and the probability of a correct response to item
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
+is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>Y</mi><mi>j</mi></msub><mo>=</mo><mn>1</mn><mo>∣</mo><mi>θ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msup><mrow><mi mathvariant="normal">logit</mi><mo>⁡</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">{</mo><msub><mi>a</mi><mi>j</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>θ</mi><mo>−</mo><msub><mi>b</mi><mi>j</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">P(Y_j=1\mid\theta)=\operatorname{logit}^{-1}\{a_j(\theta-b_j)\},</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mi>j</mi></msub><annotation encoding="application/x-tex">b_j</annotation></semantics></math>
+is item difficulty and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>j</mi></msub><annotation encoding="application/x-tex">a_j</annotation></semantics></math>
+is discrimination. <code>model = "rasch"</code> fixes discrimination at
+1, <code>"3pl"</code> adds a guessing parameter, and
+<code>"graded"</code> generates ordered responses using the graded
+response model.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">irt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_irt.html">simulate_irt</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  discrimination <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>, <span class="fl">1.2</span>, <span class="fl">1.5</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  difficulty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.5</span>, <span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">irt</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     item  parameter category value discrimination guessing</span></span>
+<span><span class="co">#&gt; 1 item_1 difficulty       NA  -1.5            0.8        0</span></span>
+<span><span class="co">#&gt; 2 item_2 difficulty       NA  -0.5            1.2        0</span></span>
+<span><span class="co">#&gt; 3 item_3 difficulty       NA   0.0            1.5        0</span></span>
+<span><span class="co">#&gt; 4 item_4 difficulty       NA   0.5            1.0        0</span></span>
+<span><span class="co">#&gt; 5 item_5 difficulty       NA   1.5            2.0        0</span></span>
+<span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">irt</span>, select <span class="op">=</span> <span class="op">-</span><span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   variable observations   mean        sd minimum maximum</span></span>
+<span><span class="co">#&gt; 1   item_1         2000 0.7185 0.4498432       0       1</span></span>
+<span><span class="co">#&gt; 2   item_2         2000 0.6160 0.4864795       0       1</span></span>
+<span><span class="co">#&gt; 3   item_3         2000 0.5120 0.4999810       0       1</span></span>
+<span><span class="co">#&gt; 4   item_4         2000 0.3905 0.4879844       0       1</span></span>
+<span><span class="co">#&gt; 5   item_5         2000 0.1320 0.3385754       0       1</span></span></code></pre></div>
+<p>Across these items, the sample proportion correct decreases from
+approximately 0.72 to 0.13 as difficulty increases. For the item with
+difficulty 0, symmetry of the ability distribution gives marginal
+response probability 0.5 under this two-parameter model. The sample
+proportion is 0.512. The <code>parameters</code> component records item
+parameters, and <code>abilities</code> contains the generated latent
+abilities.</p>
+</div>
+<div class="section level3">
+<h3 id="latent-profiles">Latent profiles<a class="anchor" aria-label="anchor" href="#latent-profiles"></a>
+</h3>
+<p><code><a href="../reference/simulate_lpa.html">simulate_lpa()</a></code> generates a finite mixture of
+multivariate normal distributions. Each observation is assigned to a
+profile according to its probability, and its indicators are generated
+using that profile’s means, standard deviations, and correlations.
+Profile means can be supplied in tidy format using <code>profile</code>,
+<code>variable</code>, and <code>mean</code>.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">means</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  profile  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"low"</span>, <span class="st">"average"</span>, <span class="st">"high"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"effort"</span>, <span class="st">"planning"</span>, <span class="st">"reflection"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  mean     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">0.5</span>,  <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>,  <span class="fl">1.2</span>, <span class="fl">1</span>, <span class="fl">1.5</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">profiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_lpa.html">simulate_lpa</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">600</span>, means <span class="op">=</span> <span class="va">means</span>, proportions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.25</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">profiles</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:lpa&gt; 3 rows x 5 columns</span></span>
+<span><span class="co">#&gt;   id profile    effort  planning reflection</span></span>
+<span><span class="co">#&gt; 1  1 average 1.1948510 -1.010465  -1.113169</span></span>
+<span><span class="co">#&gt; 2  2 average 0.4955447  2.401222  -1.405505</span></span>
+<span><span class="co">#&gt; 3  3    high 1.1180083  1.207912   1.170042</span></span>
+<span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="va">profiles</span>, by <span class="op">=</span> <span class="st">"profile"</span>, variables <span class="op">=</span> <span class="st">"effort"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   profile variable observations         mean       sd   minimum   maximum</span></span>
+<span><span class="co">#&gt; 1 average   effort          314  0.001224158 1.056226 -2.996949 3.0557424</span></span>
+<span><span class="co">#&gt; 2    high   effort          140  1.155264445 1.131875 -1.349107 4.3539714</span></span>
+<span><span class="co">#&gt; 3     low   effort          146 -0.979527540 1.015811 -4.008049 0.9713374</span></span></code></pre></div>
+<p>The result includes the generated <code>profile</code> membership,
+which provides a reference for evaluating classification by a fitted
+mixture model. Mean effort is approximately −0.98, 0.00, and 1.16 in the
+three profiles, compared with generating means −1, 0, and 1.2. Estimated
+class labels must be aligned with generating labels before
+classification is compared.</p>
+</div>
+<div class="section level3">
+<h3 id="latent-classes">Latent classes<a class="anchor" aria-label="anchor" href="#latent-classes"></a>
+</h3>
+<p><code><a href="../reference/simulate_lca.html">simulate_lca()</a></code> generates categorical indicators from a
+latent class model. Class-specific response probabilities determine each
+indicator’s distribution. Indicators are conditionally independent given
+class membership, the local-independence assumption.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">item_probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  class       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"engaged"</span>, <span class="st">"disengaged"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span>
+<span>  indicator   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"attends"</span>, <span class="st">"submits"</span>, <span class="st">"posts"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  category    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no"</span>, <span class="st">"yes"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span>
+<span>  probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span>,  <span class="fl">0.2</span>, <span class="fl">0.8</span>,  <span class="fl">0.4</span>, <span class="fl">0.6</span>,</span>
+<span>                  <span class="fl">0.6</span>, <span class="fl">0.4</span>,  <span class="fl">0.7</span>, <span class="fl">0.3</span>,  <span class="fl">0.9</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">classes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_lca.html">simulate_lca</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">500</span>, probabilities <span class="op">=</span> <span class="va">item_probabilities</span>,</span>
+<span>                        proportions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.4</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">classes</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:lca&gt; 3 rows x 5 columns</span></span>
+<span><span class="co">#&gt;   id latent_class attends submits posts</span></span>
+<span><span class="co">#&gt; 1  1      engaged     yes     yes   yes</span></span>
+<span><span class="co">#&gt; 2  2      engaged     yes     yes    no</span></span>
+<span><span class="co">#&gt; 3  3      engaged     yes     yes   yes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html" class="external-link">xtabs</a></span><span class="op">(</span><span class="op">~</span> <span class="va">latent_class</span> <span class="op">+</span> <span class="va">attends</span>, data <span class="op">=</span> <span class="va">classes</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             attends</span></span>
+<span><span class="co">#&gt; latent_class  no yes</span></span>
+<span><span class="co">#&gt;   disengaged 102  86</span></span>
+<span><span class="co">#&gt;   engaged     36 276</span></span></code></pre></div>
+<p>The generating probability of attendance is 0.9 in the engaged class
+and 0.4 in the disengaged class. In this sample, 276 of 312 engaged
+participants attend, approximately 0.88, compared with 86 of 188
+disengaged participants, approximately 0.46. The supplied class
+proportions describe sampling probabilities, so realized class sizes can
+vary.</p>
+</div>
+<div class="section level3">
+<h3 id="two-level-latent-profiles">Two-level latent profiles<a class="anchor" aria-label="anchor" href="#two-level-latent-profiles"></a>
+</h3>
+<p><code><a href="../reference/simulate_ml_lpa.html">simulate_ml_lpa()</a></code> generates individuals nested within
+clusters. Each cluster is assigned a latent cluster class, which
+determines the probabilities of individual profile membership. Profiles
+share a common measurement model across cluster classes, while their
+prevalence varies.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nested</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_ml_lpa.html">simulate_ml_lpa</a></span><span class="op">(</span></span>
+<span>  clusters <span class="op">=</span> <span class="fl">40</span>,</span>
+<span>  cluster_size <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>  means <span class="op">=</span> <span class="va">means</span>,</span>
+<span>  profile_probabilities <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    cluster_class <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mostly_low"</span>, <span class="st">"mostly_high"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    profile       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"low"</span>, <span class="st">"average"</span>, <span class="st">"high"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    probability   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>,  <span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.6</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nested</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:ml_lpa&gt; 3 rows x 7 columns</span></span>
+<span><span class="co">#&gt;   id cluster cluster_class profile   effort planning reflection</span></span>
+<span><span class="co">#&gt; 1  1       1   mostly_high    high 1.760049 1.234904  3.3405227</span></span>
+<span><span class="co">#&gt; 2  2       1   mostly_high    high 1.342451 1.701258 -0.4621991</span></span>
+<span><span class="co">#&gt; 3  3       1   mostly_high    high 3.029672 2.326598  0.4338980</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html" class="external-link">xtabs</a></span><span class="op">(</span><span class="op">~</span> <span class="va">cluster_class</span> <span class="op">+</span> <span class="va">profile</span>, data <span class="op">=</span> <span class="va">nested</span><span class="op">)</span></span>
+<span><span class="co">#&gt;              profile</span></span>
+<span><span class="co">#&gt; cluster_class average high low</span></span>
+<span><span class="co">#&gt;   mostly_high     154  314  57</span></span>
+<span><span class="co">#&gt;   mostly_low      129   58 288</span></span></code></pre></div>
+<p>The <code>mostly_low</code> cluster class assigns profile
+probabilities 0.6, 0.3, and 0.1 to <code>low</code>,
+<code>average</code>, and <code>high</code>. The
+<code>mostly_high</code> class uses 0.1, 0.3, and 0.6. The
+cross-tabulation reports realized memberships among the forty clusters
+of 25 individuals. The <code>clusters</code> component records each
+cluster’s generated class.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="part-v-multilevel-and-longitudinal-data">Part V: Multilevel and longitudinal data<a class="anchor" aria-label="anchor" href="#part-v-multilevel-and-longitudinal-data"></a>
+</h2>
+<div class="section level3">
+<h3 id="random-intercepts">Random intercepts<a class="anchor" aria-label="anchor" href="#random-intercepts"></a>
+</h3>
+<p><code><a href="../reference/simulate_multilevel.html">simulate_multilevel()</a></code> generates clustered outcomes with
+fixed effects, random intercepts, and optional random slopes. For the
+random-intercept model used here,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>γ</mi><mn>0</mn></msub><mo>+</mo><msub><mi>γ</mi><mn>1</mn></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>+</mo><msub><mi>u</mi><mi>j</mi></msub><mo>+</mo><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">y_{ij}=\gamma_0+\gamma_1x_{ij}+u_j+e_{ij},</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>u</mi><mi>j</mi></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>τ</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">u_j\sim N(0,\tau^2)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e_{ij}\sim N(0,\sigma^2)</annotation></semantics></math>.
+Conditional on the fixed predictors, the intraclass correlation is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>τ</mi><mn>2</mn></msup><mi>/</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>τ</mi><mn>2</mn></msup><mo>+</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\tau^2/(\tau^2+\sigma^2)</annotation></semantics></math>.
+It measures the correlation attributable to shared cluster membership
+under this model.</p>
+<p><code><a href="../reference/calibrate_icc.html">calibrate_icc()</a></code> calculates the random-intercept variance
+needed for a specified ICC and within-cluster variance.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/calibrate_icc.html">calibrate_icc</a></span><span class="op">(</span>icc <span class="op">=</span> <span class="fl">0.2</span>, distribution <span class="op">=</span> <span class="st">"normal"</span>, within_variance <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   icc distribution random_effect_variance</span></span>
+<span><span class="co">#&gt; 1 0.2       normal                   0.25</span></span></code></pre></div>
+<p>With target ICC 0.2 and within-cluster variance 1, the required
+random-intercept variance is 0.25, corresponding to standard deviation
+0.5.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">multilevel</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_multilevel.html">simulate_multilevel</a></span><span class="op">(</span></span>
+<span>  clusters <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  cluster_size <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  intercept <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  slopes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>hours <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  random_intercept_sd <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  residual_sd <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">multilevel</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:multilevel&gt; 3 rows x 4 columns</span></span>
+<span><span class="co">#&gt;   id cluster       hours  outcome</span></span>
+<span><span class="co">#&gt; 1  1       1 -0.62036668 48.68794</span></span>
+<span><span class="co">#&gt; 2  2       1  0.04211587 48.63825</span></span>
+<span><span class="co">#&gt; 3  3       1 -0.91092165 49.35484</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">multilevel</span>, what <span class="op">=</span> <span class="st">"variance_components"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          component variance</span></span>
+<span><span class="co">#&gt; 1 random_intercept     0.25</span></span>
+<span><span class="co">#&gt; 2     random_slope     0.00</span></span>
+<span><span class="co">#&gt; 3         residual     1.00</span></span></code></pre></div>
+<p>The example generates fifty clusters with twenty observations each.
+<code>variance_components</code> records the generating variances, and
+<code>random_effects</code> contains the realized cluster effects. The
+ICC describes residual clustering after accounting for the fixed
+predictor; variation explained by <code>hours</code> is not included in
+its denominator.</p>
+</div>
+<div class="section level3">
+<h3 id="growth-curves">Growth curves<a class="anchor" aria-label="anchor" href="#growth-curves"></a>
+</h3>
+<p><code><a href="../reference/simulate_growth.html">simulate_growth()</a></code> generates repeated outcomes around
+individual trajectories. With a linear trajectory,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mrow><mi>t</mi><mi>i</mi></mrow></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>b</mi><mrow><mn>0</mn><mi>i</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>β</mi><mn>1</mn></msub><mo>+</mo><msub><mi>b</mi><mrow><mn>1</mn><mi>i</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>t</mi><mo>+</mo><msub><mi>e</mi><mrow><mi>t</mi><mi>i</mi></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">y_{ti}=(\beta_0+b_{0i})+(\beta_1+b_{1i})t+e_{ti},</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mrow><mn>0</mn><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">b_{0i}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mrow><mn>1</mn><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">b_{1i}</annotation></semantics></math>
+are normal random effects. An optional quadratic term allows curvature
+in the mean trajectory.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">growth</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_growth.html">simulate_growth</a></span><span class="op">(</span></span>
-<span>  n <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  n <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  times <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">4</span>,</span>
 <span>  intercept <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  slope <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">42</span></span>
+<span>  slope <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  random_sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">growth</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;simulab_sim:growth&gt; 6 rows x 3 columns</span></span>
-<span><span class="co">#&gt;   id time   outcome</span></span>
-<span><span class="co">#&gt; 1  1    0  9.370029</span></span>
-<span><span class="co">#&gt; 2  2    0  9.769079</span></span>
-<span><span class="co">#&gt; 3  3    0 11.534454</span></span>
-<span><span class="co">#&gt; 4  4    0 12.692402</span></span>
-<span><span class="co">#&gt; 5  5    0  9.027407</span></span>
-<span><span class="co">#&gt; 6  6    0  8.743020</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">growth</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          term value</span></span>
-<span><span class="co">#&gt; 1   intercept  10.0</span></span>
-<span><span class="co">#&gt; 2       slope   0.5</span></span>
-<span><span class="co">#&gt; 3   quadratic   0.0</span></span>
-<span><span class="co">#&gt; 4 residual_sd   1.0</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">~</span> <span class="va">time</span>, data <span class="op">=</span> <span class="va">growth</span>, FUN <span class="op">=</span> <span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   time  outcome</span></span>
+<span><span class="co">#&gt; 1    0 10.02925</span></span>
+<span><span class="co">#&gt; 2    1 11.49174</span></span>
+<span><span class="co">#&gt; 3    2 13.11879</span></span>
+<span><span class="co">#&gt; 4    3 14.55091</span></span>
+<span><span class="co">#&gt; 5    4 16.18706</span></span></code></pre></div>
+<p>The generating mean trajectory is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>10</mn><mo>+</mo><mn>1.5</mn><mi>t</mi></mrow><annotation encoding="application/x-tex">10+1.5t</annotation></semantics></math>.
+Sample means increase from approximately 10.03 at time 0 to 16.19 at
+time 4, compared with generating means 10 and 16. Individual
+trajectories vary around this mean according to their random effects and
+residual variation.</p>
+</div>
+<div class="section level3">
+<h3 id="vector-autoregression">Vector autoregression<a class="anchor" aria-label="anchor" href="#vector-autoregression"></a>
+</h3>
+<p><code><a href="../reference/simulate_longitudinal.html">simulate_longitudinal()</a></code> generates intensive longitudinal
+data from a first-order vector autoregression. With the default zero
+intercept, the process is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>𝐲</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>=</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo>+</mo><mi>𝐀</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐲</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>𝛍</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>𝛆</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">\mathbf{y}_{it}=\boldsymbol\mu_i+\mathbf{A}(\mathbf{y}_{i,t-1}-\boldsymbol\mu_i)+\boldsymbol\varepsilon_{it},</annotation></semantics></math></p>
+<p>where person means
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝛍</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\boldsymbol\mu_i</annotation></semantics></math>
+may vary according to the specified between-person covariance.
+<code>transition</code> supplies the lagged coefficients. In tidy input,
+<code>from</code> identifies the predictor at the previous occasion and
+<code>to</code> identifies the outcome at the current occasion.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lagged_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  from        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mood"</span>, <span class="st">"mood"</span>, <span class="st">"stress"</span>, <span class="st">"stress"</span><span class="op">)</span>,</span>
+<span>  to          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mood"</span>, <span class="st">"stress"</span>, <span class="st">"mood"</span>, <span class="st">"stress"</span><span class="op">)</span>,</span>
+<span>  coefficient <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">0.2</span>, <span class="fl">0.4</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">experience</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_longitudinal.html">simulate_longitudinal</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  occasions <span class="op">=</span> <span class="fl">40</span>,</span>
+<span>  transition <span class="op">=</span> <span class="va">lagged_effects</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">experience</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:longitudinal_var&gt; 3 rows x 4 columns</span></span>
+<span><span class="co">#&gt;   id occasion       mood     stress</span></span>
+<span><span class="co">#&gt; 1  1        1 -1.3004499  0.7078784</span></span>
+<span><span class="co">#&gt; 2  1        2 -0.4608929  1.8697398</span></span>
+<span><span class="co">#&gt; 3  1        3 -3.1020560 -1.5373396</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">experience</span>, what <span class="op">=</span> <span class="st">"transition"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      row column coefficient</span></span>
+<span><span class="co">#&gt; 1   mood   mood         0.5</span></span>
+<span><span class="co">#&gt; 2 stress   mood         0.0</span></span>
+<span><span class="co">#&gt; 3   mood stress        -0.2</span></span>
+<span><span class="co">#&gt; 4 stress stress         0.4</span></span></code></pre></div>
+<p>Mood has an autoregressive coefficient of 0.5, and stress has an
+autoregressive coefficient of 0.4. Previous stress predicts current mood
+with coefficient −0.2, while the reverse cross-lagged coefficient is
+zero.</p>
+<p>In the extracted <code>transition</code> component, matrix rows
+identify predicted variables and columns identify lagged predictors,
+consistent with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐀</mi><annotation encoding="application/x-tex">\mathbf{A}</annotation></semantics></math>.
+The <code>wide</code> component stores repeated measurements by person.
+Setting <code>beeps_per_day</code> adds day and beep identifiers and
+restarts the within-day process at day boundaries, so it also changes
+how observations are generated across days.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="repeated-scenarios">Repeated scenarios<a class="anchor" aria-label="anchor" href="#repeated-scenarios"></a>
+<h2 id="part-vi-survival-data">Part VI: Survival data<a class="anchor" aria-label="anchor" href="#part-vi-survival-data"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">scenarios</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/scenario_grid.html">scenario_grid</a></span><span class="op">(</span></span>
-<span>  mean_b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>  replications <span class="op">=</span> <span class="fl">3</span></span>
+<div class="section level3">
+<h3 id="proportional-hazards">Proportional hazards<a class="anchor" aria-label="anchor" href="#proportional-hazards"></a>
+</h3>
+<p><code><a href="../reference/simulate_proportional_survival.html">simulate_proportional_survival()</a></code> generates event times
+from</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo>∣</mo><mi>𝐱</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>h</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>𝐱</mi><mi>⊤</mi></msup><mi>𝛃</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">h(t\mid\mathbf{x})=h_0(t)\exp(\mathbf{x}^\top\boldsymbol\beta).</annotation></semantics></math></p>
+<p>For a Weibull baseline with cumulative hazard
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>λ</mi><msup><mi>t</mi><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">H_0(t)=\lambda t^k</annotation></semantics></math>,
+inverse transformation gives</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">{</mo><mfrac><mrow><mi>−</mi><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mi>U</mi></mrow><mrow><mi>λ</mi><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>𝐱</mi><mi>⊤</mi></msup><mi>𝛃</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo stretchy="true" form="postfix">}</mo></mrow><mrow><mn>1</mn><mi>/</mi><mi>k</mi></mrow></msup><mo>,</mo><mspace width="2.0em"></mspace><mi>U</mi><mo>∼</mo><mi>U</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">T=\left\{\frac{-\log U}{\lambda\exp(\mathbf{x}^\top\boldsymbol\beta)}\right\}^{1/k},\qquad U\sim U(0,1).</annotation></semantics></math></p>
+<p>The function draws exponential censoring times. Their rate is
+calibrated so that the mean censoring probability across the generated
+event times equals <code>censoring</code>; the realized censored
+proportion can differ from this target.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">survival_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_proportional_survival.html">simulate_proportional_survival</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  coefficients <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>treatment <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span>, age <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>  baseline <span class="op">=</span> <span class="st">"weibull"</span>,</span>
+<span>  rate <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  shape <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  censoring <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_scenarios.html">simulate_scenarios</a></span><span class="op">(</span></span>
-<span>  <span class="va">scenarios</span>,</span>
-<span>  simulator <span class="op">=</span> <span class="st">"ttest"</span>,</span>
-<span>  n_a <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  n_b <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  mean_a <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">survival_data</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:proportional_survival&gt; 3 rows x 5 columns</span></span>
+<span><span class="co">#&gt;   id      time status  treatment        age</span></span>
+<span><span class="co">#&gt; 1  1 11.534176      1 -0.6264538 -0.8861496</span></span>
+<span><span class="co">#&gt; 2  2  6.293952      0  0.1836433 -1.9222549</span></span>
+<span><span class="co">#&gt; 3  3  1.606610      1 -0.8356286  1.6197007</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">survival_data</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;             term       value</span></span>
+<span><span class="co">#&gt; 1      treatment -0.50000000</span></span>
+<span><span class="co">#&gt; 2            age  0.30000000</span></span>
+<span><span class="co">#&gt; 3  baseline_rate  0.05000000</span></span>
+<span><span class="co">#&gt; 4          shape  1.50000000</span></span>
+<span><span class="co">#&gt; 5 censoring_rate  0.05612131</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">survival_data</span>, what <span class="op">=</span> <span class="st">"diagnostics"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   target_censoring realized_censoring baseline</span></span>
+<span><span class="co">#&gt; 1              0.3             0.3115  weibull</span></span></code></pre></div>
+<p>The coefficients are log hazard ratios. Covariates are standard
+normal by default, including the variable named <code>treatment</code>
+in this example. Its name does not make it binary;
+<code>covariate_distribution = "binary"</code> selects binary
+covariates.</p>
+<p>The realized censored proportion is 31.2%, compared with the target
+of 30%. <code>parameters</code> records the coefficients and hazard
+parameters, and <code>diagnostics</code> reports target and realized
+censoring. A Cox model estimates the covariate coefficients from the
+observed times and event indicators.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu">survival</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">treatment</span> <span class="op">+</span> <span class="va">age</span>, data <span class="op">=</span> <span class="va">survival_data</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  treatment        age </span></span>
+<span><span class="co">#&gt; -0.4636587  0.3135970</span></span></code></pre></div>
+<p>The estimates are approximately −0.464 and 0.314, compared with
+generating values −0.5 and 0.3. They describe changes in log hazard for
+a one-unit increase in the corresponding covariate.</p>
+</div>
+<div class="section level3">
+<h3 id="competing-risks">Competing risks<a class="anchor" aria-label="anchor" href="#competing-risks"></a>
+</h3>
+<p><code><a href="../reference/define_survivals.html">define_survivals()</a></code> specifies cause-specific event-time
+models, and <code><a href="../reference/simulate_survival.html">simulate_survival()</a></code> generates their latent
+event times. <code><a href="../reference/combine_competing_risks.html">combine_competing_risks()</a></code> selects the earliest
+time and its event type. An event named in <code>censor</code> is
+treated as censoring.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">latent_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_survival.html">simulate_survival</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  specification <span class="op">=</span> <span class="fu"><a href="../reference/define_survivals.html">define_survivals</a></span><span class="op">(</span></span>
+<span>    relapse <span class="op">=</span> <span class="fu">hazard</span><span class="op">(</span>log_rate <span class="op">=</span> <span class="op">-</span><span class="fl">3</span> <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="va">treatment</span><span class="op">)</span>,</span>
+<span>    dropout <span class="op">=</span> <span class="fu">hazard</span><span class="op">(</span>log_rate <span class="op">=</span> <span class="op">-</span><span class="fl">3.5</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  covariates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, treatment <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, each <span class="op">=</span> <span class="fl">250</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">batch</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;simulab_sim:scenarios&gt; 6 rows x 5 columns</span></span>
-<span><span class="co">#&gt;   scenario_id replication id group     outcome</span></span>
-<span><span class="co">#&gt; 1           1           1  1     A -0.50219235</span></span>
-<span><span class="co">#&gt; 2           1           1  2     A  0.13153117</span></span>
-<span><span class="co">#&gt; 3           1           1  3     A -0.07891709</span></span>
-<span><span class="co">#&gt; 4           1           1  4     A  0.88678481</span></span>
-<span><span class="co">#&gt; 5           1           1  5     A  0.11697127</span></span>
-<span><span class="co">#&gt; 6           1           1  6     A  0.31863009</span></span></code></pre></div>
+<span><span class="va">observed_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combine_competing_risks.html">combine_competing_risks</a></span><span class="op">(</span><span class="va">latent_times</span>, events <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"relapse"</span>, <span class="st">"dropout"</span><span class="op">)</span>,</span>
+<span>                                          censor <span class="op">=</span> <span class="st">"dropout"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">observed_times</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:competing_risks&gt; 3 rows x 5 columns</span></span>
+<span><span class="co">#&gt;   id treatment      time event event_type</span></span>
+<span><span class="co">#&gt; 1  1         0 11.855911     1    relapse</span></span>
+<span><span class="co">#&gt; 2  2         0  7.503283     1    relapse</span></span>
+<span><span class="co">#&gt; 3  3         0  8.405052     1    relapse</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">observed_times</span>, what <span class="op">=</span> <span class="st">"events"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   event_type event_code censoring</span></span>
+<span><span class="co">#&gt; 1    dropout          0      TRUE</span></span>
+<span><span class="co">#&gt; 2    relapse          1     FALSE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html" class="external-link">xtabs</a></span><span class="op">(</span><span class="op">~</span> <span class="va">treatment</span> <span class="op">+</span> <span class="va">event_type</span>, data <span class="op">=</span> <span class="va">observed_times</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          event_type</span></span>
+<span><span class="co">#&gt; treatment dropout relapse</span></span>
+<span><span class="co">#&gt;         0      97     153</span></span>
+<span><span class="co">#&gt;         1      67     183</span></span></code></pre></div>
+<p>The <code>events</code> component maps dropout to code 0 and relapse
+to code 1. Because dropout is designated as censoring, this example
+yields a relapse outcome subject to dropout censoring. The generating
+treatment coefficient 0.5 multiplies the relapse hazard by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>e</mi><mn>0.5</mn></msup><mo>≈</mo><mn>1.65</mn></mrow><annotation encoding="application/x-tex">e^{0.5}\approx1.65</annotation></semantics></math>.
+Relapse occurs first for 183 of 250 treated participants and 153 of 250
+untreated participants in this sample.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="part-vii-sequences-and-transition-networks">Part VII: Sequences and transition networks<a class="anchor" aria-label="anchor" href="#part-vii-sequences-and-transition-networks"></a>
+</h2>
+<div class="section level3">
+<h3 id="markov-chains">Markov chains<a class="anchor" aria-label="anchor" href="#markov-chains"></a>
+</h3>
+<p><code><a href="../reference/simulate_markov.html">simulate_markov()</a></code> generates sequences from a first-order
+Markov model, in which the next state depends on the current state
+through
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>t</mi></msub><mo>=</mo><mi>j</mi><mo>∣</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>p</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">P(X_t=j\mid X_{t-1}=i)=p_{ij}</annotation></semantics></math>.
+The transition probabilities may be supplied in tidy format using
+<code>from</code>, <code>to</code>, and <code>probability</code>.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">regulation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  from        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plan"</span>, <span class="st">"execute"</span>, <span class="st">"monitor"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  to          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plan"</span>, <span class="st">"execute"</span>, <span class="st">"monitor"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span>,  <span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>,  <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sequences</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_markov.html">simulate_markov</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">500</span>, transition <span class="op">=</span> <span class="va">regulation</span>, chain_length <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>                             initial <span class="op">=</span> <span class="st">"plan"</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sequences</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:markov&gt; 3 rows x 3 columns</span></span>
+<span><span class="co">#&gt;   id period   state</span></span>
+<span><span class="co">#&gt; 1  1      1    plan</span></span>
+<span><span class="co">#&gt; 2  1      2 execute</span></span>
+<span><span class="co">#&gt; 3  1      3 monitor</span></span>
+<span><span class="fu"><a href="../reference/summarize_transitions.html">summarize_transitions</a></span><span class="op">(</span><span class="va">sequences</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      from      to count probability</span></span>
+<span><span class="co">#&gt; 1 execute execute  2253  0.50155833</span></span>
+<span><span class="co">#&gt; 2 execute monitor  1759  0.39158504</span></span>
+<span><span class="co">#&gt; 3 execute    plan   480  0.10685663</span></span>
+<span><span class="co">#&gt; 4 monitor execute   787  0.30386100</span></span>
+<span><span class="co">#&gt; 5 monitor monitor   758  0.29266409</span></span>
+<span><span class="co">#&gt; 6 monitor    plan  1045  0.40347490</span></span>
+<span><span class="co">#&gt; 7    plan execute  1696  0.70140612</span></span>
+<span><span class="co">#&gt; 8    plan monitor   221  0.09139785</span></span>
+<span><span class="co">#&gt; 9    plan    plan   501  0.20719603</span></span></code></pre></div>
+<p><code><a href="../reference/summarize_transitions.html">summarize_transitions()</a></code> counts observed transitions and
+divides each count by the total leaving its source state. For a
+first-order model, these proportions are maximum-likelihood estimates of
+the transition probabilities when the source state has observed
+transitions.</p>
+<p>In this example, estimates are within approximately 0.01 of their
+generating values, including 0.70 for <code>plan</code> to
+<code>execute</code>, 0.50 for <code>execute</code> to itself, and 0.40
+for <code>monitor</code> to <code>plan</code>. The <code>wide</code>
+component stores each sequence across successive columns.</p>
+</div>
+<div class="section level3">
+<h3 id="hidden-markov-models">Hidden Markov models<a class="anchor" aria-label="anchor" href="#hidden-markov-models"></a>
+</h3>
+<p><code><a href="../reference/simulate_hmm.html">simulate_hmm()</a></code> generates a latent Markov sequence and an
+observed categorical response at each occasion. The latent state evolves
+according to <code>transition</code>, and its response distribution is
+specified by <code>emission</code>. The result includes both the
+generated <code>state</code> and the emitted
+<code>observation</code>.</p>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hidden</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_hmm.html">simulate_hmm</a></span><span class="op">(</span></span>
+<span>  n <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>  chain_length <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"engaged"</span>, <span class="st">"engaged"</span>, <span class="st">"stuck"</span>, <span class="st">"stuck"</span><span class="op">)</span>,</span>
+<span>    to   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"engaged"</span>, <span class="st">"stuck"</span>, <span class="st">"engaged"</span>, <span class="st">"stuck"</span><span class="op">)</span>,</span>
+<span>    probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span>, <span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.7</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  emission <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    state       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"engaged"</span>, <span class="st">"stuck"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    observation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"submit"</span>, <span class="st">"view"</span>, <span class="st">"idle"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>,  <span class="fl">0.1</span>, <span class="fl">0.3</span>, <span class="fl">0.6</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>engaged <span class="op">=</span> <span class="fl">0.5</span>, stuck <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">hidden</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:hmm&gt; 3 rows x 4 columns</span></span>
+<span><span class="co">#&gt;   id occasion state observation</span></span>
+<span><span class="co">#&gt; 1  1        1 stuck        idle</span></span>
+<span><span class="co">#&gt; 2  1        2 stuck        idle</span></span>
+<span><span class="co">#&gt; 3  1        3 stuck        idle</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html" class="external-link">xtabs</a></span><span class="op">(</span><span class="op">~</span> <span class="va">state</span> <span class="op">+</span> <span class="va">observation</span>, data <span class="op">=</span> <span class="va">hidden</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          observation</span></span>
+<span><span class="co">#&gt; state     idle submit view</span></span>
+<span><span class="co">#&gt;   engaged  439   2632 1264</span></span>
+<span><span class="co">#&gt;   stuck   1015    178  472</span></span></code></pre></div>
+<p>An engaged state emits <code>submit</code> with probability 0.6,
+while a stuck state emits <code>idle</code> with probability 0.6. The
+cross-tabulation summarizes the realized emissions by state. Retaining
+the latent sequence permits evaluation of state reconstruction by a
+fitted model after aligning its state labels with the generating
+labels.</p>
+</div>
+<div class="section level3">
+<h3 id="groups-mixtures-and-event-logs">Groups, mixtures and event logs<a class="anchor" aria-label="anchor" href="#groups-mixtures-and-event-logs"></a>
+</h3>
+<p><code><a href="../reference/simulate_group_sequences.html">simulate_group_sequences()</a></code> generates sequences for known
+groups with group-specific transition matrices.
+<code><a href="../reference/simulate_sequence_clusters.html">simulate_sequence_clusters()</a></code> generates a mixture of
+transition processes and records the generated latent membership in
+<code>sequence_cluster</code>.</p>
+<p><code><a href="../reference/simulate_event_log.html">simulate_event_log()</a></code> generates educational event data
+with group, actor, course, achievement, and timestamp information. Its
+state labels come from the catalogue provided by
+<code><a href="../reference/learning_states.html">learning_states()</a></code>.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">event_log</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_event_log.html">simulate_event_log</a></span><span class="op">(</span>groups <span class="op">=</span> <span class="fl">2</span>, actors <span class="op">=</span> <span class="fl">3</span>, n_states <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>                                sequence_length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">event_log</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:event_log&gt; 4 rows x 7 columns</span></span>
+<span><span class="co">#&gt;     group    id   course achievement period     state           timestamp</span></span>
+<span><span class="co">#&gt; 1 Group 1 G1_A1 Course 1      medium      1 Encourage 2020-01-01 00:00:00</span></span>
+<span><span class="co">#&gt; 2 Group 1 G1_A1 Course 1      medium      2 Encourage 2020-01-01 00:01:10</span></span>
+<span><span class="co">#&gt; 3 Group 1 G1_A1 Course 1      medium      3     Doubt 2020-01-01 00:05:15</span></span>
+<span><span class="co">#&gt; 4 Group 1 G1_A1 Course 1      medium      4  Complete 2020-01-01 00:06:32</span></span></code></pre></div>
+<p>The example generates two groups with three actors per group, four
+states, and sequence lengths sampled between five and eight events. The
+printed records show the resulting event structure.</p>
+</div>
+<div class="section level3">
+<h3 id="transition-network-analysis">Transition network analysis<a class="anchor" aria-label="anchor" href="#transition-network-analysis"></a>
+</h3>
+<p>Transition network analysis represents transitions between states as
+a weighted directed network. <code><a href="../reference/fit_tna.html">fit_tna()</a></code> fits a transition
+network using the <code>tna</code> package and returns its edges. For
+the default first-order model, weights are transition counts normalized
+by source state.</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fit_tna.html">fit_tna</a></span><span class="op">(</span><span class="va">sequences</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:tna_model&gt; 9 rows x 3 columns</span></span>
+<span><span class="co">#&gt;      from      to     weight</span></span>
+<span><span class="co">#&gt; 1 execute execute 0.50155833</span></span>
+<span><span class="co">#&gt; 2 monitor execute 0.30386100</span></span>
+<span><span class="co">#&gt; 3    plan execute 0.70140612</span></span>
+<span><span class="co">#&gt; 4 execute monitor 0.39158504</span></span>
+<span><span class="co">#&gt; 5 monitor monitor 0.29266409</span></span>
+<span><span class="co">#&gt; 6    plan monitor 0.09139785</span></span>
+<span><span class="co">#&gt; 7 execute    plan 0.10685663</span></span>
+<span><span class="co">#&gt; 8 monitor    plan 0.40347490</span></span>
+<span><span class="co">#&gt; 9    plan    plan 0.20719603</span></span></code></pre></div>
+<p><code><a href="../reference/simulate_group_tna.html">simulate_group_tna()</a></code> generates grouped sequences and
+fits a network for each group. <code><a href="../reference/evaluate_tna_estimation.html">evaluate_tna_estimation()</a></code>
+compares estimated and generating transition systems across repeated
+samples.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="part-viii-networks">Part VIII: Networks<a class="anchor" aria-label="anchor" href="#part-viii-networks"></a>
+</h2>
+<div class="section level3">
+<h3 id="random-graphs-and-blocks">Random graphs and blocks<a class="anchor" aria-label="anchor" href="#random-graphs-and-blocks"></a>
+</h3>
+<p><code><a href="../reference/simulate_network.html">simulate_network()</a></code> generates networks under several
+models. In the Bernoulli model, each eligible vertex pair is connected
+independently with probability
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>.
+Pairs are ordered in directed networks and unordered in undirected
+networks; self-links are excluded by default. A matrix of probabilities
+indexed by vertex type gives a stochastic block model in which
+connection probabilities depend on the types of both endpoints.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">node_types</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"teacher"</span>, <span class="st">"student"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tie_probability</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>,</span>
+<span>    <span class="fl">0.5</span>, <span class="fl">0.15</span><span class="op">)</span>,</span>
+<span>  nrow <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"teacher"</span>, <span class="st">"student"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"teacher"</span>, <span class="st">"student"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">classroom</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_network.html">simulate_network</a></span><span class="op">(</span></span>
+<span>  nodes <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  probability <span class="op">=</span> <span class="va">tie_probability</span>,</span>
+<span>  node_type <span class="op">=</span> <span class="va">node_types</span>,</span>
+<span>  directed <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">classroom</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:network&gt; 3 rows x 3 columns</span></span>
+<span><span class="co">#&gt;   from to weight</span></span>
+<span><span class="co">#&gt; 1    1  4      1</span></span>
+<span><span class="co">#&gt; 2    3  4      1</span></span>
+<span><span class="co">#&gt; 3    1  5      1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">classroom</span>, what <span class="op">=</span> <span class="st">"settings"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       model directed loops weight nodes edges</span></span>
+<span><span class="co">#&gt; 1 bernoulli    FALSE FALSE binary    15    26</span></span></code></pre></div>
+<p>This undirected example contains three teachers and twelve students.
+Connection probabilities are 0.1 between teachers, 0.15 between
+students, and 0.5 between teachers and students. The generated data are
+a tidy edge list. <code>nodes</code> records vertex types,
+<code>adjacency</code> provides the adjacency matrix in tidy format, and
+<code>settings</code> reports the realized edge count, here 26.</p>
+</div>
+<div class="section level3">
+<h3 id="preferential-attachment-and-small-worlds">Preferential attachment and small worlds<a class="anchor" aria-label="anchor" href="#preferential-attachment-and-small-worlds"></a>
+</h3>
+<p><code><a href="../reference/simulate_network.html">simulate_network()</a></code> also supports preferential-attachment
+and small-world models through <code>igraph</code>. Preferential
+attachment favors connections to vertices with higher degree as the
+network grows. Small-world construction combines local connections with
+rewiring.</p>
+<p><code><a href="../reference/network_centrality.html">network_centrality()</a></code> returns vertex centrality measures
+in tidy format.</p>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">scale_free</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_network.html">simulate_network</a></span><span class="op">(</span>nodes <span class="op">=</span> <span class="fl">200</span>, model <span class="op">=</span> <span class="st">"barabasi_albert"</span>,</span>
+<span>                               attachment <span class="op">=</span> <span class="fl">2</span>, directed <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">degree</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/network_centrality.html">network_centrality</a></span><span class="op">(</span><span class="va">scale_free</span>, measures <span class="op">=</span> <span class="st">"degree"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/summarize_simulations.html">summarize_simulations</a></span><span class="op">(</span><span class="va">degree</span>, variables <span class="op">=</span> <span class="st">"value"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   variable observations mean       sd minimum maximum</span></span>
+<span><span class="co">#&gt; 1    value          200 3.97 3.471217       2      21</span></span></code></pre></div>
+<p>With <code>attachment = 2</code>, new vertices form connections to
+existing vertices according to the attachment mechanism. In this
+realization, minimum degree is 2, mean degree is 3.97, and maximum
+degree is 21. These values describe unequal connectivity in the
+generated network; they do not by themselves establish a particular
+degree-distribution form.</p>
+</div>
+<div class="section level3">
+<h3 id="temporal-bipartite-and-multiplex-networks">Temporal, bipartite and multiplex networks<a class="anchor" aria-label="anchor" href="#temporal-bipartite-and-multiplex-networks"></a>
+</h3>
+<p><code><a href="../reference/simulate_temporal_network.html">simulate_temporal_network()</a></code> generates a discrete-time
+process in which each eligible pair switches between inactive and active
+states. <code>initial_probability</code> determines initial activity,
+<code>formation_probability</code> governs activation of inactive pairs,
+and <code>dissolution_probability</code> governs termination of active
+connections at subsequent periods.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">temporal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_temporal_network.html">simulate_temporal_network</a></span><span class="op">(</span></span>
+<span>  nodes <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  periods <span class="op">=</span> <span class="fl">12</span>,</span>
+<span>  initial_probability <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  formation_probability <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  dissolution_probability <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">temporal</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;simulab_sim:temporal_network&gt; 4 rows x 6 columns</span></span>
+<span><span class="co">#&gt;     from     to onset terminus weight censored</span></span>
+<span><span class="co">#&gt; 1 Node 2 Node 1     5        7      1    FALSE</span></span>
+<span><span class="co">#&gt; 2 Node 5 Node 1     1        3      1    FALSE</span></span>
+<span><span class="co">#&gt; 3 Node 5 Node 1     7       10      1    FALSE</span></span>
+<span><span class="co">#&gt; 4 Node 8 Node 1     1        3      1    FALSE</span></span>
+<span><span class="fu"><a href="../reference/components.html">components</a></span><span class="op">(</span><span class="va">temporal</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       table rows columns</span></span>
+<span><span class="co">#&gt; 1      data   49       6</span></span>
+<span><span class="co">#&gt; 2    events   83       5</span></span>
+<span><span class="co">#&gt; 3 snapshots  128       4</span></span>
+<span><span class="co">#&gt; 4     nodes   10       2</span></span>
+<span><span class="co">#&gt; 5  settings    1       7</span></span></code></pre></div>
+<p>The primary result contains relational spells with endpoints
+<code>from</code> and <code>to</code> and boundaries <code>onset</code>
+and <code>terminus</code>. A spell is active from <code>onset</code>
+through <code>terminus - 1</code>. Spells active in the final period
+have <code>terminus = periods + 1</code> and are marked
+<code>censored = TRUE</code>. The <code>events</code> component records
+formations and dissolutions, while <code>snapshots</code> records
+connected pairs at each period.</p>
+<p><code><a href="../reference/simulate_bipartite_network.html">simulate_bipartite_network()</a></code> generates connections
+between two disjoint vertex sets, such as students and attended events.
+<code><a href="../reference/simulate_multiplex_network.html">simulate_multiplex_network()</a></code> generates separate layers over
+a shared vertex set, using the specified layer-specific connection
+probabilities.</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">layers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_multiplex_network.html">simulate_multiplex_network</a></span><span class="op">(</span></span>
+<span>  nodes <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  layers <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"advice"</span>, <span class="st">"friendship"</span><span class="op">)</span>,</span>
+<span>  probability <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.15</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">layers</span>, what <span class="op">=</span> <span class="st">"layers"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        layer probability</span></span>
+<span><span class="co">#&gt; 1     advice        0.15</span></span>
+<span><span class="co">#&gt; 2 friendship        0.30</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html" class="external-link">xtabs</a></span><span class="op">(</span><span class="op">~</span> <span class="va">layer</span>, data <span class="op">=</span> <span class="va">layers</span><span class="op">)</span></span>
+<span><span class="co">#&gt; layer</span></span>
+<span><span class="co">#&gt;     advice friendship </span></span>
+<span><span class="co">#&gt;         12         30</span></span></code></pre></div>
+<p>The example uses ten vertices in two directed layers, with self-links
+excluded. Each layer has ninety possible ordered pairs, giving expected
+edge counts of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>90</mn><mo>×</mo><mn>0.15</mn><mo>=</mo><mn>13.5</mn></mrow><annotation encoding="application/x-tex">90\times0.15=13.5</annotation></semantics></math>
+for advice and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>90</mn><mo>×</mo><mn>0.3</mn><mo>=</mo><mn>27</mn></mrow><annotation encoding="application/x-tex">90\times0.3=27</annotation></semantics></math>
+for friendship. The realized counts are twelve and thirty. The
+<code>layers</code> component records the layer settings, while the
+cross-tabulation counts generated edges by layer.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

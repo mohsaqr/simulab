@@ -5,7 +5,7 @@ Convert tidy network data to an igraph object
 ## Usage
 
 ``` r
-as_igraph(x, directed = TRUE)
+as_igraph(x, directed = NULL)
 ```
 
 ## Arguments
@@ -16,9 +16,10 @@ as_igraph(x, directed = TRUE)
 
 - directed:
 
-  Whether the resulting graph is directed. It is not inferred from `x`,
-  so a network generated with `directed = FALSE` must be converted with
-  `directed = FALSE` as well.
+  Whether the resulting graph is directed. `NULL` (the default) takes it
+  from the `settings` table of a simulab network, so a network generated
+  with `directed = FALSE` converts to an undirected graph, and treats
+  any other input as directed.
 
 ## Value
 

@@ -1,5 +1,142 @@
 # Changelog
 
+## simulab 0.4.7
+
+### Inputs are matched by name, not position
+
+Several simulators take two inputs that describe the same things, such
+as `means` and `sds` for the same profiles, or `transition` and
+`emission` for the same hidden states. The second input was matched to
+the first by position. A tidy table listed in another order, or a named
+matrix or vector in another order, silently attached its values to the
+wrong profile, state or variable, and the parameter tables reported
+those wrong values as the truth. The second input is now matched by
+name, and names that do not match raise `simulab_mismatched_names`.
+Unnamed matrices and vectors are still matched by position. Affected:
+[`simulate_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_lpa.md),
+[`simulate_ml_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_ml_lpa.md),
+[`simulate_clusters()`](https://mohsaqr.github.io/simulab/reference/simulate_clusters.md),
+[`simulate_hmm()`](https://mohsaqr.github.io/simulab/reference/simulate_hmm.md),
+[`simulate_irt()`](https://mohsaqr.github.io/simulab/reference/simulate_irt.md),
+[`simulate_factors()`](https://mohsaqr.github.io/simulab/reference/simulate_factors.md),
+[`simulate_regression()`](https://mohsaqr.github.io/simulab/reference/simulate_regression.md),
+[`simulate_correlated()`](https://mohsaqr.github.io/simulab/reference/simulate_correlated.md),
+[`simulate_ordinal()`](https://mohsaqr.github.io/simulab/reference/simulate_ordinal.md),
+[`simulate_copula()`](https://mohsaqr.github.io/simulab/reference/simulate_copula.md),
+[`simulate_network()`](https://mohsaqr.github.io/simulab/reference/simulate_network.md),
+[`simulate_markov()`](https://mohsaqr.github.io/simulab/reference/simulate_markov.md),
+[`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md),
+[`simulate_group_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_group_sequences.md),
+[`simulate_group_tna()`](https://mohsaqr.github.io/simulab/reference/simulate_group_tna.md),
+[`simulate_sequence_clusters()`](https://mohsaqr.github.io/simulab/reference/simulate_sequence_clusters.md)
+and
+[`simulate_longitudinal()`](https://mohsaqr.github.io/simulab/reference/simulate_longitudinal.md).
+
+- A square `from`/`to` table whose `to` column lists states in a
+  different order from its `from` column was pivoted with mismatched
+  rows and columns, so self-transitions were off the diagonal
+  ([`simulate_hmm()`](https://mohsaqr.github.io/simulab/reference/simulate_hmm.md),
+  [`simulate_network()`](https://mohsaqr.github.io/simulab/reference/simulate_network.md),
+  grouped and clustered sequence transitions).
+- Names given with an input now label the output: profiles
+  ([`simulate_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_lpa.md),
+  [`simulate_ml_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_ml_lpa.md)),
+  cluster classes
+  ([`simulate_ml_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_ml_lpa.md)),
+  latent classes and categories
+  ([`simulate_lca()`](https://mohsaqr.github.io/simulab/reference/simulate_lca.md)),
+  hidden states and observations
+  ([`simulate_hmm()`](https://mohsaqr.github.io/simulab/reference/simulate_hmm.md)),
+  items
+  ([`simulate_irt()`](https://mohsaqr.github.io/simulab/reference/simulate_irt.md)),
+  groups
+  ([`simulate_group_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_group_sequences.md))
+  and sequence clusters
+  ([`simulate_sequence_clusters()`](https://mohsaqr.github.io/simulab/reference/simulate_sequence_clusters.md)).
+  They were replaced by `Profile 1`, `Class 1`, `State 1` and similar.
+
+### Batches from every simulator
+
+- Every simulator that produces one dataset (39 verbs, including
+  [`generate_transition_system()`](https://mohsaqr.github.io/simulab/reference/generate_transition_system.md)
+  and
+  [`simulate_until_event()`](https://mohsaqr.github.io/simulab/reference/simulate_until_event.md))
+  takes `batch = NULL`. Given a positive whole number, it returns a
+  plain `list` of that many results, each exactly what the call without
+  `batch` returns. The argument also passes through
+  [`simulate_data()`](https://mohsaqr.github.io/simulab/reference/simulate_data.md).
+  The four verbs that already replicate
+  ([`simulate_sequence_batches()`](https://mohsaqr.github.io/simulab/reference/simulate_sequence_batches.md),
+  [`simulate_tna_batches()`](https://mohsaqr.github.io/simulab/reference/simulate_tna_batches.md),
+  [`simulate_network_batches()`](https://mohsaqr.github.io/simulab/reference/simulate_network_batches.md),
+  [`simulate_scenarios()`](https://mohsaqr.github.io/simulab/reference/simulate_scenarios.md))
+  keep their own `repetitions` or replication arguments.
+- With a `seed`, each dataset gets its own seed drawn from it, so a
+  batch is reproducible and the caller’s random-number stream is
+  unchanged. Seeds are drawn rather than consecutive because several
+  verbs already seed their groups or layers with `seed + k - 1`.
+- An invalid `batch` raises a `simulab_invalid_batch` condition.
+
+### Monte Carlo recovery
+
+- [`validate_recovery()`](https://mohsaqr.github.io/simulab/reference/validate_recovery.md)
+  keeps every other column of `estimates`, such as the `batch_id` from
+  [`apply_batch()`](https://mohsaqr.github.io/simulab/reference/apply_batch.md),
+  and returns rows in the order of `estimates`. It previously dropped
+  identifiers and sorted by term, so a recovery table from a batch could
+  not be traced back to its datasets.
+- [`summarize_simulations()`](https://mohsaqr.github.io/simulab/reference/summarize_simulations.md)
+  numbers its rows 1 to n instead of labeling them by group, and a group
+  with no non-missing values reports `NA` statistics rather than `NaN`,
+  `Inf` and two warnings.
+- [`simulate_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_lpa.md)
+  and
+  [`simulate_ml_lpa()`](https://mohsaqr.github.io/simulab/reference/simulate_ml_lpa.md)
+  label profiles with the names given in `means` (the `profile` values
+  of a tidy table, or matrix row names). They previously replaced them
+  with `Profile 1`, `Profile 2`, and so on.
+- [`list_distributions()`](https://mohsaqr.github.io/simulab/reference/list_distributions.md)
+  numbers its rows 1 to n after sorting.
+- [`summarize_simulations()`](https://mohsaqr.github.io/simulab/reference/summarize_simulations.md)
+  without `by` no longer adds a `.group` column holding `"all"`.
+- [`summarize_transitions()`](https://mohsaqr.github.io/simulab/reference/summarize_transitions.md)
+  and
+  [`network_centrality()`](https://mohsaqr.github.io/simulab/reference/network_centrality.md)
+  number their rows 1 to
+  14. 
+- [`as_igraph()`](https://mohsaqr.github.io/simulab/reference/as_igraph.md),
+  [`network_centrality()`](https://mohsaqr.github.io/simulab/reference/network_centrality.md)
+  and
+  [`compare_centralities()`](https://mohsaqr.github.io/simulab/reference/compare_centralities.md)
+  take `directed = NULL` by default and read the direction from the
+  network’s `settings` table. The default was `TRUE`, which read an
+  undirected network (whose edge list stores each tie once) as directed
+  and distorted betweenness, eigenvector and PageRank centrality unless
+  `directed = FALSE` was passed by hand.
+- `survival` is suggested, for the Cox model in the vignette.
+- The vignette is rewritten as a methodological guide: the model behind
+  each family of simulators, with its references, a simulation from it,
+  its parameter tables, and a recovery check where one is short.
+
+### Bug fixes found by the batch sweep
+
+- [`simulate_bipartite_network()`](https://mohsaqr.github.io/simulab/reference/simulate_bipartite_network.md)
+  failed with “arguments imply differing number of rows: 0, 1” whenever
+  a probability draw produced no edges (94 of seeds 1 to 300 at the
+  defaults). It now returns an empty edge list.
+- [`simulate_proportional_survival()`](https://mohsaqr.github.io/simulab/reference/simulate_proportional_survival.md)
+  occasionally raised `simulab_no_convergence` when solving for the
+  censoring rate (24 of seeds 1 to 2000 at `n = 10`). The shared root
+  solver now refines to machine precision, so convergence is decided by
+  the residual alone.
+- `simulate_longitudinal(beeps_per_day = )` reset the carryover one
+  occasion late, at the second beep of each day (and at the second beep
+  of day one), so the first beep of every later day still carried over
+  the previous evening. The reset also dropped `intercept`, setting the
+  value to the person mean instead of the person mean plus the
+  intercept. The carryover now resets at the first beep of each day
+  after the first, and only the lagged term is removed.
+
 ## simulab 0.4.6
 
 - `VignetteBuilder` now lists `rmarkdown` as well as `knitr`. Under

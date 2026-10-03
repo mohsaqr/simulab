@@ -10,7 +10,7 @@ compare_centralities(
   y,
   measures = c("degree", "betweenness", "closeness"),
   method = c("pearson", "spearman", "kendall"),
-  directed = TRUE
+  directed = NULL
 )
 ```
 
@@ -31,7 +31,8 @@ compare_centralities(
 
 - directed:
 
-  Treat networks as directed.
+  Treat networks as directed. `NULL` (the default) takes it from each
+  network's `settings` table.
 
 ## Value
 

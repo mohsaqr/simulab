@@ -17,7 +17,7 @@ this design from simulating one latent profile model per cluster."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,7 @@ this design from simulating one latent profile model per cluster."></head><body>
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -68,7 +68,8 @@ this design from simulating one latent profile model per cluster.</p>
 <span>  correlations <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cluster_class_labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  batch <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -91,8 +92,8 @@ unbalanced.</p></dd>
 <dd><p>Profile-by-variable mean matrix (one row per profile, one
 column per indicator, at least 2 rows), or a tidy data frame with columns
 <code>profile</code>, <code>variable</code> and <code>mean</code>. Column names become the indicator
-columns of the returned data; row names are ignored, profile names come
-from <code>labels</code>.</p></dd>
+columns of the returned data; row names, or the <code>profile</code> values of a
+tidy table, name the profiles unless <code>labels</code> is given.</p></dd>
 
 
 <dt id="arg-profile-probabilities">profile_probabilities<a class="anchor" aria-label="anchor" href="#arg-profile-probabilities"></a></dt>
@@ -126,7 +127,9 @@ within every profile, the conditional-independence measurement model.</p></dd>
 
 <dt id="arg-labels">labels<a class="anchor" aria-label="anchor" href="#arg-labels"></a></dt>
 <dd><p>Optional profile labels, one unique value per profile.
-Defaults to <code>"Profile 1"</code>, <code>"Profile 2"</code> and so on.</p></dd>
+Defaults to the profile names given with <code>means</code> (the <code>profile</code> values of
+a tidy table, or the row names of a matrix), else <code>"Profile 1"</code>,
+<code>"Profile 2"</code> and so on.</p></dd>
 
 
 <dt id="arg-cluster-class-labels">cluster_class_labels<a class="anchor" aria-label="anchor" href="#arg-cluster-class-labels"></a></dt>
@@ -136,6 +139,16 @@ per cluster class. Defaults to <code>"Class 1"</code>, <code>"Class 2"</code> an
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Optional random seed.</p></dd>
+
+
+<dt id="arg-batch">batch<a class="anchor" aria-label="anchor" href="#arg-batch"></a></dt>
+<dd><p>Optional single positive whole number. When given, the
+simulator runs <code>batch</code> times and returns a plain <code>list</code> of <code>batch</code>
+results, each exactly what the same call without <code>batch</code> returns. With a
+<code>seed</code>, every dataset gets its own seed drawn from <code>seed</code>, so the whole
+batch is reproducible; without one the datasets are consecutive draws
+from the session's random-number stream. The default <code>NULL</code> returns a
+single result.</p></dd>
 
 </dl></div>
     <div class="section level2">

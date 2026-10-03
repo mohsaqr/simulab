@@ -21,7 +21,8 @@ simulate_correlation(
   structure = c("independent", "exchangeable", "ar1", "custom"),
   correlation = NULL,
   variable_names = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 ```
 
@@ -38,6 +39,16 @@ simulate_correlation(
   Unlike that function, `means` defaults to `0`. One variable is
   generated per element of `means`; `sds` must be a single value, which
   is recycled, or one value per mean.
+
+- batch:
+
+  Optional single positive whole number. When given, the simulator runs
+  `batch` times and returns a plain `list` of `batch` results, each
+  exactly what the same call without `batch` returns. With a `seed`,
+  every dataset gets its own seed drawn from `seed`, so the whole batch
+  is reproducible; without one the datasets are consecutive draws from
+  the session's random-number stream. The default `NULL` returns a
+  single result.
 
 ## Value
 

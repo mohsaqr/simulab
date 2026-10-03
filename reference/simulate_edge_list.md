@@ -18,7 +18,8 @@ simulate_edge_list(
   node_type = NULL,
   edge_classes = NULL,
   class_probabilities = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 ```
 
@@ -67,6 +68,16 @@ simulate_edge_list(
 - seed:
 
   Optional seed.
+
+- batch:
+
+  Optional single positive whole number. When given, the simulator runs
+  `batch` times and returns a plain `list` of `batch` results, each
+  exactly what the same call without `batch` returns. With a `seed`,
+  every dataset gets its own seed drawn from `seed`, so the whole batch
+  is reproducible; without one the datasets are consecutive draws from
+  the session's random-number stream. The default `NULL` returns a
+  single result.
 
 ## Value
 

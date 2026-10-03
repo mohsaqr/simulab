@@ -13,7 +13,8 @@ simulate_lca(
   proportions = NULL,
   class_labels = NULL,
   category_labels = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 ```
 
@@ -28,10 +29,9 @@ simulate_lca(
   Item probabilities as an array with dimensions class, indicator and
   category, or as a tidy data frame with columns `class`, `indicator`,
   `category` and `probability`. Category probabilities must sum to one
-  within each class and indicator. Only the `indicator` dimnames are
-  used, to name the indicator columns; any class and category dimnames
-  are ignored, so class and category labels must be supplied through
-  `class_labels` and `category_labels`.
+  within each class and indicator. The dimnames (the `class`,
+  `indicator` and `category` values of a tidy table) name the classes,
+  the indicator columns and the categories.
 
 - proportions:
 
@@ -41,14 +41,25 @@ simulate_lca(
 
 - class_labels, category_labels:
 
-  Optional labels, one unique value per class and per category.
-  `class_labels` defaults to `"Class 1"`, `"Class 2"` and so on;
-  `category_labels` defaults to the integers `1:categories`, which are
-  the values written into the indicator columns.
+  Optional labels, one unique value per class and per category,
+  overriding the names given in `probabilities`. Without names there,
+  `class_labels` defaults to `"Class 1"`, `"Class 2"` and so on, and
+  `category_labels` to the integers `1:categories`. The category labels
+  are the values written into the indicator columns.
 
 - seed:
 
   Optional random seed.
+
+- batch:
+
+  Optional single positive whole number. When given, the simulator runs
+  `batch` times and returns a plain `list` of `batch` results, each
+  exactly what the same call without `batch` returns. With a `seed`,
+  every dataset gets its own seed drawn from `seed`, so the whole batch
+  is reproducible; without one the datasets are consecutive draws from
+  the session's random-number stream. The default `NULL` returns a
+  single result.
 
 ## Value
 

@@ -20,12 +20,14 @@ simulate_data(type, ...)
 
 - ...:
 
-  Arguments passed on to the selected canonical simulation verb.
+  Arguments passed on to the selected canonical simulation verb,
+  including `batch` for every verb that produces one dataset.
 
 ## Value
 
 Whatever the selected verb returns, which for every dispatchable entry
-is a `simulab_sim` base `data.frame`.
+is a `simulab_sim` base `data.frame`, or a plain `list` of them when
+`batch` is given.
 
 ## Examples
 
@@ -40,4 +42,9 @@ head(result)
 #> 4  4     A  1.5952808
 #> 5  5     A  0.3295078
 #> 6  6     A -0.8204684
+# Five independent datasets from one call.
+datasets <- simulate_data("ttest", n_a = 30, n_b = 30, mean_a = 0,
+                          mean_b = 0.5, seed = 1, batch = 5)
+length(datasets)
+#> [1] 5
 ```

@@ -15,7 +15,8 @@ simulate_markov(
   id = "id",
   period = "period",
   state = "state",
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 ```
 
@@ -57,6 +58,16 @@ simulate_markov(
 
   Optional random seed.
 
+- batch:
+
+  Optional single positive whole number. When given, the simulator runs
+  `batch` times and returns a plain `list` of `batch` results, each
+  exactly what the same call without `batch` returns. With a `seed`,
+  every dataset gets its own seed drawn from `seed`, so the whole batch
+  is reproducible; without one the datasets are consecutive draws from
+  the session's random-number stream. The default `NULL` returns a
+  single result.
+
 ## Value
 
 A long-form `simulab_sim` base `data.frame` with columns `id`, `period`,
@@ -86,8 +97,8 @@ head(result)
 summarize_transitions(result, normalize = TRUE)
 #>   from to count probability
 #> 1    A  A   392   0.6938053
-#> 3    A  B   173   0.3061947
-#> 2    B  A   149   0.3870130
+#> 2    A  B   173   0.3061947
+#> 3    B  A   149   0.3870130
 #> 4    B  B   236   0.6129870
 
 # Transitions may also be given as a tidy from/to/probability table.

@@ -47,7 +47,7 @@ data <- simulate_markov(
 summarize_transitions(data, normalize = TRUE)
 #>   from to count probability
 #> 1    A  A   325   0.7049892
-#> 3    A  B   136   0.2950108
-#> 2    B  A   119   0.3979933
+#> 2    A  B   136   0.2950108
+#> 3    B  A   119   0.3979933
 #> 4    B  B   180   0.6020067
 ```

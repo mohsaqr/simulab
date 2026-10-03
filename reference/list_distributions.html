@@ -13,7 +13,7 @@ quantile function can be a marginal in simulate_copula()."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,7 +24,7 @@ quantile function can be a marginal in simulate_copula()."></head><body>
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -79,40 +79,40 @@ distribution.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">list_distributions</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     distribution            parameters n_parameters copula</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40        anglit       location, scale            2   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31       arcsine              min, max            2   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51        benini shape1, shape2, scale            3   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           beta        shape1, shape2            2   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74 beta_binomial  size, shape1, shape2            3  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29    beta_prime        shape1, shape2            2   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    distribution            parameters n_parameters copula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        anglit       location, scale            2   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       arcsine              min, max            2   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        benini shape1, shape2, scale            3   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          beta        shape1, shape2            2   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 beta_binomial  size, shape1, shape2            3  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    beta_prime        shape1, shape2            2   TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Distributions whose name mentions normal.</span></span></span>
 <span class="r-in"><span><span class="fu">list_distributions</span><span class="op">(</span><span class="st">"normal"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         distribution             parameters n_parameters copula</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      folded_normal               mean, sd            2  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 generalized_normal shape, location, scale            3   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      folded_normal               mean, sd            2  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 generalized_normal shape, location, scale            3   TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3        half_normal                     sd            1   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7       logit_normal               mean, sd            2   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          lognormal         meanlog, sdlog            2   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             normal               mean, sd            2   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8       power_normal shape, location, scale            3   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9        skew_normal location, scale, shape            3  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   truncated_normal mean, sd, lower, upper            4   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       logit_normal               mean, sd            2   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          lognormal         meanlog, sdlog            2   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6             normal               mean, sd            2   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7       power_normal shape, location, scale            3   TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8        skew_normal location, scale, shape            3  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9   truncated_normal mean, sd, lower, upper            4   TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Distributions that cannot be a copula marginal.</span></span></span>
 <span class="r-in"><span><span class="fu">list_distributions</span><span class="op">(</span>copula <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        distribution             parameters n_parameters copula</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74    beta_binomial   size, shape1, shape2            3  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78      categorical                  probs            1  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24    folded_normal               mean, sd            2  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56 inverse_gaussian            mean, shape            2  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79          mixture                weights            1  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57             rice        location, scale            2  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59     semicircular        location, scale            2  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75          skellam       lambda1, lambda2            2  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58      skew_normal location, scale, shape            3  FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77        treatment                 groups            1  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     beta_binomial   size, shape1, shape2            3  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       categorical                  probs            1  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     folded_normal               mean, sd            2  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  inverse_gaussian            mean, shape            2  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5           mixture                weights            1  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6              rice        location, scale            2  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      semicircular        location, scale            2  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8           skellam       lambda1, lambda2            2  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9       skew_normal location, scale, shape            3  FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10        treatment                 groups            1  FALSE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

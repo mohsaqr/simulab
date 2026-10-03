@@ -45,11 +45,15 @@ validate_recovery(
 
 ## Value
 
-A base `data.frame` with one row per term appearing in either frame (the
-merge keeps unmatched terms) and the columns `term`, `estimate`,
-`truth`, `bias` (estimate minus truth), `absolute_error`,
-`relative_error` (`NA` where truth is zero) and `recovered`, a logical
-that is `TRUE` when `absolute_error` is at most `tolerance`.
+A base `data.frame` with one row per row of `estimates`, in the same
+order, plus one row for each term found only in `truth`. Every column of
+`estimates` other than `term` and `estimate` (for example the `batch_id`
+of
+[`apply_batch()`](https://mohsaqr.github.io/simulab/reference/apply_batch.md))
+comes first, then the columns `term`, `estimate`, `truth`, `bias`
+(estimate minus truth), `absolute_error`, `relative_error` (`NA` where
+truth is zero) and `recovered`, a logical that is `TRUE` when
+`absolute_error` is at most `tolerance`.
 
 ## Examples
 

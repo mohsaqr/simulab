@@ -27,9 +27,10 @@ summarize_simulations(data, by = NULL, variables = NULL)
 ## Value
 
 A plain base `data.frame` with one row per group and variable: the `by`
-columns (or a single `.group` column holding `"all"` when `by` is
-`NULL`), then `variable`, `observations` (the non-missing count),
-`mean`, `sd`, `minimum` and `maximum`.
+columns (none when `by` is `NULL`), then `variable`, `observations` (the
+non-missing count), `mean`, `sd`, `minimum` and `maximum`. Missing
+values are left out of the statistics; a group with none left reports
+`NA` statistics.
 
 ## Examples
 
@@ -37,6 +38,6 @@ columns (or a single `.group` column holding `"all"` when `by` is
 data <- simulate_ttest(n_a = 50, n_b = 50, mean_a = 0, mean_b = 0.6, seed = 1)
 summarize_simulations(data, by = "group", variables = "outcome")
 #>   group variable observations      mean        sd   minimum  maximum
-#> A     A  outcome           50 0.1004483 0.8313939 -2.214700 1.595281
-#> B     B  outcome           50 0.7173265 0.9688279 -1.204959 3.001618
+#> 1     A  outcome           50 0.1004483 0.8313939 -2.214700 1.595281
+#> 2     B  outcome           50 0.7173265 0.9688279 -1.204959 3.001618
 ```

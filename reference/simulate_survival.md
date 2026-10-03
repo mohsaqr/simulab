@@ -12,7 +12,8 @@ simulate_survival(
   id = "id",
   seed = NULL,
   digits = NULL,
-  envir = parent.frame()
+  envir = parent.frame(),
+  batch = NULL
 )
 ```
 
@@ -41,6 +42,16 @@ simulate_survival(
 
   Arguments passed to
   [`augment_survival()`](https://mohsaqr.github.io/simulab/reference/augment_survival.md).
+
+- batch:
+
+  Optional single positive whole number. When given, the simulator runs
+  `batch` times and returns a plain `list` of `batch` results, each
+  exactly what the same call without `batch` returns. With a `seed`,
+  every dataset gets its own seed drawn from `seed`, so the whole batch
+  is reproducible; without one the datasets are consecutive draws from
+  the session's random-number stream. The default `NULL` returns a
+  single result.
 
 ## Value
 

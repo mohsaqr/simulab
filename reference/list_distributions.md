@@ -34,38 +34,38 @@ A base `data.frame` with one row per distribution and columns
 
 ``` r
 head(list_distributions())
-#>     distribution            parameters n_parameters copula
-#> 40        anglit       location, scale            2   TRUE
-#> 31       arcsine              min, max            2   TRUE
-#> 51        benini shape1, shape2, scale            3   TRUE
-#> 5           beta        shape1, shape2            2   TRUE
-#> 74 beta_binomial  size, shape1, shape2            3  FALSE
-#> 29    beta_prime        shape1, shape2            2   TRUE
+#>    distribution            parameters n_parameters copula
+#> 1        anglit       location, scale            2   TRUE
+#> 2       arcsine              min, max            2   TRUE
+#> 3        benini shape1, shape2, scale            3   TRUE
+#> 4          beta        shape1, shape2            2   TRUE
+#> 5 beta_binomial  size, shape1, shape2            3  FALSE
+#> 6    beta_prime        shape1, shape2            2   TRUE
 
 # Distributions whose name mentions normal.
 list_distributions("normal")
 #>         distribution             parameters n_parameters copula
-#> 4      folded_normal               mean, sd            2  FALSE
-#> 6 generalized_normal shape, location, scale            3   TRUE
+#> 1      folded_normal               mean, sd            2  FALSE
+#> 2 generalized_normal shape, location, scale            3   TRUE
 #> 3        half_normal                     sd            1   TRUE
-#> 7       logit_normal               mean, sd            2   TRUE
-#> 2          lognormal         meanlog, sdlog            2   TRUE
-#> 1             normal               mean, sd            2   TRUE
-#> 8       power_normal shape, location, scale            3   TRUE
-#> 9        skew_normal location, scale, shape            3  FALSE
-#> 5   truncated_normal mean, sd, lower, upper            4   TRUE
+#> 4       logit_normal               mean, sd            2   TRUE
+#> 5          lognormal         meanlog, sdlog            2   TRUE
+#> 6             normal               mean, sd            2   TRUE
+#> 7       power_normal shape, location, scale            3   TRUE
+#> 8        skew_normal location, scale, shape            3  FALSE
+#> 9   truncated_normal mean, sd, lower, upper            4   TRUE
 
 # Distributions that cannot be a copula marginal.
 list_distributions(copula = FALSE)
 #>        distribution             parameters n_parameters copula
-#> 74    beta_binomial   size, shape1, shape2            3  FALSE
-#> 78      categorical                  probs            1  FALSE
-#> 24    folded_normal               mean, sd            2  FALSE
-#> 56 inverse_gaussian            mean, shape            2  FALSE
-#> 79          mixture                weights            1  FALSE
-#> 57             rice        location, scale            2  FALSE
-#> 59     semicircular        location, scale            2  FALSE
-#> 75          skellam       lambda1, lambda2            2  FALSE
-#> 58      skew_normal location, scale, shape            3  FALSE
-#> 77        treatment                 groups            1  FALSE
+#> 1     beta_binomial   size, shape1, shape2            3  FALSE
+#> 2       categorical                  probs            1  FALSE
+#> 3     folded_normal               mean, sd            2  FALSE
+#> 4  inverse_gaussian            mean, shape            2  FALSE
+#> 5           mixture                weights            1  FALSE
+#> 6              rice        location, scale            2  FALSE
+#> 7      semicircular        location, scale            2  FALSE
+#> 8           skellam       lambda1, lambda2            2  FALSE
+#> 9       skew_normal location, scale, shape            3  FALSE
+#> 10        treatment                 groups            1  FALSE
 ```

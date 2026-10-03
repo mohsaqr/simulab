@@ -21,7 +21,8 @@ simulate_longitudinal(
   grand_means = 0,
   beeps_per_day = NULL,
   burn_in = 50L,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 ```
 
@@ -91,6 +92,16 @@ simulate_longitudinal(
 - seed:
 
   Optional random seed.
+
+- batch:
+
+  Optional single positive whole number. When given, the simulator runs
+  `batch` times and returns a plain `list` of `batch` results, each
+  exactly what the same call without `batch` returns. With a `seed`,
+  every dataset gets its own seed drawn from `seed`, so the whole batch
+  is reproducible; without one the datasets are consecutive draws from
+  the session's random-number stream. The default `NULL` returns a
+  single result.
 
 ## Value
 

@@ -15,7 +15,8 @@ simulate_lpa(
   proportions = NULL,
   correlations = NULL,
   labels = NULL,
-  seed = NULL
+  seed = NULL,
+  batch = NULL
 )
 ```
 
@@ -30,8 +31,8 @@ simulate_lpa(
   Profile-by-variable mean matrix (one row per profile, one column per
   indicator, at least 2 rows), or a tidy data frame with columns
   `profile`, `variable` and `mean`. Column names become the indicator
-  columns of the returned data; row names are ignored, profile names
-  come from `labels`.
+  columns of the returned data; row names, or the `profile` values of a
+  tidy table, name the profiles unless `labels` is given.
 
 - sds:
 
@@ -54,12 +55,24 @@ simulate_lpa(
 
 - labels:
 
-  Optional profile labels, one unique value per profile. Defaults to
-  `"Profile 1"`, `"Profile 2"` and so on.
+  Optional profile labels, one unique value per profile. Defaults to the
+  profile names given with `means` (the `profile` values of a tidy
+  table, or the row names of a matrix), else `"Profile 1"`,
+  `"Profile 2"` and so on.
 
 - seed:
 
   Optional random seed.
+
+- batch:
+
+  Optional single positive whole number. When given, the simulator runs
+  `batch` times and returns a plain `list` of `batch` results, each
+  exactly what the same call without `batch` returns. With a `seed`,
+  every dataset gets its own seed drawn from `seed`, so the whole batch
+  is reproducible; without one the datasets are consecutive draws from
+  the session's random-number stream. The default `NULL` returns a
+  single result.
 
 ## Value
 
