@@ -14,6 +14,8 @@ empirical_transitions <- function(result) {
 }
 
 test_that("simulate_markov recovers its transition matrix", {
+  # Large-sample calibration; runs on CI, skipped on CRAN to keep checks fast.
+  skip_on_cran()
   result <- simulate_markov(
     n = 3000, transition = two_state, chain_length = 50,
     states = c("A", "B"), seed = 5
@@ -49,6 +51,8 @@ test_that("a named starting state fixes the first observation", {
 })
 
 test_that("initial probabilities are honoured", {
+  # Large-sample calibration; runs on CI, skipped on CRAN to keep checks fast.
+  skip_on_cran()
   result <- simulate_markov(
     n = 4000, transition = two_state, chain_length = 3,
     states = c("A", "B"), initial = c(0.25, 0.75), seed = 5

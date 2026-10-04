@@ -23,6 +23,8 @@ test_that("every single-dataset simulator takes `batch`, and only those", {
 })
 
 test_that("a seeded batch is a reproducible list of standalone results", {
+  # Large-sample calibration; runs on CI, skipped on CRAN to keep checks fast.
+  skip_on_cran()
   calls <- .seed_contract_calls()[.batch_verbs()]
   if (!requireNamespace("tna", quietly = TRUE)) {
     calls <- calls[setdiff(names(calls), c("group_tna", "tna"))]

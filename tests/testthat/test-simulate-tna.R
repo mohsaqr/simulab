@@ -19,6 +19,8 @@ test_that("simulate_tna() runs with no arguments and stores its truth", {
 })
 
 test_that("the fitted network recovers the generating matrix", {
+  # Large-sample calibration; runs on CI, skipped on CRAN to keep checks fast.
+  skip_on_cran()
   skip_if_not_installed("tna")
   transition <- data.frame(
     from = rep(c("plan", "act", "check"), each = 3),
