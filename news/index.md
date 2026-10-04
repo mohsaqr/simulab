@@ -1,5 +1,5 @@
 # Changelog
 
-## simulab 0.4.9
+## simulab 0.4.10
 
 - Initial CRAN submission.

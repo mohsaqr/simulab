@@ -239,7 +239,7 @@ lists them with the shape of their results.
 
 ``` R
 Saqr M, López-Pernas S (2026). _simulab: Simulates a Wide Variety of
-Data Shapes, Sizes and Distributions_. R package version 0.4.9,
+Data Shapes, Sizes and Distributions_. R package version 0.4.10,
 <https://pak.dynasite.org/simulab/>.
 ```
 
