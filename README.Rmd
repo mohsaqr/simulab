@@ -1,0 +1,160 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Edit README.Rmd, then knit. -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+# simulab
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/mohsaqr/simulab/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mohsaqr/simulab/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+simulab generates a wide variety of data, in different shapes, sample sizes,
+distributions and parameters. The parameters are either drawn at random or
+set in advance, and in both cases they are stored with the data, so they are
+known, recoverable and testable. The package is designed for simulation, for
+the evaluation of statistical methods, for training and testing models and
+software, and for learning and teaching. Data generated from specified
+parameters describe no real persons, so they can be shared, published and
+given to a class without the consent, review and access agreements that real
+data about people require.
+
+The generators cover declared variables with treatment assignment, missing
+values and copula dependence; group comparisons, regression and Gaussian
+clusters; latent profile, latent class, factor and item response models;
+multilevel, growth and vector autoregressive longitudinal data; survival times
+with censoring and competing risks; sequences of states from Markov chains,
+hidden Markov models and mixtures; behavioral event data; transition networks;
+and random, bipartite, multiplex and temporal networks. The package is written
+in base R and requires R 4.1.0 or later.
+
+The documentation, with a methodological guide and the reference of every
+function, is at <https://pak.dynasite.org/simulab/>.
+
+## Installation
+
+```r
+install.packages("simulab")
+```
+
+The development version is installed from r-universe or GitHub:
+
+```r
+install.packages("simulab", repos = c("https://mohsaqr.r-universe.dev",
+                                      "https://cloud.r-project.org"))
+remotes::install_github("mohsaqr/simulab")
+```
+
+No suggested package is needed at run time. `tna` (1.2.3 or later) fits the
+transition networks of `simulate_tna()`, `simulate_group_tna()` and
+`fit_tna()`; `igraph` (2.0.0 or later) supplies the preferential-attachment
+and small-world generators and `as_igraph()`; `survival` fits the Cox model in
+the vignette; `simstudy` is an equivalence oracle in the tests.
+
+## Data with and without parameters
+
+Called with no arguments, a generator draws its parameters and prints them
+under the data as the truth. Here the intercept of a linear regression is
+drawn from the standard normal distribution and two slopes from the uniform
+distribution on [−1, 1].
+
+```{r drawn}
+library(simulab)
+simulate_regression(seed = 1)
+```
+
+Given parameters are printed in the same way.
+
+```{r known}
+known <- simulate_regression(
+  n = 100,
+  coefficients = c("(Intercept)" = 1, x1 = 0.5, x2 = -0.3),
+  seed = 1
+)
+known
+```
+
+## Recovery
+
+A model fitted to the data estimates the parameters, and `validate_recovery()`
+sets each estimate against the value that generated it.
+
+```{r recovery}
+validate_recovery(lm(outcome ~ x1 + x2, data = known), known)
+```
+
+## Batches
+
+Every single-dataset generator takes `batch`. With `batch = 500`, a call
+returns 500 data sets from the same model, each reproducible from its own
+seed. In `apply_batch()`, a model is fitted to each data set, and
+`validate_recovery()` compares every estimate with the truth of its own data
+set.
+
+```{r batch}
+datasets <- simulate_regression(
+  n = 100,
+  coefficients = c("(Intercept)" = 1, x1 = 0.5, x2 = -0.3),
+  seed = 1,
+  batch = 500
+)
+estimates <- apply_batch(datasets, lm, formula = outcome ~ x1 + x2)
+recovery <- validate_recovery(estimates, datasets)
+summarize_simulations(recovery, by = "term", variables = "bias")
+```
+
+The mean bias of each coefficient over the 500 data sets estimates the bias of
+the estimator, and the standard deviation of the bias is its empirical
+standard error.
+
+## Transition networks
+
+`simulate_tna()` draws a transition matrix over learning states, generates
+sequences from it, and fits one transition network with the `tna` package.
+The result is a native `tna` model, so every `tna` function applies to it. Its
+print shows the fitted network, then the matrix that generated the sequences.
+
+```{r tna, eval = requireNamespace("tna", quietly = TRUE)}
+network <- simulate_tna(seed = 1)
+network
+```
+
+## Generators
+
+| Family | Generators |
+|---|---|
+| General | `simulate_study()`, `simulate_correlation()`, `simulate_correlated()`, `simulate_copula()`, `simulate_ordinal()` |
+| Statistical | `simulate_ttest()`, `simulate_anova()`, `simulate_regression()`, `simulate_prediction()`, `simulate_clusters()` |
+| Latent and measurement | `simulate_lpa()`, `simulate_ml_lpa()`, `simulate_lca()`, `simulate_factors()`, `simulate_irt()` |
+| Longitudinal | `simulate_multilevel()`, `simulate_growth()`, `simulate_longitudinal()` |
+| Survival | `simulate_survival()`, `simulate_proportional_survival()` |
+| Sequences | `simulate_markov()`, `generate_transition_system()`, `simulate_sequences()`, `simulate_sequence_clusters()`, `simulate_hmm()`, `simulate_group_sequences()`, `simulate_event_log()`, `simulate_until_event()` |
+| Transition networks | `simulate_tna()`, `simulate_group_tna()`, `simulate_tna_network()` |
+| Networks | `simulate_network()`, `simulate_edge_list()`, `simulate_network_matrix()`, `simulate_temporal_network()`, `simulate_bipartite_network()`, `simulate_multiplex_network()` |
+| Empirical and functional | `simulate_synthetic()`, `simulate_density()`, `simulate_spline()` |
+| Replication | `simulate_sequence_batches()`, `simulate_tna_batches()`, `simulate_network_batches()`, `simulate_scenarios()`, `simulate_data()` |
+
+The vignette describes the data each generator produces, and
+`list_simulators()` lists them with the shape of their results.
+
+## Relationship to other packages
+
+simulab supersedes Saqrlab, which has never been on CRAN, and continues its
+version numbering. simstudy is an equivalence oracle rather than a
+dependency: under the same seed, simulab reproduces simstudy 0.9.2 values
+exactly for normal, binary and gamma declarative generation.
+
+## Citation
+
+```{r citation, echo = FALSE, comment = ""}
+print(citation("simulab"), style = "text")
+```
+
+## License
+
+MIT © Mohammed Saqr, Sonsoles López-Pernas

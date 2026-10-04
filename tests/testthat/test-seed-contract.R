@@ -7,8 +7,8 @@ test_that("the seed-contract sweep covers every dispatchable verb", {
 
 test_that("a seeded call reproduces itself and restores the caller's RNG stream", {
   calls <- .seed_contract_calls()
-  # Both verbs call fit_tna(); CRAN's no-Suggests check runs without `tna`.
-  needs_tna <- c("group_tna", "tna_batches")
+  # These verbs call fit_tna(); CRAN's no-Suggests check runs without `tna`.
+  needs_tna <- c("group_tna", "tna", "tna_batches")
   if (!requireNamespace("tna", quietly = TRUE)) {
     calls <- calls[setdiff(names(calls), needs_tna)]
   }

@@ -1,7 +1,10 @@
 #' Simulate a two-group design
 #'
-#' @param n_a,n_b Group sample sizes.
-#' @param mean_a,mean_b Group means.
+#' @param n_a,n_b Group sample sizes, each defaulting to `50`.
+#' @param mean_a,mean_b Group means. A mean left `NULL` (the default) is drawn
+#'   from the standard normal distribution and rounded to two decimals, inside
+#'   the same seeded draw as the data, and is reported in the `parameters`
+#'   table.
 #' @param sd_a,sd_b Positive group standard deviations.
 #' @param labels Two group labels.
 #' @param outcome Name of the outcome variable.
@@ -21,7 +24,12 @@
 #' result <- simulate_ttest(n_a = 40, n_b = 40, mean_a = 0, mean_b = 0.6, seed = 1)
 #' head(result)
 #' as.data.frame(result, what = "parameters")
-simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
+#'
+#' # With no arguments, the group means are drawn and reported.
+#' drawn <- simulate_ttest(seed = 1)
+#' as.data.frame(drawn, what = "parameters")
+simulate_ttest <- function(n_a = 50L, n_b = 50L, mean_a = NULL, mean_b = NULL,
+                           sd_a = 1, sd_b = 1,
                            labels = c("A", "B"), outcome = "outcome",
                            seed = NULL,
                            batch = NULL) {
@@ -37,14 +45,12 @@ simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
         length(n_b) == 1L &&
         all(n_b >= 2) &&
         all(n_b == as.integer(n_b)),
-    "`mean_a` must be a single finite number" =
-      is.numeric(mean_a) &&
-        length(mean_a) == 1L &&
-        all(is.finite(mean_a)),
-    "`mean_b` must be a single finite number" =
-      is.numeric(mean_b) &&
-        length(mean_b) == 1L &&
-        all(is.finite(mean_b)),
+    "`mean_a` must be NULL or a single finite number" =
+      is.null(mean_a) ||
+        (is.numeric(mean_a) && length(mean_a) == 1L && all(is.finite(mean_a))),
+    "`mean_b` must be NULL or a single finite number" =
+      is.null(mean_b) ||
+        (is.numeric(mean_b) && length(mean_b) == 1L && all(is.finite(mean_b))),
     "`sd_a` must be a single positive number" =
       is.numeric(sd_a) &&
         length(sd_a) == 1L &&
@@ -64,10 +70,21 @@ simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
     "`seed` must be NULL or a single number" =
       is.null(seed) || (is.numeric(seed) && length(seed) == 1L)
   )
-  values <- .with_seed(seed, c(
-    stats::rnorm(as.integer(n_a), mean_a, sd_a),
-    stats::rnorm(as.integer(n_b), mean_b, sd_b)
-  ))
+  generated <- .with_seed(seed, {
+    mean_a <- mean_a %||% .draw_means(1L)
+    mean_b <- mean_b %||% .draw_means(1L)
+    list(
+      mean_a = mean_a,
+      mean_b = mean_b,
+      values = c(
+        stats::rnorm(as.integer(n_a), mean_a, sd_a),
+        stats::rnorm(as.integer(n_b), mean_b, sd_b)
+      )
+    )
+  })
+  mean_a <- generated$mean_a
+  mean_b <- generated$mean_b
+  values <- generated$values
   data <- data.frame(
     id = seq_along(values),
     group = rep(labels, times = c(as.integer(n_a), as.integer(n_b))),
@@ -102,8 +119,11 @@ simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
 
 #' Simulate a one-way group design
 #'
-#' @param n Group sample size or one size per group.
-#' @param means Group means.
+#' @param n Group sample size or one size per group, defaulting to `30`.
+#' @param means Group means. `NULL` (the default) draws one mean per group from
+#'   the standard normal distribution, rounded to two decimals, inside the
+#'   same seeded draw as the data. The number of groups is then the length of
+#'   `n`, `sds` or `labels`, or `3` when all of them have length one.
 #' @param sds Group standard deviations.
 #' @param labels Optional group labels.
 #' @param outcome Name of the outcome variable.
@@ -127,7 +147,7 @@ simulate_ttest <- function(n_a, n_b, mean_a, mean_b, sd_a = 1, sd_b = 1,
 #' result <- simulate_anova(n = 90, means = c(0, 0.4, 0.9), seed = 1)
 #' head(result)
 #' as.data.frame(result, what = "parameters")
-simulate_anova <- function(n, means, sds = 1, labels = NULL,
+simulate_anova <- function(n = 30L, means = NULL, sds = 1, labels = NULL,
                            outcome = "outcome", seed = NULL,
                            batch = NULL) {
   if (!is.null(batch)) return(.simulate_batch(batch, seed))
@@ -137,10 +157,9 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
         length(n) >= 1L &&
         all(n >= 2) &&
         all(n == as.integer(n)),
-    "`means` must be a finite numeric vector with at least two elements" =
-      is.numeric(means) &&
-        length(means) >= 2L &&
-        all(is.finite(means)),
+    "`means` must be NULL or a finite numeric vector with at least two elements" =
+      is.null(means) ||
+        (is.numeric(means) && length(means) >= 2L && all(is.finite(means))),
     "`sds` must be a finite positive numeric vector, with at least one element" =
       is.numeric(sds) &&
         length(sds) >= 1L &&
@@ -155,7 +174,15 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
     "`seed` must be NULL or a single number" =
       is.null(seed) || (is.numeric(seed) && length(seed) == 1L)
   )
-  groups <- length(means)
+  groups <- if (is.null(means)) {
+    sizes <- c(length(n), length(sds), length(labels))
+    if (any(sizes > 1L)) max(sizes) else 3L
+  } else {
+    length(means)
+  }
+  if (groups < 2L) {
+    stop("A one-way design needs at least two groups.", call. = FALSE)
+  }
   if (length(n) == 1L) n <- rep(n, groups)
   if (length(sds) == 1L) sds <- rep(sds, groups)
   if (length(n) != groups || length(sds) != groups) {
@@ -165,10 +192,15 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
   if (length(labels) != groups || anyDuplicated(labels)) {
     stop("labels must contain one unique value per group.", call. = FALSE)
   }
-  values <- .with_seed(seed, unlist(Map(
-    function(size, mean, sd) stats::rnorm(as.integer(size), mean, sd),
-    n, means, sds
-  ), use.names = FALSE))
+  generated <- .with_seed(seed, {
+    means <- means %||% .draw_means(groups)
+    list(means = means, values = unlist(Map(
+      function(size, mean, sd) stats::rnorm(as.integer(size), mean, sd),
+      n, means, sds
+    ), use.names = FALSE))
+  })
+  means <- generated$means
+  values <- generated$values
   data <- data.frame(
     id = seq_along(values),
     group = rep(labels, times = as.integer(n)),
@@ -201,8 +233,15 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
 
 #' Simulate a linear regression design
 #'
-#' @param n Sample size.
+#' @param n Sample size, defaulting to `100`.
 #' @param coefficients Named coefficients including optional `(Intercept)`.
+#'   `NULL` (the default) draws an intercept from the standard normal
+#'   distribution and `n_predictors` slopes, named `x1`, `x2`, ..., from the
+#'   uniform distribution on \eqn{[-1, 1]}, each rounded to two decimals,
+#'   inside the same seeded draw as the data. The drawn values are reported in
+#'   the `coefficients` table.
+#' @param n_predictors Number of predictors when `coefficients` is `NULL`, a
+#'   single positive whole number defaulting to `2`. Ignored otherwise.
 #' @param predictor_means,predictor_sds Predictor means and standard deviations.
 #' @param correlation Optional predictor correlation matrix or tidy table.
 #' @param error_sd Positive residual standard deviation.
@@ -233,11 +272,15 @@ simulate_anova <- function(n, means, sds = 1, labels = NULL,
 #' head(result)
 #' as.data.frame(result, what = "coefficients")
 #' as.data.frame(result, what = "effects")
-simulate_regression <- function(n, coefficients, predictor_means = 0,
+#'
+#' # With no coefficients, they are drawn and reported as the truth.
+#' drawn <- simulate_regression(seed = 1)
+#' as.data.frame(drawn, what = "coefficients")
+simulate_regression <- function(n = 100L, coefficients = NULL, predictor_means = 0,
                                 predictor_sds = 1, correlation = NULL,
                                 error_sd = 1, outcome = "outcome",
                                 seed = NULL,
-                                batch = NULL) {
+                                batch = NULL, n_predictors = 2L) {
   if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n` must be a single whole number of at least 2" =
@@ -245,11 +288,17 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
         length(n) == 1L &&
         all(n >= 2) &&
         all(n == as.integer(n)),
-    "`coefficients` must be a named numeric vector, with at least one element" =
-      is.numeric(coefficients) &&
-        length(coefficients) >= 1L &&
-        !is.null(names(coefficients)) &&
-        all(nzchar(names(coefficients))),
+    "`coefficients` must be NULL or a named numeric vector, with at least one element" =
+      is.null(coefficients) ||
+        (is.numeric(coefficients) &&
+           length(coefficients) >= 1L &&
+           !is.null(names(coefficients)) &&
+           all(nzchar(names(coefficients)))),
+    "`n_predictors` must be a single positive whole number" =
+      is.numeric(n_predictors) &&
+        length(n_predictors) == 1L &&
+        all(n_predictors >= 1) &&
+        all(n_predictors == as.integer(n_predictors)),
     "`predictor_means` must be a numeric vector" =
       is.numeric(predictor_means),
     "`predictor_sds` must be a numeric vector" =
@@ -267,10 +316,19 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
     "`seed` must be NULL or a single number" =
       is.null(seed) || (is.numeric(seed) && length(seed) == 1L)
   )
-  intercept <- if ("(Intercept)" %in% names(coefficients)) coefficients["(Intercept)"] else 0
-  slopes <- coefficients[names(coefficients) != "(Intercept)"]
-  if (!length(slopes)) stop("At least one predictor coefficient is required.", call. = FALSE)
-  predictor_names <- names(slopes)
+  draw_coefficients <- is.null(coefficients)
+  if (draw_coefficients) {
+    predictor_names <- sprintf("x%d", seq_len(as.integer(n_predictors)))
+    # Placeholders of the right length for the validation below; the values
+    # are drawn inside the seeded block together with the data.
+    intercept <- 0
+    slopes <- stats::setNames(numeric(length(predictor_names)), predictor_names)
+  } else {
+    intercept <- if ("(Intercept)" %in% names(coefficients)) coefficients["(Intercept)"] else 0
+    slopes <- coefficients[names(coefficients) != "(Intercept)"]
+    if (!length(slopes)) stop("At least one predictor coefficient is required.", call. = FALSE)
+    predictor_names <- names(slopes)
+  }
   if (length(predictor_means) == 1L) predictor_means <- rep(predictor_means, length(slopes))
   if (length(predictor_sds) == 1L) predictor_sds <- rep(predictor_sds, length(slopes))
   if (length(predictor_means) != length(slopes) ||
@@ -290,13 +348,20 @@ simulate_regression <- function(n, coefficients, predictor_means = 0,
   correlation <- .align_matrix(correlation, predictor_names, predictor_names, "correlation")
   dimnames(correlation) <- list(predictor_names, predictor_names)
   generated <- .with_seed(seed, {
+    if (draw_coefficients) {
+      intercept <- .draw_means(1L)
+      slopes <- stats::setNames(.draw_slopes(length(predictor_names)), predictor_names)
+    }
     predictors <- .draw_multivariate_normal(
       as.integer(n), predictor_means, predictor_sds, correlation
     )
     signal <- as.vector(intercept + predictors %*% slopes)
     response <- signal + stats::rnorm(as.integer(n), sd = error_sd)
-    list(predictors = predictors, signal = signal, response = response)
+    list(intercept = intercept, slopes = slopes, predictors = predictors,
+         signal = signal, response = response)
   })
+  intercept <- generated$intercept
+  slopes <- generated$slopes
   data <- data.frame(
     id = seq_len(as.integer(n)),
     generated$predictors,

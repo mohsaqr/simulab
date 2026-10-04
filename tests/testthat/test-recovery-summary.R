@@ -81,3 +81,70 @@ test_that("network centrality reads direction from the network's settings", {
   expect_true(igraph::is_directed(as_igraph(directed)))
   expect_true(igraph::is_directed(as_igraph(as.data.frame(directed))))
 })
+
+test_that("validate_recovery() compares each batch data set with its own truth", {
+  datasets <- simulate_regression(n = 50, seed = 2, batch = 4)
+  fit_coefficients <- function(data) {
+    fit <- stats::lm(outcome ~ x1 + x2, data = data)
+    data.frame(term = names(stats::coef(fit)), estimate = unname(stats::coef(fit)))
+  }
+  estimates <- apply_batch(datasets, fit_coefficients)
+  recovery <- validate_recovery(estimates, datasets)
+  expect_identical(nrow(recovery), 12L)
+  expected_truth <- unlist(lapply(datasets, function(result) {
+    as.data.frame(result, what = "coefficients")$coefficient
+  }), use.names = FALSE)
+  expect_identical(recovery$truth, expected_truth)
+  expect_identical(recovery$batch_id, rep(as.character(1:4), each = 3))
+})
+
+test_that("validate_recovery() takes a single result as truth", {
+  result <- simulate_regression(seed = 3)
+  estimates <- data.frame(term = c("x1", "x2"), estimate = c(0, 0))
+  recovery <- validate_recovery(estimates, result)
+  truth <- as.data.frame(result, what = "coefficients")
+  expect_identical(recovery$truth[1:2], subset(truth, term != "(Intercept)")$coefficient)
+})
+
+test_that("validate_recovery() reports a result without generating values", {
+  synthetic <- simulate_synthetic(data.frame(id = 1:4, x = c(1, 2, 3, 4)), n = 2, seed = 1)
+  estimates <- data.frame(term = "x", estimate = 1)
+  expect_error(validate_recovery(estimates, synthetic), class = "simulab_no_truth")
+})
+
+test_that("validate_recovery() asks for true_value when it is ambiguous", {
+  estimates <- data.frame(term = "a", estimate = 1)
+  truth <- data.frame(term = "a", mean = 1, sd = 2)
+  expect_error(validate_recovery(estimates, truth), "several numeric columns: mean, sd")
+  expect_identical(validate_recovery(estimates, truth, true_value = "mean")$truth, 1)
+})
+
+test_that("validate_recovery() refuses a truth with duplicated keys", {
+  estimates <- data.frame(term = "a", estimate = 1)
+  truth <- data.frame(term = c("a", "a"), truth = c(1, 2))
+  expect_error(validate_recovery(estimates, truth), "more than one row")
+})
+
+test_that("validate_recovery() takes a fitted model as estimates", {
+  data_set <- simulate_regression(n = 200, seed = 4)
+  fit <- stats::lm(outcome ~ x1 + x2, data = data_set)
+  recovery <- validate_recovery(fit, data_set)
+  expect_identical(recovery$term, c("(Intercept)", "x1", "x2"))
+  expect_identical(recovery$estimate, unname(stats::coef(fit)))
+  expect_identical(recovery$truth, as.data.frame(data_set, what = "coefficients")$coefficient)
+})
+
+test_that("validate_recovery() handles estimate and truth columns of the same name", {
+  transition <- data.frame(from = rep(c("a", "b"), each = 2), to = rep(c("a", "b"), 2),
+                           probability = c(0.7, 0.3, 0.4, 0.6))
+  chains <- simulate_markov(n = 50, transition = transition, chain_length = 10, seed = 1)
+  recovery <- validate_recovery(summarize_transitions(chains), chains,
+                                term = "to", estimate = "probability")
+  expect_identical(nrow(recovery), 4L)
+  expected <- merge(summarize_transitions(chains), transition, by = c("from", "to"),
+                    suffixes = c("_estimated", "_generating"))
+  expected <- expected[order(expected$from, expected$to), ]
+  observed <- recovery[order(recovery$from, recovery$term), ]
+  expect_equal(observed$truth, expected$probability_generating)
+  expect_equal(observed$estimate, expected$probability_estimated)
+})

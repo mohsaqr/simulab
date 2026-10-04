@@ -5,21 +5,27 @@
 \title{Simulate a linear regression design}
 \usage{
 simulate_regression(
-  n,
-  coefficients,
+  n = 100L,
+  coefficients = NULL,
   predictor_means = 0,
   predictor_sds = 1,
   correlation = NULL,
   error_sd = 1,
   outcome = "outcome",
   seed = NULL,
-  batch = NULL
+  batch = NULL,
+  n_predictors = 2L
 )
 }
 \arguments{
-\item{n}{Sample size.}
+\item{n}{Sample size, defaulting to \code{100}.}
 
-\item{coefficients}{Named coefficients including optional \code{(Intercept)}.}
+\item{coefficients}{Named coefficients including optional \code{(Intercept)}.
+\code{NULL} (the default) draws an intercept from the standard normal
+distribution and \code{n_predictors} slopes, named \code{x1}, \code{x2}, ..., from the
+uniform distribution on \eqn{[-1, 1]}, each rounded to two decimals,
+inside the same seeded draw as the data. The drawn values are reported in
+the \code{coefficients} table.}
 
 \item{predictor_means, predictor_sds}{Predictor means and standard deviations.}
 
@@ -38,6 +44,9 @@ results, each exactly what the same call without \code{batch} returns. With a
 batch is reproducible; without one the datasets are consecutive draws
 from the session's random-number stream. The default \code{NULL} returns a
 single result.}
+
+\item{n_predictors}{Number of predictors when \code{coefficients} is \code{NULL}, a
+single positive whole number defaulting to \code{2}. Ignored otherwise.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per observation and
@@ -65,4 +74,8 @@ result <- simulate_regression(
 head(result)
 as.data.frame(result, what = "coefficients")
 as.data.frame(result, what = "effects")
+
+# With no coefficients, they are drawn and reported as the truth.
+drawn <- simulate_regression(seed = 1)
+as.data.frame(drawn, what = "coefficients")
 }

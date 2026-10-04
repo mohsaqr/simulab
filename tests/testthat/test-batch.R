@@ -25,7 +25,7 @@ test_that("every single-dataset simulator takes `batch`, and only those", {
 test_that("a seeded batch is a reproducible list of standalone results", {
   calls <- .seed_contract_calls()[.batch_verbs()]
   if (!requireNamespace("tna", quietly = TRUE)) {
-    calls <- calls[setdiff(names(calls), "group_tna")]
+    calls <- calls[setdiff(names(calls), c("group_tna", "tna"))]
   }
 
   set.seed(1)
@@ -38,7 +38,7 @@ test_that("a seeded batch is a reproducible list of standalone results", {
     second <- do.call(simulate_data, c(arguments, list(batch = 2)))
 
     is_plain_list <- identical(class(first), "list") && length(first) == 2L &&
-      all(vapply(first, inherits, logical(1), what = "simulab_sim"))
+      all(vapply(first, inherits, logical(1), what = c("simulab_sim", "simulab_tna")))
     standalone <- all(vapply(first, function(dataset) {
       alone <- do.call(simulate_data, c(arguments[names(arguments) != "seed"],
                                         list(seed = attr(dataset, "simulab_seed"))))
@@ -81,19 +81,22 @@ test_that("the datasets in a batch are distinct draws", {
 test_that("batch datasets do not share a verb's internal per-group seeds", {
   # simulate_group_sequences() seeds group k with seed + k - 1, so seed 2's
   # first group is seed 1's second group. Consecutive batch seeds would make
-  # dataset 2 silently reuse dataset 1's draws.
+  # dataset 2 silently reuse dataset 1's draws. Generic labels keep the label
+  # draw (made once, from the base seed) out of the comparison.
   group_states <- function(result, group) {
     as.data.frame(result)$state[as.data.frame(result)$group == group]
   }
   expect_identical(
     group_states(simulate_group_sequences(groups = 2, actors = 3,
-                                          chain_length = 6, seed = 2), "Group 1"),
+                                          chain_length = 6, state_categories = NULL,
+                                          seed = 2), "Group 1"),
     group_states(simulate_group_sequences(groups = 2, actors = 3,
-                                          chain_length = 6, seed = 1), "Group 2")
+                                          chain_length = 6, state_categories = NULL,
+                                          seed = 1), "Group 2")
   )
 
   batch <- simulate_group_sequences(groups = 2, actors = 3, chain_length = 6,
-                                    seed = 1, batch = 2)
+                                    state_categories = NULL, seed = 1, batch = 2)
   expect_false(identical(group_states(batch[[2L]], "Group 1"),
                          group_states(batch[[1L]], "Group 2")))
 })
@@ -131,4 +134,27 @@ test_that("an invalid `batch` is a classed error", {
   lapply(invalid, function(value) {
     expect_error(.ttest_batch(batch = value), class = "simulab_invalid_batch")
   })
+})
+
+test_that("apply_batch() takes a model function and tidies its coefficients", {
+  datasets <- simulate_regression(n = 40, seed = 5, batch = 3)
+  by_model <- apply_batch(datasets, lm, formula = outcome ~ x1 + x2)
+  by_hand <- apply_batch(datasets, function(data) {
+    fit <- stats::lm(outcome ~ x1 + x2, data = data)
+    data.frame(term = names(stats::coef(fit)), estimate = unname(stats::coef(fit)))
+  })
+  expect_identical(by_model, by_hand)
+})
+
+test_that("apply_batch() passes each data set as `data` when the function has one", {
+  # glm() takes `family` second, so a positional data set would land there.
+  datasets <- simulate_ttest(n_a = 30, n_b = 30, seed = 6, batch = 2)
+  estimates <- apply_batch(datasets, glm, formula = outcome ~ group)
+  expect_identical(estimates$term, rep(c("(Intercept)", "groupB"), 2))
+})
+
+test_that("apply_batch() rejects a value that is neither a data frame nor a model", {
+  datasets <- simulate_regression(n = 10, seed = 7, batch = 2)
+  expect_error(apply_batch(datasets, function(data) "text"),
+               "data frames or fitted models")
 })

@@ -7,8 +7,11 @@
 #' @param diagonal_concentration Optional extra concentration added to the
 #'   self-transition (diagonal) entries only. The default `0` leaves
 #'   self-transitions no more likely than any other transition.
-#' @param state_categories Optional learning-state categories, used only when
-#'   `states` is `NULL`, to draw state labels with `sample_learning_states()`.
+#' @param state_categories Learning-state categories the state labels are
+#'   drawn from with `sample_learning_states()` when `states` is `NULL`,
+#'   defaulting to `c("metacognitive", "cognitive")`; see
+#'   [learning_state_categories()]. `NULL` labels the states `State 1`,
+#'   `State 2`, and so on.
 #' @param seed Optional random seed.
 #'
 #' @return A tidy transition-edge `simulab_sim` base `data.frame` with
@@ -24,8 +27,8 @@
 generate_transition_system <- function(n_states = 8L, states = NULL,
                                        concentration = 1,
                                        diagonal_concentration = 0,
-                                       state_categories = NULL, seed = NULL,
-                                       batch = NULL) {
+                                       state_categories = c("metacognitive", "cognitive"),
+                                       seed = NULL, batch = NULL) {
   if (!is.null(batch)) return(.simulate_batch(batch, seed))
   stopifnot(
     "`n_states` must be a single whole number of at least 2" =

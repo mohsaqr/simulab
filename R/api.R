@@ -163,7 +163,7 @@ augment_factorial <- function(data, factors,
       "anova", "regression", "clusters", "lpa", "ml_lpa", "lca", "factors",
       "multilevel", "growth", "longitudinal", "irt", "markov",
       "transition_system", "sequences", "sequence_clusters", "hmm",
-      "group_sequences", "group_tna", "event_log", "until_event", "survival",
+      "group_sequences", "group_tna", "tna", "event_log", "until_event", "survival",
       "proportional_survival", "prediction", "synthetic", "density", "spline",
       "network", "edge_list", "temporal_network", "network_matrix",
       "bipartite_network", "multiplex_network", "tna_network",
@@ -178,7 +178,7 @@ augment_factorial <- function(data, factors,
       "simulate_longitudinal", "simulate_irt", "simulate_markov",
       "generate_transition_system", "simulate_sequences",
       "simulate_sequence_clusters", "simulate_hmm", "simulate_group_sequences",
-      "simulate_group_tna", "simulate_event_log", "simulate_until_event",
+      "simulate_group_tna", "simulate_tna", "simulate_event_log", "simulate_until_event",
       "simulate_survival", "simulate_proportional_survival", "simulate_prediction",
       "simulate_synthetic", "simulate_density", "simulate_spline",
       "simulate_network", "simulate_edge_list", "simulate_temporal_network",
@@ -188,21 +188,21 @@ augment_factorial <- function(data, factors,
       "simulate_network_batches", "simulate_scenarios", "simulate_data"
     ),
     kind = c(
-      rep("simulator", 18L), "generator", rep("simulator", 6L), "workflow",
+      rep("simulator", 18L), "generator", rep("simulator", 7L), "workflow",
       rep("simulator", 13L), rep("workflow", 4L), "dispatcher"
     ),
     family = c(
       rep("general", 5L), rep("statistical", 4L), rep("latent", 4L),
-      rep("longitudinal", 3L), "measurement", rep("sequence", 9L),
+      rep("longitudinal", 3L), "measurement", rep("sequence", 10L),
       rep("survival", 2L), "statistical", rep("empirical", 2L), "functional",
       rep("network", 7L), rep("sequence", 2L), "network", rep("general", 2L)
     ),
     primary_shape = c(
       rep("wide", 17L), "long", "edge_list", "long", "long", "long", "long",
-      "long", "long", "long", rep("wide", 6L), rep("edge_list", 3L), "matrix",
+      "long", "edge_list", "long", "long", rep("wide", 6L), rep("edge_list", 3L), "matrix",
       rep("edge_list", 3L), "long", "edge_list", "edge_list", "varies", "varies"
     ),
-    dispatchable = c(rep(TRUE, 43L), FALSE),
+    dispatchable = c(rep(TRUE, 44L), FALSE),
     stringsAsFactors = FALSE,
     row.names = NULL
   )
@@ -309,15 +309,23 @@ simulate_data <- function(type, ...) {
 #' Compare recovered estimates with known simulation truth
 #'
 #' @param estimates Tidy base `data.frame` with a term column and an estimate
-#'   column.
-#' @param truth Tidy base `data.frame` with a term column and a true-value
-#'   column.
-#' @param term Name of the term column in both frames, default `"term"`. It is
-#'   the key the two frames are merged on.
+#'   column, or a fitted model with named coefficients, such as the result of
+#'   `lm()`, whose coefficients become the `term` and `estimate` columns.
+#' @param truth The generating values. A tidy base `data.frame` with a term
+#'   column and a true-value column; a `simulab_sim` result, whose table of
+#'   generating values (the one its print method shows under `Truth`) is used;
+#'   or a batch of results from `batch = n`, whose tables are stacked with a
+#'   `batch_id` column numbered as [apply_batch()] numbers the data sets, so
+#'   each estimate is compared with the truth of its own data set.
+#' @param term Name of the term column in both frames, default `"term"`. The
+#'   frames are merged on it and on every other column the two share, such as
+#'   `batch_id`.
 #' @param estimate Name of the estimate column in `estimates`, default
 #'   `"estimate"`.
-#' @param true_value Name of the true-value column in `truth`, default
-#'   `"truth"`.
+#' @param true_value Name of the true-value column in `truth`. `NULL` (the
+#'   default) uses a column named `truth` when there is one, and otherwise the
+#'   only numeric column of `truth` other than the shared identifiers; it is an
+#'   error when there are several.
 #' @param tolerance Single non-negative absolute-error tolerance for successful
 #'   recovery, default `0.1`.
 #'
@@ -334,16 +342,33 @@ simulate_data <- function(type, ...) {
 #' estimates <- data.frame(term = c("x1", "x2"), estimate = c(0.52, -0.28))
 #' truth <- data.frame(term = c("x1", "x2"), truth = c(0.5, -0.3))
 #' validate_recovery(estimates, truth, tolerance = 0.1)
+#'
+#' # One data set: the fitted model against the result's own truth.
+#' data_set <- simulate_regression(seed = 1)
+#' validate_recovery(lm(outcome ~ x1 + x2, data = data_set), data_set)
+#'
+#' # A batch with drawn coefficients: each data set is compared with its own.
+#' datasets <- simulate_regression(seed = 1, batch = 20)
+#' fit_coefficients <- function(data) {
+#'   fit <- lm(outcome ~ x1 + x2, data = data)
+#'   data.frame(term = names(coef(fit)), estimate = unname(coef(fit)))
+#' }
+#' estimates <- apply_batch(datasets, fit_coefficients)
+#' head(validate_recovery(estimates, datasets))
 validate_recovery <- function(estimates, truth, term = "term", estimate = "estimate",
-                              true_value = "truth", tolerance = 0.1) {
+                              true_value = NULL, tolerance = 0.1) {
+  estimates <- .tidy_batch_value(estimates)
+  truth <- .recovery_truth(truth)
   stopifnot(
     "`estimates` must be a data frame" =
       is.data.frame(estimates),
-    "`truth` must be a data frame" =
+    "`truth` must be a data frame, a simulab result, or a batch of results" =
       is.data.frame(truth),
     "`term` and `estimate` must name columns of `estimates`" =
       all(c(term, estimate) %in% names(estimates)) &&
-        all(c(term, true_value) %in% names(truth)),
+        term %in% names(truth),
+    "`true_value` must be NULL or a single string" =
+      is.null(true_value) || (is.character(true_value) && length(true_value) == 1L),
     "`tolerance` must be a single non-negative number" =
       is.numeric(tolerance) &&
         length(tolerance) == 1L &&
@@ -354,12 +379,26 @@ validate_recovery <- function(estimates, truth, term = "term", estimate = "estim
   # would drop the identifiers and sort by term. Terms found only in `truth`
   # follow at the end.
   identifiers <- setdiff(names(estimates), c(term, estimate))
+  keys <- c(intersect(identifiers, names(truth)), term)
+  true_value <- true_value %||% .recovery_value_column(truth, keys)
+  if (!true_value %in% names(truth)) {
+    stop(sprintf("`true_value` '%s' is not a column of `truth`.", true_value), call. = FALSE)
+  }
+  if (anyDuplicated(truth[, keys, drop = FALSE])) {
+    stop(sprintf("`truth` has more than one row for some %s.",
+                 paste(keys, collapse = " and ")), call. = FALSE)
+  }
+  # The value columns are renamed before the merge, because an estimate and a
+  # true value often share a name (`probability` in a transition table), and
+  # merge() would then suffix both.
   keyed <- estimates[, c(identifiers, term, estimate), drop = FALSE]
+  names(keyed)[length(identifiers) + 2L] <- ".estimate"
   keyed$.row <- seq_len(nrow(keyed))
-  merged <- merge(keyed, truth[, c(term, true_value), drop = FALSE],
-                  by = term, all = TRUE, sort = FALSE)
+  truth_values <- truth[, c(keys, true_value), drop = FALSE]
+  names(truth_values)[length(keys) + 1L] <- ".truth"
+  merged <- merge(keyed, truth_values, by = keys, all = TRUE, sort = FALSE)
   merged <- merged[order(merged$.row, merged[[term]], na.last = TRUE),
-                   c(identifiers, term, estimate, true_value), drop = FALSE]
+                   c(identifiers, term, ".estimate", ".truth"), drop = FALSE]
   names(merged) <- c(identifiers, "term", "estimate", "truth")
   rownames(merged) <- NULL
   if (!is.numeric(merged$estimate) || !is.numeric(merged$truth)) {
@@ -370,6 +409,52 @@ validate_recovery <- function(estimates, truth, term = "term", estimate = "estim
   merged$relative_error <- ifelse(merged$truth == 0, NA_real_, merged$bias / merged$truth)
   merged$recovered <- !is.na(merged$absolute_error) & merged$absolute_error <= tolerance
   merged
+}
+
+# A result's table of generating values, or a batch's tables stacked with the
+# batch_id that apply_batch() gives the same data sets. A data frame passes
+# through unchanged.
+.recovery_truth <- function(truth) {
+  if (inherits(truth, c("simulab_sim", "simulab_tna"))) return(.truth_table(truth))
+  is_batch <- is.list(truth) && !is.data.frame(truth) && length(truth) >= 1L &&
+    all(vapply(truth, inherits, logical(1), what = c("simulab_sim", "simulab_tna")))
+  if (!is_batch) return(truth)
+  labels <- names(truth) %||% as.character(seq_along(truth))
+  stacked <- do.call(rbind, Map(function(result, label) {
+    data.frame(batch_id = label, .truth_table(result), check.names = FALSE,
+               row.names = NULL)
+  }, truth, labels))
+  rownames(stacked) <- NULL
+  stacked
+}
+
+.truth_table <- function(result) {
+  tables <- attr(result, "simulab_tables")
+  name <- .truth_table_name(names(tables))
+  if (is.null(name)) {
+    stop(errorCondition(
+      sprintf("A '%s' result stores no table of generating values.",
+              attr(result, "simulab_type")),
+      class = "simulab_no_truth", call = NULL
+    ))
+  }
+  tables[[name]]
+}
+
+# `truth` when present, else the single numeric non-key column.
+.recovery_value_column <- function(truth, keys) {
+  if ("truth" %in% names(truth)) return("truth")
+  candidates <- setdiff(names(truth), keys)
+  numeric_columns <- candidates[vapply(truth[candidates], is.numeric, logical(1))]
+  if (length(numeric_columns) != 1L) {
+    stop(sprintf(
+      "Name the true-value column with `true_value`; `truth` has %s.",
+      if (length(numeric_columns)) paste0("several numeric columns: ",
+                                          paste(numeric_columns, collapse = ", "))
+      else "no numeric column"
+    ), call. = FALSE)
+  }
+  numeric_columns
 }
 
 #' Run a simulator across a scenario grid

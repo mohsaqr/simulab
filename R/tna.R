@@ -1,6 +1,7 @@
 .require_tna <- function() {
   if (!requireNamespace("tna", quietly = TRUE)) {
-    stop("TNA model fitting requires the suggested 'tna' package.", call. = FALSE)
+    stop(errorCondition("TNA model fitting requires the suggested 'tna' package.",
+                        class = "simulab_missing_tna", call = NULL))
   }
   invisible(TRUE)
 }
@@ -65,11 +66,12 @@
   if (inherits(model, "group_tna")) {
     groups <- names(model)
     tables <- Map(.tidy_one_tna, unclass(model), group = groups)
-    list(
-      edges = do.call(rbind, lapply(tables, function(value) value$edges)),
-      initial = do.call(rbind, lapply(tables, function(value) value$initial)),
-      groups = groups
-    )
+    # unname() keeps rbind() from building "Group 1.1"-style row names.
+    edges <- do.call(rbind, unname(lapply(tables, function(value) value$edges)))
+    initial <- do.call(rbind, unname(lapply(tables, function(value) value$initial)))
+    rownames(edges) <- NULL
+    rownames(initial) <- NULL
+    list(edges = edges, initial = initial, groups = groups)
   } else {
     tables <- .tidy_one_tna(model)
     list(edges = tables$edges, initial = tables$initial, groups = NA_character_)
@@ -167,6 +169,13 @@ fit_tna <- function(data, model = c("tna", "ftna", "ctna", "atna"),
 #'   class(model)
 #' }
 as_tna_model <- function(x, group = NULL) {
+  if (inherits(x, "simulab_tna")) {
+    class(x) <- setdiff(class(x), "simulab_tna")
+    attr(x, "simulab_type") <- NULL
+    attr(x, "simulab_seed") <- NULL
+    attr(x, "simulab_tables") <- NULL
+    return(x)
+  }
   stopifnot(
     "`x` must be a `simulab_sim` object" =
       inherits(x, "simulab_sim"),
@@ -228,12 +237,13 @@ compare_tna_models <- function(data, models = c("tna", "ftna", "ctna", "atna"),
 
 #' Simulate grouped actor sequences
 #'
-#' @param groups Number of groups.
-#' @param actors Actors per group, scalar or one value per group.
+#' @param groups Number of groups, defaulting to `2`.
+#' @param actors Actors per group, scalar or one value per group, defaulting
+#'   to `50`.
 #' @param transitions A common transition matrix, one matrix per group, or
 #'   `NULL` for randomly generated matrices. A tidy data frame with columns
 #'   `group`, `from`, `to` and `probability` gives one matrix per group.
-#' @param chain_length Sequence length.
+#' @param chain_length Sequence length, defaulting to `20`.
 #' @param initial Common initial probabilities, one vector per group, or
 #'   `NULL`. A tidy data frame with columns `group`, `state` and `probability`
 #'   gives one vector per group.
@@ -259,10 +269,10 @@ compare_tna_models <- function(data, models = c("tna", "ftna", "ctna", "atna"),
 #' )
 #' head(result)
 #' components(result)
-simulate_group_sequences <- function(groups, actors, transitions = NULL,
-                                     chain_length, initial = NULL,
+simulate_group_sequences <- function(groups = 2L, actors = 50L, transitions = NULL,
+                                     chain_length = 20L, initial = NULL,
                                      group_names = NULL, states = NULL,
-                                     n_states = 5L, state_categories = NULL,
+                                     n_states = 5L, state_categories = c("metacognitive", "cognitive"),
                                      seed = NULL, ...,
                                      batch = NULL) {
   if (!is.null(batch)) return(.simulate_batch(batch, seed))
@@ -314,6 +324,12 @@ simulate_group_sequences <- function(groups, actors, transitions = NULL,
   }
   initial_list <- if (is.list(initial)) initial else rep(list(initial), groups)
   if (length(initial_list) != groups) stop("initial must be common or one value per group.", call. = FALSE)
+  # Learning-state labels are drawn once and shared, so every group has the
+  # same state space; drawn per group, the groups would not be comparable.
+  if (is.null(states) && !is.null(state_categories) &&
+      all(vapply(transition_list, is.null, logical(1)))) {
+    states <- sample_learning_states(n_states, state_categories, seed = seed)$state
+  }
   simulations <- Map(function(index, label, actor_count, transition, group_initial) {
     simulate_sequences(
       n = actor_count, transition = transition, chain_length = chain_length,
@@ -365,11 +381,15 @@ simulate_group_sequences <- function(groups, actors, transitions = NULL,
 #'   )
 #'   head(result)
 #'   components(result)
+#'
+#'   # With no arguments, one transition matrix per group is drawn and fitted.
+#'   drawn <- simulate_group_tna(seed = 1)
+#'   as.data.frame(drawn, what = "true_transitions")
 #' }
-simulate_group_tna <- function(groups, actors, transitions = NULL,
-                               chain_length, initial = NULL,
+simulate_group_tna <- function(groups = 2L, actors = 50L, transitions = NULL,
+                               chain_length = 20L, initial = NULL,
                                group_names = NULL, states = NULL,
-                               n_states = 5L, state_categories = NULL,
+                               n_states = 5L, state_categories = c("metacognitive", "cognitive"),
                                model = c("tna", "ftna", "ctna", "atna"),
                                seed = NULL, ...,
                                batch = NULL) {
@@ -400,6 +420,163 @@ simulate_group_tna <- function(groups, actors, transitions = NULL,
   )
   attr(result, "simulab_tna_models") <- as_tna_model(fitted)
   result
+}
+
+#' Simulate one transition network
+#'
+#' Takes or draws a transition matrix, generates sequences from it with
+#' [simulate_sequences()], and fits one transition network to the sequences
+#' with the `tna` package, all in one call. It is the single-network verb of
+#' Saqrlab (there named `simulate_tna_network()`; in simulab that name belongs
+#' to the node-grouped matrix generator).
+#'
+#' @param n Number of sequences, defaulting to `100`.
+#' @param transition Generating transition matrix, or a tidy data frame with
+#'   columns `from`, `to` and `probability`. `NULL` (the default) draws one
+#'   over `n_states` states from a Dirichlet distribution.
+#' @param chain_length Sequence length, defaulting to `20`.
+#' @param state_categories Learning-state categories the labels of a drawn
+#'   matrix come from, defaulting to `c("metacognitive", "cognitive")` as in
+#'   Saqrlab; see [learning_state_categories()]. `NULL` labels the states
+#'   `State 1`, `State 2`, and so on. Ignored when `transition` or `states`
+#'   names the states.
+#' @param model TNA estimator, one of `"tna"` (the default), `"ftna"`,
+#'   `"ctna"` or `"atna"`.
+#' @param ... Further arguments passed to [simulate_sequences()], such as
+#'   `concentration` or `missing_tail`.
+#' @inheritParams simulate_sequences
+#' @inheritParams simulate_correlation
+#'
+#' @return The fitted network as a native `tna` model, of class
+#'   `c("simulab_tna", "tna")`, so every `tna` function (`plot()`,
+#'   `centralities()`, `summary()` and the rest) applies to it. Printing it
+#'   shows the native `tna` print, then the generating transition matrix and
+#'   initial probabilities. Tidy tables come from [as.data.frame()][as.data.frame.simulab_tna]:
+#'   the fitted `edges` (the default; columns `from`, `to` and `weight`), the
+#'   generating `transitions` (columns `from`, `to` and `probability`),
+#'   `initial_probabilities`, the generated `sequences` in long form, `wide`
+#'   and `model_info`. Requires the suggested `tna` package, and raises
+#'   `simulab_missing_tna` without it.
+#' @export
+#'
+#' @examples
+#' if (requireNamespace("tna", quietly = TRUE)) {
+#'   # With no arguments: a drawn 5-state system, 100 sequences, one network.
+#'   network <- simulate_tna(seed = 1)
+#'   network
+#'   validate_recovery(network, network, term = "to", estimate = "weight")
+#'
+#'   # From a given transition matrix.
+#'   transition <- data.frame(
+#'     from = rep(c("plan", "act"), each = 2),
+#'     to = rep(c("plan", "act"), times = 2),
+#'     probability = c(0.3, 0.7, 0.6, 0.4)
+#'   )
+#'   simulate_tna(n = 200, transition = transition, seed = 1)
+#' }
+simulate_tna <- function(n = 100L, transition = NULL, chain_length = 20L,
+                         initial = NULL, states = NULL, n_states = 5L,
+                         state_categories = c("metacognitive", "cognitive"),
+                         model = c("tna", "ftna", "ctna", "atna"),
+                         seed = NULL, ..., batch = NULL) {
+  if (!is.null(batch)) return(.simulate_batch(batch, seed))
+  model <- match.arg(model)
+  .require_tna()
+  sequences <- simulate_sequences(
+    n = n, transition = transition, chain_length = chain_length,
+    initial = initial, states = states, n_states = n_states,
+    state_categories = state_categories, seed = seed, ...
+  )
+  fitted <- fit_tna(.plain_data(sequences), model = model, format = "long")
+  # The result is the native `tna` model, so tna's print, plot, centralities
+  # and the rest apply unchanged; the generating values ride along as tables.
+  result <- as_tna_model(fitted)
+  attr(result, "simulab_type") <- "tna"
+  attr(result, "simulab_seed") <- seed
+  attr(result, "simulab_tables") <- list(
+    transitions = as.data.frame(sequences, what = "transitions"),
+    initial_probabilities = as.data.frame(sequences, what = "initial_probabilities"),
+    edges = .plain_data(fitted),
+    sequences = .plain_data(sequences),
+    wide = as.data.frame(sequences, what = "wide"),
+    model_info = as.data.frame(fitted, what = "model_info")
+  )
+  class(result) <- c("simulab_tna", class(result))
+  result
+}
+
+#' Print a simulated transition network
+#'
+#' Prints the fitted network with the native `tna` print method, then the
+#' transition matrix and initial probabilities that generated the sequences,
+#' in the same format, then the names of the other stored tables.
+#'
+#' @param x A `simulab_tna` result of [simulate_tna()].
+#' @param digits Digits for the generating probabilities, default `3`.
+#' @param ... Passed to the `tna` print method.
+#'
+#' @return `x`, invisibly.
+#' @export
+#'
+#' @examples
+#' if (requireNamespace("tna", quietly = TRUE)) {
+#'   print(simulate_tna(n = 30, n_states = 3, seed = 1))
+#' }
+print.simulab_tna <- function(x, digits = 3L, ...) {
+  NextMethod()
+  tables <- attr(x, "simulab_tables")
+  # The truth is laid out in the fitted model's state order, so the two
+  # matrices line up row for row and column for column.
+  truth <- .tidy_to_square(tables$transitions, "transitions", "from", "to",
+                           "probability", levels = x$labels)
+  initial <- stats::setNames(tables$initial_probabilities$probability,
+                             tables$initial_probabilities$state)[x$labels]
+  cat("\nGenerating Transition Probability Matrix (truth) :\n\n")
+  print(round(truth, digits))
+  cat("\nGenerating Initial Probabilities (truth) :\n\n")
+  print(round(initial, digits))
+  others <- setdiff(names(tables), c("transitions", "initial_probabilities"))
+  cat(sprintf(
+    "\nOther tables: %s. Read one with as.data.frame(x, what = \"%s\").\n",
+    paste(others, collapse = ", "), others[1L]
+  ))
+  invisible(x)
+}
+
+#' Tidy tables of a simulated transition network
+#'
+#' @param x A `simulab_tna` result of [simulate_tna()].
+#' @param row.names,optional Ignored; present for the generic.
+#' @param what Table to return: `"edges"` (the default, the fitted network),
+#'   `"transitions"`, `"initial_probabilities"`, `"sequences"`, `"wide"` or
+#'   `"model_info"`.
+#' @param ... Ignored.
+#'
+#' @return A base `data.frame`. `"edges"` has one row per edge with columns
+#'   `from`, `to` and `weight`; `"transitions"` one row per edge with columns
+#'   `from`, `to` and `probability`; `"initial_probabilities"` one row per
+#'   state with columns `state` and `probability`; `"sequences"` one row per
+#'   sequence and position with columns `id`, `period` and `state`.
+#' @export
+#'
+#' @examples
+#' if (requireNamespace("tna", quietly = TRUE)) {
+#'   network <- simulate_tna(n = 30, n_states = 3, seed = 1)
+#'   as.data.frame(network)
+#'   as.data.frame(network, what = "transitions")
+#' }
+as.data.frame.simulab_tna <- function(x, row.names = NULL, optional = FALSE,
+                                      what = "edges", ...) {
+  stopifnot(
+    "`what` must be a single string that is not NA" =
+      is.character(what) && length(what) == 1L && !is.na(what)
+  )
+  tables <- attr(x, "simulab_tables")
+  if (!what %in% names(tables)) {
+    stop(sprintf("Unknown table '%s'. Available tables: %s.", what,
+                 paste(names(tables), collapse = ", ")), call. = FALSE)
+  }
+  tables[[what]]
 }
 
 #' Simulate a grouped TNA transition network

@@ -1,17 +1,27 @@
 Package: simulab
-Title: Unified Simulation of Statistical and Study Data
-Version: 0.4.7
-Authors@R: person("Mohammed", "Saqr", email = "saqr@saqr.me", role = c("aut", "cre", "cph"))
-Description: Provides a consistent interface for simulating tidy data with
-    known ground truth. Supported designs include declarative variable
-    definitions, correlated and clustered data, treatment assignment,
-    missingness, survival and competing risks, latent-variable and
-    item-response models, longitudinal processes, event sequences, and static,
-    bipartite, multiplex, temporal, and transition networks. Simulation
-    outputs inherit from data.frame and expose parameters and design details
-    through standardized tidy component tables. Seeded functions restore the
-    caller's random-number state.
-URL: https://github.com/mohsaqr/simulab
+Title: Simulates a Wide Variety of Data Shapes, Sizes and Distributions
+Version: 0.4.8
+Authors@R: c(
+    person("Mohammed", "Saqr", email = "saqr@saqr.me",
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0001-5881-3109")),
+    person("Sonsoles", "L\u00f3pez-Pernas", email = "sonsoles.lopez@uef.fi",
+           role = c("aut", "cph"),
+           comment = c(ORCID = "0000-0002-9621-1392"))
+    )
+Description: Generates a wide variety of data, in different shapes, sample
+    sizes, distributions and parameters. The parameters are either drawn at
+    random or set in advance, and in both cases they are stored with the
+    data, so they are known and their recovery can be tested. Generators cover
+    declared variables with treatment assignment and missing values,
+    correlated and clustered data, latent profile, latent class, factor and
+    item response models, longitudinal and multilevel processes, survival
+    times with competing risks, sequences of states, and static, bipartite,
+    multiplex, temporal and transition networks. Every generator returns
+    batches of reproducible data sets for the evaluation of statistical
+    methods, the testing of models and software, and teaching; simulated
+    transition networks are native 'tna' models.
+URL: https://pak.dynasite.org/simulab/, https://github.com/mohsaqr/simulab
 BugReports: https://github.com/mohsaqr/simulab/issues
 License: MIT + file LICENSE
 Encoding: UTF-8

@@ -5,14 +5,16 @@
 \title{Simulate and fit repeated TNA networks}
 \usage{
 simulate_tna_batches(
-  repetitions,
+  repetitions = 1L,
   model = c("tna", "ftna", "ctna", "atna"),
   ...,
   seed = NULL
 )
 }
 \arguments{
-\item{repetitions}{Number of fitted networks. A single positive whole number.}
+\item{repetitions}{Number of fitted networks. A single positive whole number,
+defaulting to \code{1}, so a call with no arguments draws one transition
+system, generates sequences from it and fits one network.}
 
 \item{model}{TNA estimator, one of \code{"tna"} (the default), \code{"ftna"}, \code{"ctna"}
 or \code{"atna"}.}
@@ -24,11 +26,12 @@ Dataset \code{i} uses \code{seed + i - 1}.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} of fitted edges, one row per
-network and from/to pair, with columns \code{network}, \code{from}, \code{to} and
-\code{weight}. Components: \code{sequences}, the generated sequences in long form
+dataset and from/to pair, with columns \code{dataset}, \code{from}, \code{to} and
+\code{weight}. Printing it shows \code{true_transitions} as the truth, keyed by the
+same \code{dataset}. Components: \code{sequences}, the generated sequences in long form
 with columns \code{dataset}, \code{id}, \code{period} and \code{state}; \code{true_transitions}, the
 generating probabilities with columns \code{dataset}, \code{from}, \code{to} and
-\code{probability}; and \code{model_info}, one row per network describing the fit.
+\code{probability}; and \code{model_info}, one row per dataset describing the fit.
 }
 \description{
 Generates \code{repetitions} sequence datasets with \code{\link[=simulate_sequence_batches]{simulate_sequence_batches()}}
@@ -40,5 +43,9 @@ if (requireNamespace("tna", quietly = TRUE)) {
   head(simulate_tna_batches(
     repetitions = 2, model = "tna", n = 20, n_states = 3, chain_length = 10, seed = 1
   ))
+
+  # One network with no arguments, recovered against its own truth.
+  network <- simulate_tna_batches(seed = 1)
+  head(validate_recovery(network, network, term = "to", estimate = "weight"))
 }
 }

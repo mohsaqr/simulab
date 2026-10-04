@@ -9,7 +9,7 @@ generate_transition_system(
   states = NULL,
   concentration = 1,
   diagonal_concentration = 0,
-  state_categories = NULL,
+  state_categories = c("metacognitive", "cognitive"),
   seed = NULL,
   batch = NULL
 )
@@ -26,8 +26,11 @@ to the initial-state probabilities.}
 self-transition (diagonal) entries only. The default \code{0} leaves
 self-transitions no more likely than any other transition.}
 
-\item{state_categories}{Optional learning-state categories, used only when
-\code{states} is \code{NULL}, to draw state labels with \code{sample_learning_states()}.}
+\item{state_categories}{Learning-state categories the state labels are
+drawn from with \code{sample_learning_states()} when \code{states} is \code{NULL},
+defaulting to \code{c("metacognitive", "cognitive")}; see
+\code{\link[=learning_state_categories]{learning_state_categories()}}. \code{NULL} labels the states \verb{State 1},
+\verb{State 2}, and so on.}
 
 \item{seed}{Optional random seed.}
 

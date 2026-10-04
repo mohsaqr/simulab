@@ -1,895 +1,245 @@
+
+<!-- README.md is generated from README.Rmd. Edit README.Rmd, then knit. -->
+
 # simulab
 
 <!-- badges: start -->
+
 [![R-CMD-check](https://github.com/mohsaqr/simulab/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mohsaqr/simulab/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-simulab simulates tidy data with known ground truth. Each simulator takes the
-parameters of a data-generating process and returns the observations it
-produces, together with the parameters themselves as tidy tables. The package
-covers declarative variable definitions, correlated and clustered data,
-treatment assignment, missingness, survival and competing risks,
-latent-variable and item-response models, longitudinal processes, event
-sequences, and static, bipartite, multiplex, temporal and transition networks.
+simulab generates a wide variety of data, in different shapes, sample
+sizes, distributions and parameters. The parameters are either drawn at
+random or set in advance, and in both cases they are stored with the
+data, so they are known, recoverable and testable. The package is
+designed for simulation, for the evaluation of statistical methods, for
+training and testing models and software, and for learning and teaching.
+Data generated from specified parameters describe no real persons, so
+they can be shared, published and given to a class without the consent,
+review and access agreements that real data about people require.
 
-The package is written in base R. It has no hard dependencies beyond the base
-distribution and requires R 4.1.0 or later.
+The generators cover declared variables with treatment assignment,
+missing values and copula dependence; group comparisons, regression and
+Gaussian clusters; latent profile, latent class, factor and item
+response models; multilevel, growth and vector autoregressive
+longitudinal data; survival times with censoring and competing risks;
+sequences of states from Markov chains, hidden Markov models and
+mixtures; behavioral event data; transition networks; and random,
+bipartite, multiplex and temporal networks. The package is written in
+base R and requires R 4.1.0 or later.
+
+The documentation, with a methodological guide and the reference of
+every function, is at <https://pak.dynasite.org/simulab/>.
 
 ## Installation
 
-Install the released version from CRAN:
-
-```r
+``` r
 install.packages("simulab")
 ```
 
-Or the development version from GitHub:
+The development version is installed from r-universe or GitHub:
 
-```r
+``` r
+install.packages("simulab", repos = c("https://mohsaqr.r-universe.dev",
+                                      "https://cloud.r-project.org"))
 remotes::install_github("mohsaqr/simulab")
 ```
 
-Seven packages are suggested and none is required at run time. `tna` (1.2.3 or
-later) supplies the transition-network estimators used by `fit_tna()`.
-`igraph` (2.0.0 or later) receives graphs from `as_igraph()`. `simstudy` is
-used as an equivalence oracle in the test suite. `survival` fits the Cox
-model in the vignette. `testthat`, `knitr` and `rmarkdown` build the tests
-and the vignette.
-
-## The result contract
-
-Every simulator returns a `simulab_sim` object. The object inherits from
-`data.frame` and holds one row per observation, so it can be passed directly
-to `lm()`, `table()`, `aggregate()` or any function that accepts a data frame.
-The parameters that generated the data are attached as named tables.
-
-`components()` lists the tables a result carries. It takes a `simulab_sim`
-object and returns a data frame with one row per table and columns `table`,
-`rows` and `columns`.
-
-`as.data.frame()` retrieves one table. It takes the object and a `what`
-argument naming the table, and returns a base data frame. `what = "data"` is
-the default and returns the observations.
-
-```r
-result <- simulate_ttest(n_a = 40, n_b = 40, mean_a = 0, mean_b = 0.6, seed = 1)
-components(result)
-#>        table rows columns
-#> 1       data   80       3
-#> 2 parameters    2       4
-#> 3    effects    1       4
-
-as.data.frame(result, what = "parameters")
-#>   group  n mean sd
-#> 1     A 40  0.0  1
-#> 2     B 40  0.6  1
-
-as.data.frame(result, what = "effects")
-#>   contrast mean_difference pooled_sd cohens_d
-#> 1    B - A             0.6         1      0.6
-```
-
-The `parameters` table records the population means and standard deviations
-that were requested. The `effects` table records the population contrast
-implied by them: a mean difference of 0.6 with a pooled standard deviation of
-1 gives a Cohen's *d* of 0.6. Neither table is estimated from the sample. Both
-state what the generating process was set to.
-
-`summary()` describes the observations. It returns one row per variable with
-the storage class, the number of observations, the count of missing values,
-the number of distinct values, and the mean, standard deviation, minimum and
-maximum for numeric columns.
-
-`print()` shows the first ten rows with a header giving the simulator type and
-the dimensions of the observation table.
-
-```r
-print(result)
-#> <simulab_sim:ttest> 80 rows x 3 columns
-#>    id group    outcome
-#> 1   1     A -0.6264538
-#> 2   2     A  0.1836433
-#> 3   3     A -0.8356286
-#> ... 70 more rows
-```
-
-Results are ordinary data frames, so no accessor is needed to analyze them.
-The `what` argument exists to reach the generating parameters, which are the
-part a simulation study needs and a plain data frame cannot carry.
-
-## Long-form input
-
-Every argument that is a matrix, an array or a list of matrices also accepts
-the equivalent long-form data frame. A transition matrix and its tidy table
-generate the same data under the same seed.
-
-```r
-simulate_hmm(
-  n = 40, chain_length = 10,
-  transition = data.frame(from = c("A", "A", "B", "B"),
-                          to = c("A", "B", "A", "B"),
-                          probability = c(0.7, 0.3, 0.4, 0.6)),
-  emission = data.frame(state = c("A", "A", "B", "B"),
-                        observation = c("x", "y", "x", "y"),
-                        probability = c(0.9, 0.1, 0.2, 0.8))
-)
-```
-
-Row and column order follows first appearance, so the layout is controlled by
-ordering the rows of the table. A symmetric argument such as a correlation or
-covariance may be given as one triangle: the mirror cell is filled and the
-diagonal defaults to 1 for a correlation. A list of matrices is one table with
-a grouping column, so `simulate_sequence_clusters()` takes a `cluster` column
-and `simulate_group_sequences()` takes a `group` column.
-
-`simulate_prediction()` takes the levels, effects and sampling probabilities
-of its categorical predictors as one table with `variable`, `level`, `effect`
-and `probability` columns, in place of three parallel lists.
-
-Every matrix, array and matrix-list argument in the package accepts the
-equivalent long-form data frame, routed through one set of converters in
-`R/tidy_input.R`; `tests/testthat/test-tidy-input.R` asserts that the two
-spellings produce identical output. The exceptions are the named lists of data
-frames, where a list is the correct shape.
-
-A table that omits cells raises `simulab_incomplete_tidy_input`; one missing
-a required column raises `simulab_bad_tidy_input`.
-
-## Reproducibility
-
-Every simulator accepts a `seed` argument. Passing a seed makes the result
-reproducible. It also leaves the calling session's random-number state
-unchanged, so a seeded simulator does not advance the stream that surrounds
-it.
-
-```r
-set.seed(99)
-before <- .Random.seed
-a <- simulate_ttest(10, 10, 0, 1, seed = 7)
-after <- .Random.seed
-b <- simulate_ttest(10, 10, 0, 1, seed = 7)
-
-identical(as.data.frame(a), as.data.frame(b))
-#> [1] TRUE
-identical(before, after)
-#> [1] TRUE
-```
-
-The behavior is implemented by saving `.Random.seed`, calling `set.seed()`,
-generating the data, and restoring the saved state on exit. Sixty-four
-exported functions accept a `seed` argument. Both properties are checked on
-every one of the 42 dispatchable verbs in `tests/testthat/test-seed-contract.R`,
-which reads its case list from the simulator registry so a verb added without a
-case fails the suite rather than escaping the sweep.
-
-## Declarative studies
-
-`define_variables()` states a data-generating process as distribution calls.
-The variable name is the argument name, and the distribution is a call whose
-arguments are its parameters.
-
-```r
-specification <- define_variables(
-  age     = normal(mean = 50, sd = 10),
-  treated = binary(prob = 0.5),
-  outcome = normal(mean = 10 + 0.2 * age + 2 * treated, sd = 2)
-)
-
-simulate_study(500, specification, seed = 42)
-```
-
-A parameter may be any expression over variables defined earlier in the same
-call, which is how a regression is written. Parameters may be positional, in
-the order `list_distributions()` reports, so `normal(5, 1)` is
-`normal(mean = 5, sd = 1)`.
-
-Distribution names are never evaluated, so `gamma()`, `beta()`, `t()` and
-`f()` name distributions without reaching the base functions of those names.
-A parameter that refers to an undefined variable is reported by name rather
-than silently resolving to a base function.
-
-`list_distributions()` reports the catalogue: 79 distributions, all built on
-base R with no added dependency. Every one is checked against its theoretical
-mean in `tests/testthat/test-distributions.R` and in
-`inst/distribution-check.R`.
-
-Mixtures nest distribution calls, and a link is a function in the expression
-rather than a separate column:
-
-```r
-define_variables(
-  score = mixture(normal(0, 1), normal(5, 1), weights = c(0.3, 0.7)),
-  group = categorical(probs = c(0.2, 0.5, 0.3)),
-  sick  = binary(prob = plogis(-4 + 0.06 * age))
-)
-```
-
-A parameter that leaves its distribution's support is reported by name rather
-than returning a column of missing values, so `poisson(lambda = x)` on an `x`
-that can be negative raises `simulab_invalid_parameter` naming the variable.
-
-### The same specification reaches every simulator
-
-A specification written as distribution calls is accepted wherever one is
-taken. `augment_study()` generates it into data that already exists, and a
-parameter may refer to a column that was already there:
-
-```r
-augment_study(
-  data.frame(id = 1:100, treated = rep(0:1, each = 50)),
-  specification = define_variables(
-    outcome = normal(mean = 3 + 2 * treated, sd = 1),
-    visits  = poisson(lambda = exp(0.2 * outcome))
-  ),
-  seed = 3
-)
-```
-
-`simulate_copula()` uses it as the marginals of a Gaussian copula, so each
-variable keeps its own distribution while the set is correlated:
-
-```r
-simulate_copula(
-  n = 500,
-  specification = define_variables(
-    score  = normal(mean = 10, sd = 2),
-    visits = poisson(lambda = 4),
-    rate   = beta(shape1 = 2, shape2 = 5)
-  ),
-  rho = 0.6, seed = 1
-)
-```
-
-A copula marginal has to be invertible, so `list_distributions(copula = TRUE)`
-reports the 69 distributions that carry a quantile function. Naming one of the
-other ten raises `simulab_no_quantile` rather than failing later.
-
-### Conditions and hazards
-
-`define_conditions()` states a rule as a condition and a distribution.
-Repeating the variable name gives it one rule per condition, and every
-distribution in the catalogue is available:
-
-```r
-apply_conditions(
-  data.frame(id = 1:200, group = rep(0:1, 100)),
-  specification = define_conditions(
-    outcome = when(group == 1, normal(mean = 5, sd = 1)),
-    outcome = when(group == 0, poisson(lambda = 2)),
-    bonus   = when(group == 1, gamma(shape = 2, rate = 0.5))
-  ),
-  seed = 1
-)
-```
-
-Rules are applied in order, so a later rule may replace what an earlier one
-wrote, and `when(TRUE, ...)` is the rule that applies to every row. A row no
-rule selects is left missing.
-
-`define_survivals()` states a process as a hazard, whose log rate is an
-expression over the covariates. Repeating the event name gives a piecewise
-hazard, where `from` is the time the segment begins:
-
-```r
-simulate_survival(
-  n = 500,
-  specification = define_survivals(
-    time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3),
-    time = hazard(log_rate = -5 + 0.5 * treatment, shape = 0.3, from = 60)
-  ),
-  covariates = data.frame(id = 1:500, treatment = rep(0:1, each = 250)),
-  seed = 1
-)
-```
-
-## Specification columns
-
-
-
-`define_variables()` records a data-generating process as a table. It takes
-the columns of that table as named vectors and returns one row per variable.
-`variable` and `formula` are required. A column given as a single value is
-recycled across every variable, so `variance` and `distribution` are written
-once when they are shared.
-
-`formula` is the mean or the linear predictor, written as R source text. It
-may refer to variables defined earlier in the same specification.
-`simulate_study()` takes a sample size and a specification and generates the
-variables in the order they appear.
-
-```r
-specification <- define_variables(
-  variable     = c("baseline", "treatment", "outcome"),
-  formula      = c("0", "0.5", "0.4 * baseline + 0.8 * treatment"),
-  variance     = c("1", "0", "1"),
-  distribution = c("normal", "binary", "normal")
-)
-specification
-#>    variable distribution                          formula variance     link
-#> 1  baseline       normal                                0        1 identity
-#> 2 treatment       binary                              0.5        0 identity
-#> 3   outcome       normal 0.4 * baseline + 0.8 * treatment        1 identity
-
-simulate_study(500, specification, seed = 42)
-```
-
-`variance` is a variance, not a standard deviation. A `variance` of 100 gives
-a standard deviation of 10.
-
-`define_variable()` builds one row at a time and is accepted by
-`define_variables()` as an alternative to the column form. It takes a name, a
-`formula`, a `variance`, a `distribution` and a `link`. The two forms cannot
-be mixed in one call.
-
-`define_survivals()`, `define_missingnesses()` and `define_conditions()` take
-the same two forms, with the columns their own specifications require.
-
-Seventeen distributions are available in this lane -- fewer than the 79 a
-distribution call reaches, because each is parameterized by a mean and a
-dispersion rather than by its own parameters: `beta`, `binary`, `binomial`,
-`categorical`, `cluster_size`, `custom`, `deterministic`, `exponential`,
-`gamma`, `mixture`, `negative_binomial`, `normal`, `no_zero_poisson`,
-`poisson`, `treatment`, `uniform` and `uniform_integer`.
-
-`augment_study()` adds variables to data that already exists. It takes a data
-frame and a specification, and returns the input with the new variables
-appended. Formulas may refer to columns already present.
-
-`update_definition()` replaces one field of an existing specification.
-`repeat_variables()` generates a numbered family of variables from a single
-template. `read_definitions()` reads a specification from a CSV file with
-columns `variable`, `distribution`, `formula`, `variance` and `link`.
-
-`apply_conditions()` applies different generating rules to different subsets of
-the same data. It takes a data frame and rules built by `define_condition()`,
-where each rule pairs a logical expression with a generating formula.
-
-### Which lane to use
-
-The two lanes are not two spellings of one thing, and neither is deprecated.
-
-A **distribution call** parameterizes a distribution by its own parameters:
-`gamma(shape = 2, rate = 0.5)` says shape and rate. It reaches all 79
-distributions, nests, and takes expressions directly.
-
-A **specification column** parameterizes it by a mean and a dispersion on a
-link scale: `formula` is the mean or linear predictor, `link` is the scale it
-is written on, and `variance` is the dispersion. That is the parameterization
-`calibrate_distribution()`, `calibrate_icc()` and `calibrate_logistic()` speak,
-the one `read_definitions()` reads from a CSV, and the one the multilevel and
-longitudinal simulators build programmatically. `link` is meaningful only here;
-in a call, a link is a function inside the expression.
-
-Reach for calls when you know the distribution's parameters, and for columns
-when you know a mean and a dispersion. `calibrate_moments()` converts between
-them.
-
-## Simulator catalogue
-
-`list_simulators()` returns every public simulation and generation verb from a
-single registry. Its columns are `simulator`, `function_name`, `kind`, `family`,
-`primary_shape` and `dispatchable`. `simulate_data()` uses that same registry,
-dispatches on the `simulator` name and passes its remaining arguments through.
-This makes catalogue and dispatcher drift testable. All entries except the
-`data` dispatcher itself are directly dispatchable.
-
-| Family | Simulators |
-|---|---|
-| general | `study`, `correlation`, `correlated`, `copula`, `ordinal`; workflow: `scenarios`; dispatcher: `data` |
-| statistical | `ttest`, `anova`, `regression`, `clusters`, `prediction` |
-| latent | `lpa`, `lca`, `factors` |
-| measurement | `irt` |
-| longitudinal | `multilevel`, `growth`, `longitudinal` |
-| sequence | `markov`, `sequences`, `sequence_clusters`, `hmm`, `group_sequences`, `group_tna`, `event_log`; generator: `transition_system`; workflows: `until_event`, `sequence_batches`, `tna_batches` |
-| survival | `survival`, `proportional_survival` |
-| empirical | `synthetic`, `density` |
-| functional | `spline` |
-| network | `network`, `edge_list`, `temporal_network`, `network_matrix`, `bipartite_network`, `multiplex_network`, `tna_network`; workflow: `network_batches` |
-
-The `primary_shape` column records the layout of the observation table. Most
-simulators return one row per unit. Sequence simulators return one row per unit
-per position. Network simulators return one row per edge, except
-`network_matrix`, which returns one row per matrix cell.
-
-Use `kind`, `family` or `dispatchable` to narrow discovery:
-
-```r
-list_simulators(kind = "workflow")
-list_simulators(family = "network")
-list_simulators(dispatchable = TRUE)
-```
-
-## What each simulator exposes as truth
-
-The tables attached to a result differ by simulator, because different designs
-have different parameters. The table below lists the observation columns and
-the component tables for a representative set.
-
-| Simulator | Observation columns | Component tables |
-|---|---|---|
-| `simulate_ttest` | `id`, `group`, `outcome` | `parameters`, `effects` |
-| `simulate_regression` | `id`, `x1`, `outcome` | `coefficients`, `effects`, `predictor_correlation` |
-| `simulate_multilevel` | `id`, `cluster`, `x1`, `outcome` | `fixed_effects`, `variance_components`, `random_effects` |
-| `simulate_irt` | `id`, `item_1`, `item_2` | `parameters`, `abilities` |
-| `simulate_lca` | `id`, `latent_class`, `item_1`, `item_2` | `parameters` |
-| `simulate_markov` | `id`, `period`, `state` | `transitions`, `initial_probabilities`, `wide` |
-| `simulate_sequences` | `id`, `period`, `state` | `transitions`, `initial_probabilities`, `wide`, `settings` |
-| `simulate_network` | `from`, `to`, `weight` | `nodes`, `adjacency`, `settings` |
-| `simulate_temporal_network` | `from`, `to`, `onset`, `terminus`, `weight`, `censored` | `events`, `snapshots`, `nodes`, `settings` |
-| `simulate_copula` | `id`, `a`, `b` | `definitions`, `latent_correlation` |
-
-Alternate views of one result are component tables rather than separate
-functions. `simulate_markov()` returns long-form observations and carries the
-wide form as a component. `simulate_network()` returns an edge list and carries
-the adjacency matrix as a component. `simulate_temporal_network()` returns
-spells and carries both the event stream and per-period snapshots.
-
-## Parameter recovery
-
-The generating parameters can be recovered from the simulated data by fitting
-the corresponding model. The script below runs seven such checks and reports
-the largest absolute discrepancy for each. It uses only base R and the
-package itself.
-
-```r
+No suggested package is needed at run time. `tna` (1.2.3 or later) fits
+the transition networks of `simulate_tna()`, `simulate_group_tna()` and
+`fit_tna()`; `igraph` (2.0.0 or later) supplies the
+preferential-attachment and small-world generators and `as_igraph()`;
+`survival` fits the Cox model in the vignette; `simstudy` is an
+equivalence oracle in the tests.
+
+## Data with and without parameters
+
+Called with no arguments, a generator draws its parameters and prints
+them under the data as the truth. Here the intercept of a linear
+regression is drawn from the standard normal distribution and two slopes
+from the uniform distribution on \[−1, 1\].
+
+``` r
 library(simulab)
-
-# Linear regression coefficients, recovered by lm() on the simulated data.
-d <- simulate_regression(50000, c("(Intercept)" = 1, x1 = 0.5, x2 = -0.3), seed = 1)
-coef(lm(outcome ~ x1 + x2, data = as.data.frame(d)))
-
-# Markov transition matrix, recovered by counting observed transitions.
-tm <- matrix(c(0.7, 0.3, 0.4, 0.6), 2, byrow = TRUE)
-summarize_transitions(simulate_markov(4000, tm, 60, states = c("A", "B"), seed = 5),
-                      normalize = TRUE)
+simulate_regression(seed = 1)
+#> <simulab_sim:regression> 100 rows x 4 columns
+#>    id         x1         x2     outcome
+#> 1   1 -0.8356286 -0.9109216  0.08428839
+#> 2   2  1.5952808  0.1580288 -0.59203209
+#> 3   3  0.3295078 -0.6545846 -3.40256878
+#> 4   4 -0.8204684  1.7672873  3.19376689
+#> 5   5  0.4874291  0.7167075  0.69788065
+#> 6   6  0.7383247  0.9101742  0.76841891
+#> 7   7  0.5757814  0.3841854 -0.24200033
+#> 8   8 -0.3053884  1.6821761  1.21368455
+#> 9   9  1.5117812 -0.6357365 -1.08891255
+#> 10 10  0.3898432 -0.4616447 -0.52937755
+#> ... 90 more rows
+#> 
+#> Truth (coefficients):
+#>          term coefficient
+#> 1 (Intercept)       -0.63
+#> 2          x1        0.15
+#> 3          x2        0.82
+#> 
+#> Other tables: effects, predictor_correlation. Read one with as.data.frame(x, what = "effects").
 ```
 
-The full script is shipped as `inst/recovery-check.R` and is run with
-`Rscript inst/recovery-check.R`. It reports:
+Given parameters are printed in the same way.
 
-| Quantity | True value | Recovered | Max abs. difference |
-|---|---|---|---|
-| Regression coefficients | 1, 0.5, -0.3 | 1.004, 0.493, -0.299 | 0.0068 |
-| IRT 2PL marginal item probability | 0.697, 0.500, 0.331 | 0.696, 0.498, 0.333 | 0.0021 |
-| Markov transition matrix | 0.7, 0.3, 0.4, 0.6 | 0.701, 0.299, 0.399, 0.601 | 0.0012 |
-| HMM emission matrix | 0.9, 0.1, 0.2, 0.8 | 0.900, 0.100, 0.199, 0.801 | 0.0007 |
-| VAR(1) transition matrix | 0.5, 0.1, 0.0, 0.4 | 0.502, 0.096, -0.004, 0.402 | 0.0038 |
-| Weibull AFT log hazard ratio | -0.467 | -0.467 | 0.0007 |
-| CFA loading-implied covariance | 0.56, 0.48, 0.42 and 9 zeros | 0.570, 0.484, 0.422 and 9 near-zeros | 0.0097 |
-
-The IRT row compares the simulated item means against the marginal
-probabilities obtained by integrating the two-parameter logistic curve over a
-standard normal ability distribution, rather than against a rule of thumb. The
-Weibull row uses the accelerated-failure-time identity, under which a
-proportional-hazards coefficient of 0.7 with shape 1.5 appears as a slope of
--0.7 / 1.5 on the log-time scale. Each discrepancy is within Monte Carlo error
-for the sample size used.
-
-## Correlated data
-
-`simulate_correlated()` draws multivariate normal variables. It takes a sample
-size, means, standard deviations, and a correlation specification, and returns
-one row per observation with the correlation and covariance matrices as
-component tables.
-
-The correlation is specified in one of three ways. `rho` with
-`structure = "exchangeable"` gives a constant off-diagonal correlation. `rho`
-with `structure = "ar1"` gives a first-order autoregressive pattern. A
-`correlation` matrix gives an arbitrary target.
-
-Leaving `structure` unset selects `"exchangeable"` when a non-zero `rho` is
-supplied and `"custom"` when a `correlation` matrix is supplied. Requesting
-`structure = "independent"` together with a non-zero `rho` raises an error of
-class `simulab_contradictory_structure` rather than returning uncorrelated
-data.
-
-`simulate_copula()` draws correlated variables with non-normal margins. It
-takes a sample size, a specification of the marginal distributions, and a
-latent correlation. The correlation applies to the latent normal variables,
-so the observed rank correlation is close to the requested value while the
-observed product-moment correlation is attenuated by the marginal transforms.
-
-`simulate_ordinal()` draws correlated ordinal variables by thresholding latent
-normal variables. `rho` again describes the latent correlation. A requested
-latent correlation of 0.4 across three ordered categories produces an observed
-Pearson correlation near 0.32 on the category codes, which is the expected
-polychoric attenuation.
-
-`correlation_structure()` and `block_correlation()` build correlation matrices
-without simulating data. `block_correlation()` constructs matrices with
-separate within-period, between-period and within-individual blocks, with
-optional decay.
-
-## Missingness
-
-`inject_missingness()` sets values to `NA` under a named mechanism. It takes a
-data frame, a `mechanism` of `"MCAR"`, `"MAR"` or `"MNAR"`, a target
-`proportion`, and the variables to affect. MAR missingness additionally takes
-an observed `predictor`.
-
-The target proportion is calibrated rather than approximated. The function
-solves for the multiplier that makes the expected missing fraction equal the
-requested value, and the solve is checked for convergence before its result is
-used.
-
-`define_missingness()` and `missingness_matrix()` separate the two steps for
-longitudinal data. `missingness_matrix()` returns a logical mask with the same
-shape as the input. `observed_data()` applies a mask, holding identifier
-columns exempt. The `monotone` argument makes a unit that becomes missing stay
-missing at later periods.
-
-## Treatment assignment and design structure
-
-`assign_treatment()` allocates units to groups. It takes a data frame, a number
-of groups or their labels, optional `strata`, and optional allocation `ratios`.
-With `balanced = TRUE` the allocation is exactly balanced within each stratum.
-
-`observe_treatment()` generates a non-randomized exposure from covariates. It
-takes probability formulas and a link, and returns the input with an exposure
-variable appended.
-
-`assign_stepped_wedge()` builds a stepped-wedge trial. It takes long-form data
-with cluster and period columns, a number of waves, and a wave length, and
-returns the input with treatment and transition indicators.
-
-`expand_clusters()` turns cluster-level data into unit-level data.
-`expand_periods()` turns unit-level data into long form, with either common
-period values or irregular gamma-spaced intervals. `factorial_design()` builds
-a factorial grid from a named vector of level counts. `encode_factors()`
-applies factor, dummy or effect coding.
-
-## Survival and competing risks
-
-`define_survival()` records one event-time process. It takes an event name, a
-log-hazard `formula`, a Weibull `shape`, and an optional `transition` time at
-which the specification takes effect. Splitting a process across two
-definitions with different transition times gives a piecewise hazard.
-
-`simulate_survival()` and `augment_survival()` generate event times from such
-definitions. `combine_competing_risks()` reduces several event-time variables
-to an observed time, an integer event code, and an event type.
-
-`simulate_proportional_survival()` generates times from a proportional-hazards
-model directly. It takes named covariate coefficients, a baseline of
-`"weibull"`, `"exponential"` or `"gompertz"`, a shape, and a target censoring
-proportion. The censoring rate is solved for rather than fixed, so the realized
-proportion matches the request.
-
-`calibrate_survival()` goes the other way. It takes observed times and survival
-probabilities and returns the Weibull formula and shape that reproduce them,
-with the optimizer's convergence code and the root mean squared error in the
-result.
-
-## Latent variable and measurement models
-
-`simulate_lpa()` draws continuous indicators from a mixture of normals. It
-takes a `means` matrix with one row per profile and one column per indicator,
-standard deviations in the same layout or a scalar, and mixing `proportions`.
-
-`simulate_lca()` draws categorical indicators from a latent class model. It
-takes a `probabilities` array with dimensions class, indicator and category.
-The array is the least obvious input in the package, so its example builds one
-explicitly.
-
-`simulate_factors()` draws indicators from a confirmatory factor model. It
-takes a `loadings` matrix with one row per item and one column per factor, plus
-optional uniquenesses and a factor correlation matrix.
-
-`simulate_irt()` draws item responses from an item-response model. It takes
-`discrimination` and `difficulty` vectors, a `model` of `"rasch"`, `"2pl"` or
-`"3pl"`, and a `guessing` parameter for the three-parameter form. Multiple
-ability dimensions are available through `dimensions` and
-`ability_correlation`.
-
-## Longitudinal and multilevel designs
-
-`simulate_multilevel()` draws data from a random-intercept and random-slope
-model. It takes a number of clusters, a cluster size, a fixed intercept, named
-fixed `slopes`, and standard deviations for the random intercept, the random
-slope and the residual. The realized intraclass correlation matches the value
-implied by the variance components.
-
-`simulate_growth()` draws latent growth curves. It takes measurement `times`, a
-mean intercept and slope, an optional quadratic term, random-effect standard
-deviations, and a residual standard deviation.
-
-`simulate_longitudinal()` draws a multivariate first-order vector
-autoregressive process. It takes a lag-one `transition` matrix, an innovation
-covariance, an initial covariance, and a between-unit covariance of person
-means. `beeps_per_day` resets temporal carryover at each day boundary, which
-matches experience-sampling designs. `burn_in` discards warm-up occasions.
-
-## Sequences and transition networks
-
-`simulate_markov()` draws state sequences from a first-order Markov chain. It
-takes a `transition` matrix or a tidy table with `from`, `to` and `probability`
-columns, a `chain_length`, and state labels. `initial` accepts either a named
-starting state or a vector of starting probabilities. `trim_state` truncates
-each sequence at the first occurrence of an absorbing state.
-
-`simulate_sequences()` generates sequences with additional structure. Without a
-supplied transition matrix it draws one from a Dirichlet distribution, with
-`concentration` controlling how uneven the rows are. `stable_transitions` names
-preferred `from` and `to` pairs that are followed with probability
-`stability_probability`. `instability` perturbs the remaining transitions by
-one of `"random_jump"`, `"perturb"` or `"unlikely_jump"`. `missing_tail`
-removes a random number of trailing positions from each sequence.
-
-`simulate_hmm()` draws observed symbols from a hidden Markov model, returning
-both the latent state and the observation for each position.
-`simulate_sequence_clusters()` draws sequences from a mixture of transition
-matrices and records the generating cluster.
-
-`summarize_transitions()` counts observed transitions in long-form sequence
-data. It returns one row per ordered state pair with a count and, when
-`normalize = TRUE`, a row-normalized probability.
-
-`fit_tna()` estimates a transition network from sequence data using the `tna`
-package. It takes sequence data and a `model` of `"tna"`, `"ftna"`, `"ctna"` or
-`"atna"`, and returns a tidy edge list. `as_tna_model()` converts the result to
-a native `tna` object when downstream plotting or inference requires one.
-
-`bootstrap_tna()`, `sample_tna()`, `cross_validate_tna()`,
-`assess_tna_reliability()` and `compare_tna_models()` are simulation workflows
-built on the same estimators. `evaluate_tna_estimation()` repeatedly generates
-sequences from a known transition system and reports how well each estimator
-recovers it.
-
-`learning_states()` and `sample_learning_states()` supply labeled state spaces
-in eight categories, including metacognitive, cognitive, behavioral, social,
-motivational, affective, group-regulation and learning-management-system
-states. `simulate_event_log()` generates educational event logs with groups,
-actors, courses, timestamps and achievement levels.
-
-## Networks
-
-`simulate_network()` generates a graph from one of seven models: `"bernoulli"`,
-`"barabasi_albert"`, `"small_world"`, `"block"`, `"regular"`, `"geometric"` and
-`"forest_fire"`. It returns a tidy edge list with `from`, `to` and `weight`
-columns, and carries the node table and the adjacency matrix as components.
-
-Five further verbs cover the network layouts that a tidy edge list alone does
-not express. `simulate_edge_list()` generates plain edge lists with optional
-node types and edge classes. `simulate_temporal_network()` generates activity
-spells with formation and dissolution probabilities, and carries an event
-stream and per-period snapshots. `simulate_network_matrix()` generates
-adjacency, transition, frequency or co-occurrence matrices.
-`simulate_bipartite_network()` generates actor-event incidence.
-`simulate_multiplex_network()` generates several layers over a shared node set.
-
-`network_centrality()` computes degree, strength, betweenness, closeness,
-eigenvector and PageRank centralities. `compare_networks()` and
-`compare_centralities()` compare two graphs. `evaluate_edge_recovery()` scores
-an estimated edge set against a known one. `as_igraph()` converts a result to
-an `igraph` graph.
-
-## Calibration
-
-`calibrate_moments()` solves a distribution's own parameters from a target mean
-and variance, across 36 distributions. The result names the parameters a
-distribution call takes, so a moment target becomes a specification.
-
-```r
-calibrate_moments("lognormal", mean = 10, variance = 25)
-#>   distribution mean variance parameter     value
-#> 1    lognormal   10       25   meanlog 2.1910133
-#> 2    lognormal   10       25     sdlog 0.4723807
-
-define_variables(income = lognormal(meanlog = 2.1910133, sdlog = 0.4723807))
+``` r
+known <- simulate_regression(
+  n = 100,
+  coefficients = c("(Intercept)" = 1, x1 = 0.5, x2 = -0.3),
+  seed = 1
+)
+known
+#> <simulab_sim:regression> 100 rows x 4 columns
+#>    id         x1          x2    outcome
+#> 1   1 -0.6264538 -0.62036668  1.2822849
+#> 2   2  0.1836433  0.04211587  2.7680602
+#> 3   3 -0.8356286 -0.91092165  2.4420506
+#> 4   4  1.5952808  0.15802877  1.4193240
+#> 5   5  0.3295078 -0.65458464 -0.9241063
+#> 6   6 -0.8204684  1.76728727  2.5572412
+#> 7   7  0.4874291  0.71670748  1.6957685
+#> 8   8  0.7383247  0.91017423  1.6374374
+#> 9   9  0.5757814  0.38418536  1.1592355
+#> 10 10 -0.3053884  1.68217608  0.8527614
+#> ... 90 more rows
+#> 
+#> Truth (coefficients):
+#>          term coefficient
+#> 1 (Intercept)         1.0
+#> 2          x1         0.5
+#> 3          x2        -0.3
+#> 
+#> Other tables: effects, predictor_correlation. Read one with as.data.frame(x, what = "effects").
 ```
 
-A one-parameter family takes the mean alone, because its mean already fixes its
-variance, and the reported `variance` is the one that follows. Targets recycle,
-so `calibrate_moments("gamma", mean = c(5, 10, 20), variance = 9)` is one call.
-Moments no member of the family attains -- a beta variance at or above
-`mean * (1 - mean)`, a negative binomial less dispersed than a Poisson -- raise
-`simulab_unattainable_moments` rather than returning a nonsense parameter.
-`calibrate_moments()` with no arguments reports what it can invert.
+## Recovery
 
-Most solves are closed form. For a scale family whose shape is fixed by the
-coefficient of variation alone -- Weibull, log-logistic, Frechet, Nakagami --
-the shape is found by root finding and the scale then follows exactly. Some
-families cannot reach every pair, and say so: a Nakagami squared coefficient of
-variation is at most `pi / 2 - 1`, a Lomax with a finite variance always has
-one above 1.
+A model fitted to the data estimates the parameters, and
+`validate_recovery()` sets each estimate against the value that
+generated it.
 
-Each inversion is checked by integrating the quantile function it produced,
-which recovers the target mean and variance to about 1e-9 -- a check the
-algebra cannot fake, and one a sampling test cannot make, because the sample
-variance of a heavy tail is still per cent-accurate at half a million draws.
-
-`calibrate_distribution()` converts a mean and dispersion into the shape
-parameters of a beta, gamma or negative binomial distribution. That is the
-parameterization the specification columns use, and it agrees with
-{simstudy}'s.
-
-`calibrate_icc()` returns the random-effect variance that produces a target
-intraclass correlation, for normal, binary, Poisson, gamma and negative
-binomial outcomes.
-
-`calibrate_logistic()` returns logistic coefficients that produce a target
-population prevalence. It optionally scales the coefficients to a target area
-under the ROC curve, or solves for a treatment coefficient that produces a
-target risk ratio or risk difference.
-
-Every calibration is solved by root finding, and every solve is checked. A
-target that no coefficient can produce raises an error of class
-`simulab_no_solution`. A search that does not reach its tolerance raises
-`simulab_no_convergence`. Neither returns an approximate answer silently.
-
-## Scenario studies, batches and export
-
-Every simulator that produces one dataset takes `batch`. Given a number, it
-returns a plain list of that many results, each exactly what the same call
-without `batch` returns. With a `seed`, every dataset gets its own seed drawn
-from it, so the whole batch is reproducible and the caller's random-number
-stream is left untouched.
-
-```r
-datasets <- simulate_ttest(n_a = 40, n_b = 40, mean_a = 0, mean_b = 0.6,
-                           seed = 1, batch = 100)
-length(datasets)
-#> [1] 100
+``` r
+validate_recovery(lm(outcome ~ x1 + x2, data = known), known)
+#>          term   estimate truth        bias absolute_error relative_error
+#> 1 (Intercept)  1.0253534   1.0  0.02535343     0.02535343     0.02535343
+#> 2          x1  0.5211102   0.5  0.02111017     0.02111017     0.04222033
+#> 3          x2 -0.3534668  -0.3 -0.05346682     0.05346682     0.17822272
+#>   recovered
+#> 1      TRUE
+#> 2      TRUE
+#> 3      TRUE
 ```
 
-The per-dataset seeds are drawn rather than counted up from `seed`, because
-several simulators already give their groups or layers the seeds `seed`,
-`seed + 1`, and so on. Consecutive seeds would make one dataset's second group
-repeat the next dataset's first group.
+## Batches
 
-`scenario_grid()` builds a scenario table from named vectors, with
-replications. `simulate_scenarios()` runs one simulator across every row of
-such a table, giving each row a deterministic seed offset, and returns the
-pooled results with a scenario identifier.
+Every single-dataset generator takes `batch`. With `batch = 500`, a call
+returns 500 data sets from the same model, each reproducible from its
+own seed. In `apply_batch()`, a model is fitted to each data set, and
+`validate_recovery()` compares every estimate with the truth of its own
+data set.
 
-`parameter_grid()` builds parameter designs by full factorial expansion, random
-sampling or Latin hypercube sampling. Its own arguments are named `n`, `method`
-and `seed`, so a grid parameter cannot use those three names.
-
-`apply_batch()` applies a function across a named list of inputs and stacks the
-results with a batch identifier. `simulate_sequence_batches()`,
-`simulate_network_batches()` and `simulate_tna_batches()` repeat a simulator a
-fixed number of times with independent seeds.
-
-`summarize_simulations()` aggregates simulated variables by group.
-`validate_recovery()` compares estimated parameters against known truth and
-reports bias, absolute and relative error, and whether each parameter falls
-within a tolerance. `write_simulation()` writes a result or one of its
-component tables to CSV or RDS.
-
-## Input validation
-
-Argument checks state the contract that was broken and name the argument.
-
-```r
-simulate_clusters(n = 10, centers = list(c(0, 0), c(4, 4)))
-#> Error: `centers` must be a matrix, with at least 2 rows
-
-simulate_regression(n = 10, coefficients = c(1, 0.5))
-#> Error: `coefficients` must be a named numeric vector, with at least one element
+``` r
+datasets <- simulate_regression(
+  n = 100,
+  coefficients = c("(Intercept)" = 1, x1 = 0.5, x2 = -0.3),
+  seed = 1,
+  batch = 500
+)
+estimates <- apply_batch(datasets, lm, formula = outcome ~ x1 + x2)
+recovery <- validate_recovery(estimates, datasets)
+summarize_simulations(recovery, by = "term", variables = "bias")
+#>          term variable observations         mean        sd    minimum   maximum
+#> 1 (Intercept)     bias          500  0.004524666 0.1003488 -0.3130872 0.3106459
+#> 2          x1     bias          500  0.001262413 0.1018302 -0.2850844 0.3985527
+#> 3          x2     bias          500 -0.001266961 0.1003781 -0.2668912 0.3682355
 ```
 
-Conditions that a caller might reasonably catch carry a class:
-`simulab_contradictory_structure` for a correlation request that cannot be
-satisfied, `simulab_no_solution` and `simulab_no_convergence` for calibration
-failures, and `simulab_bad_definition_file`, `simulab_duplicate_variable`,
-`simulab_unknown_distribution` and `simulab_unknown_link` for malformed
-specification files.
+The mean bias of each coefficient over the 500 data sets estimates the
+bias of the estimator, and the standard deviation of the bias is its
+empirical standard error.
+
+## Transition networks
+
+`simulate_tna()` draws a transition matrix over learning states,
+generates sequences from it, and fits one transition network with the
+`tna` package. The result is a native `tna` model, so every `tna`
+function applies to it. Its print shows the fitted network, then the
+matrix that generated the sequences.
+
+``` r
+network <- simulate_tna(seed = 1)
+network
+#> State Labels : 
+#> 
+#>    Analyze, Elaborate, Learn, Plan, Reflect 
+#> 
+#> Transition Probability Matrix :
+#> 
+#>              Analyze  Elaborate      Learn      Plan    Reflect
+#> Analyze   0.56750572 0.12356979 0.02288330 0.2013730 0.08466819
+#> Elaborate 0.05590062 0.10869565 0.13664596 0.3881988 0.31055901
+#> Learn     0.04237288 0.44067797 0.04237288 0.2627119 0.21186441
+#> Plan      0.22473868 0.04181185 0.07665505 0.3745645 0.28222997
+#> Reflect   0.13363029 0.32962138 0.01781737 0.3006682 0.21826281
+#> 
+#> Initial Probabilities : 
+#> 
+#>   Analyze Elaborate     Learn      Plan   Reflect 
+#>      0.02      0.31      0.09      0.12      0.46 
+#> 
+#> Generating Transition Probability Matrix (truth) :
+#> 
+#>           Analyze Elaborate Learn  Plan Reflect
+#> Analyze     0.553     0.122 0.024 0.194   0.108
+#> Elaborate   0.078     0.070 0.150 0.386   0.317
+#> Learn       0.036     0.381 0.038 0.246   0.298
+#> Plan        0.221     0.034 0.082 0.358   0.305
+#> Reflect     0.113     0.316 0.025 0.327   0.219
+#> 
+#> Generating Initial Probabilities (truth) :
+#> 
+#>   Analyze Elaborate     Learn      Plan   Reflect 
+#>     0.045     0.334     0.134     0.079     0.407 
+#> 
+#> Other tables: edges, sequences, wide, model_info. Read one with as.data.frame(x, what = "edges").
+```
+
+## Generators
+
+| Family | Generators |
+|----|----|
+| General | `simulate_study()`, `simulate_correlation()`, `simulate_correlated()`, `simulate_copula()`, `simulate_ordinal()` |
+| Statistical | `simulate_ttest()`, `simulate_anova()`, `simulate_regression()`, `simulate_prediction()`, `simulate_clusters()` |
+| Latent and measurement | `simulate_lpa()`, `simulate_ml_lpa()`, `simulate_lca()`, `simulate_factors()`, `simulate_irt()` |
+| Longitudinal | `simulate_multilevel()`, `simulate_growth()`, `simulate_longitudinal()` |
+| Survival | `simulate_survival()`, `simulate_proportional_survival()` |
+| Sequences | `simulate_markov()`, `generate_transition_system()`, `simulate_sequences()`, `simulate_sequence_clusters()`, `simulate_hmm()`, `simulate_group_sequences()`, `simulate_event_log()`, `simulate_until_event()` |
+| Transition networks | `simulate_tna()`, `simulate_group_tna()`, `simulate_tna_network()` |
+| Networks | `simulate_network()`, `simulate_edge_list()`, `simulate_network_matrix()`, `simulate_temporal_network()`, `simulate_bipartite_network()`, `simulate_multiplex_network()` |
+| Empirical and functional | `simulate_synthetic()`, `simulate_density()`, `simulate_spline()` |
+| Replication | `simulate_sequence_batches()`, `simulate_tna_batches()`, `simulate_network_batches()`, `simulate_scenarios()`, `simulate_data()` |
+
+The vignette describes the data each generator produces, and
+`list_simulators()` lists them with the shape of their results.
 
 ## Relationship to other packages
 
-simulab supersedes Saqrlab and continues its version numbering. Saqrlab is
-unchanged, because the seeded output of its `simulate_data()` is a fixture
-contract for other projects. `SAQRLAB_COVERAGE.md` maps each of Saqrlab's 87
-exported names to its resolution in simulab.
-
-simstudy is an equivalence oracle rather than a dependency. Under the same
-seed, simulab reproduces simstudy 0.9.2 values exactly for normal, binary and
-gamma declarative generation, and its beta, gamma and negative binomial
-parameter conversions match exactly. Nine assertions check this, and they run
-whenever simstudy is installed.
-`FEATURE_COVERAGE.md` maps each simstudy capability to its simulab verb.
-
-The `tna` package supplies the transition-network estimators. simulab keeps
-tidy edge lists as its result contract and provides `as_tna_model()` as the
-explicit bridge to native `tna` objects.
-
-## Package status
-
-Version 0.4.1 is intended to be the first CRAN release under the simulab name.
-It follows the 0.4.0 release candidate and continues the version line of
-Saqrlab, which has never been on CRAN. The package is a new submission.
-
-The test suite contains 670 assertions across 28 files and covers 90.8% of
-package lines, measured with `covr`. With every suggested package installed
-there are no skips. Tests include statistical calibration checks, seeded
-regression checks, recovery checks for transition networks and grouped models,
-error-path checks by condition class, equivalence tests against simstudy, and
-identity checks between the matrix and long-form call styles. Every
-distribution is checked against its theoretical mean, every entry that carries
-both a sampler and a quantile function is checked for agreeing with itself, and
-every moment inversion is checked by integrating the quantile function it
-produced.
-
-All 123 exported functions carry runnable examples, which `R CMD check`
-executes. `R CMD check --as-cran` reports one note, the standard note for a
-first submission, on R 4.5.2 under macOS on arm64. GitHub Actions is configured
-to run checks on macOS, Windows and Ubuntu across R release, devel and
-oldrel-1, plus a manual-enabled Ubuntu check.
-
-## Function reference
-
-Specification and study generation: `define_variable()`, `define_variables()`,
-`update_definition()`, `repeat_variables()`, `read_definitions()`,
-`simulate_study()`, `augment_study()`, `define_condition()`,
-`define_conditions()`, `apply_conditions()`.
-
-Correlated data: `simulate_correlated()`, `simulate_correlation()`,
-`simulate_copula()`, `augment_correlated()`, `simulate_ordinal()`,
-`correlation_structure()`, `block_correlation()`.
-
-Statistical designs: `simulate_ttest()`, `simulate_anova()`,
-`simulate_regression()`, `simulate_clusters()`, `simulate_prediction()`.
-
-Latent and measurement models: `simulate_lpa()`, `simulate_lca()`,
-`simulate_factors()`, `simulate_irt()`, `simulate_hmm()`.
-
-Longitudinal designs: `simulate_multilevel()`, `simulate_growth()`,
-`simulate_longitudinal()`.
-
-Survival: `define_survival()`, `define_survivals()`, `simulate_survival()`,
-`augment_survival()`, `combine_competing_risks()`,
-`simulate_proportional_survival()`, `calibrate_survival()`,
-`survival_curve()`.
-
-Missingness: `define_missingness()`, `define_missingnesses()`,
-`missingness_matrix()`, `observed_data()`, `inject_missingness()`.
-
-Treatment and design structure: `assign_treatment()`, `observe_treatment()`,
-`assign_stepped_wedge()`, `expand_clusters()`, `expand_periods()`,
-`factorial_design()`, `augment_factorial()`, `encode_factors()`,
-`merge_studies()`, `select_variables()`.
-
-Sequences: `simulate_markov()`, `augment_markov()`, `simulate_sequences()`,
-`simulate_sequence_clusters()`, `simulate_group_sequences()`,
-`simulate_until_event()`, `trim_events()`, `summarize_transitions()`,
-`encode_sequences()`, `generate_transition_system()`, `simulate_event_log()`,
-`learning_states()`, `learning_state_categories()`,
-`sample_learning_states()`.
-
-Transition networks: `fit_tna()`, `as_tna_model()`, `simulate_group_tna()`,
-`simulate_tna_network()`, `compare_tna_models()`, `bootstrap_tna()`,
-`sample_tna()`, `cross_validate_tna()`, `assess_tna_reliability()`,
-`evaluate_tna_estimation()`, `fit_tna_batch()`, `simulate_tna_batches()`.
-
-Networks: `simulate_network()`, `simulate_edge_list()`,
-`simulate_temporal_network()`, `simulate_network_matrix()`,
-`simulate_bipartite_network()`, `simulate_multiplex_network()`,
-`simulate_network_batches()`, `network_centrality()`, `compare_networks()`,
-`compare_centralities()`, `evaluate_edge_recovery()`, `summarize_networks()`,
-`as_igraph()`.
-
-Empirical and functional: `simulate_synthetic()`, `augment_synthetic()`,
-`simulate_density()`, `augment_density()`, `simulate_spline()`,
-`spline_basis()`, `spline_curves()`, `linear_formula()`, `mixture_formula()`,
-`categorical_formula()`.
-
-Calibration: `calibrate_moments()`, `calibrate_distribution()`, `calibrate_icc()`,
-`calibrate_logistic()`.
-
-Workflows: `scenario_grid()`, `simulate_scenarios()`, `parameter_grid()`,
-`apply_batch()`, `simulate_sequence_batches()`, `summarize_simulations()`,
-`validate_recovery()`, `write_simulation()`, `simulation_scenarios()`,
-`run_simulation_scenario()`, `list_simulators()`, `simulate_data()`,
-`global_names()`, `global_name_regions()`, `sample_global_names()`.
-
-Result methods: `components()`, `as.data.frame()`, `print()`, `summary()`.
-
-## License
-
-MIT. See `LICENSE`.
+simulab supersedes Saqrlab, which has never been on CRAN, and continues
+its version numbering. simstudy is an equivalence oracle rather than a
+dependency: under the same seed, simulab reproduces simstudy 0.9.2
+values exactly for normal, binary and gamma declarative generation.
 
 ## Citation
 
-Saqr, M. (2026). simulab: Unified Simulation of Statistical and Study Data.
-R package version 0.4.1. https://github.com/mohsaqr/simulab
+    Saqr M, López-Pernas S (2026). _simulab: Simulates a Wide Variety of
+    Data Shapes, Sizes and Distributions_. R package version 0.4.8,
+    <https://pak.dynasite.org/simulab/>.
+
+## License
+
+MIT © Mohammed Saqr, Sonsoles López-Pernas

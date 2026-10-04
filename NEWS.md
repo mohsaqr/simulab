@@ -1,3 +1,80 @@
+# simulab 0.4.8
+
+## One transition network in one call
+
+- New `simulate_tna()` takes or draws a transition matrix, generates
+  sequences from it and fits one transition network with the `tna` package.
+  The result is the native `tna` model (class `c("simulab_tna", "tna")`), so
+  `plot()`, `centralities()` and every other `tna` function apply to it. It
+  prints the native `tna` output, then the generating transition matrix and
+  initial probabilities; `as.data.frame()` gives the fitted edges, and
+  `what = "transitions"` the truth. A drawn matrix is labeled with
+  metacognitive and cognitive learning states by default, as in Saqrlab, and
+  the printed truth follows the fitted network's state order. It restores the single-network verb of Saqrlab, where it
+  was `simulate_tna_network()`; in simulab that name remains the node-grouped
+  matrix generator. Like every simulator, it takes `batch` and runs with no
+  arguments.
+- Without the `tna` package, TNA fitting raises the classed condition
+  `simulab_missing_tna`.
+
+## Learning-state labels by default
+
+- `simulate_sequences()`, `simulate_group_sequences()`, `simulate_group_tna()`,
+  `generate_transition_system()` and `simulate_tna()` label a drawn state
+  space with metacognitive and cognitive states from the learning-state
+  catalogue by default (`state_categories = c("metacognitive", "cognitive")`),
+  as Saqrlab did. `state_categories = NULL` restores `State 1`, `State 2`, and
+  so on. Because the labels are drawn, seeded output of these generators
+  differs from 0.4.7 when they draw their own state space.
+- Grouped sequences draw their labels once and share them, so every group has
+  the same state space. Before, groups given `state_categories` each drew
+  their own labels.
+- The README is generated from `README.Rmd`, so its printed output is run, and
+  it is rewritten around the current interface. The title is now "Simulates a
+  Wide Variety of Data Shapes, Sizes and Distributions", and the description
+  leads with the range of data and with parameters that are drawn or given,
+  and in both cases recoverable. Sonsoles López-Pernas is an author and copyright holder.
+
+## Simulation with no parameters
+
+- `simulate_regression()`, `simulate_ttest()`, `simulate_anova()`,
+  `simulate_sequences()`, `simulate_group_sequences()` and
+  `simulate_group_tna()` run with no arguments. Sizes have defaults (100
+  observations; 50 per group for a t-test; 3 groups of 30 for an analysis of
+  variance; 100 sequences of length 20; 2 groups of 50 actors with sequences
+  of length 20).
+- A parameter left `NULL` is drawn inside the same seeded block as the data and
+  reported as the truth in the result's tables. Regression draws an intercept
+  from the standard normal distribution and `n_predictors` (new, default 2)
+  slopes from the uniform distribution on [-1, 1]; group designs draw each
+  mean from the standard normal distribution. Drawn values are rounded to two
+  decimals, so the reported value is the value used.
+- Printing a result shows its generating values under the data, headed
+  `Truth`, and names the other stored tables.
+- `validate_recovery()` takes a result, or a whole batch, as `truth`. A batch
+  is matched by `batch_id` and `term`, so each estimate is compared with the
+  truth of its own data set, which a batch with drawn parameters needs.
+  `true_value` defaults to `NULL`: a `truth` column, or else the single
+  numeric column of the truth table.
+- `apply_batch()` takes a model function directly:
+  `apply_batch(datasets, lm, formula = outcome ~ x1 + x2)`. Each data set is
+  passed as `data` when the function has that argument, and a fitted model is
+  returned as its coefficients, with columns `term` and `estimate`.
+- `simulate_tna_batches()` and `simulate_sequence_batches()` take
+  `repetitions = 1` by default, so `simulate_tna_batches()` with no arguments
+  draws a transition system, generates sequences and fits one network.
+- `simulate_tna_batches()` identifies data sets by `dataset` in the fitted
+  edges and `model_info`, as its `sequences` and `true_transitions` tables
+  already did. The column was `network`, which kept fitted edges and truth
+  from being matched. Its rows are numbered 1 to n instead of `1.1`, `1.2`.
+- `validate_recovery()` handles an estimate column and a true-value column of
+  the same name, such as `probability`, and takes a fitted model, such as
+  `lm()` or `coxph()`, as `estimates`. Grouped TNA tables are numbered 1 to n
+  instead of `Group 1.1`.
+- Calls that supply the parameters produce the same data as in 0.4.7, and
+  positional calls keep their meaning: `n_predictors` is the last argument of
+  `simulate_regression()`.
+
 # simulab 0.4.7
 
 ## Inputs are matched by name, not position

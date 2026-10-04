@@ -5,10 +5,10 @@
 \title{Simulate a two-group design}
 \usage{
 simulate_ttest(
-  n_a,
-  n_b,
-  mean_a,
-  mean_b,
+  n_a = 50L,
+  n_b = 50L,
+  mean_a = NULL,
+  mean_b = NULL,
   sd_a = 1,
   sd_b = 1,
   labels = c("A", "B"),
@@ -18,9 +18,12 @@ simulate_ttest(
 )
 }
 \arguments{
-\item{n_a, n_b}{Group sample sizes.}
+\item{n_a, n_b}{Group sample sizes, each defaulting to \code{50}.}
 
-\item{mean_a, mean_b}{Group means.}
+\item{mean_a, mean_b}{Group means. A mean left \code{NULL} (the default) is drawn
+from the standard normal distribution and rounded to two decimals, inside
+the same seeded draw as the data, and is reported in the \code{parameters}
+table.}
 
 \item{sd_a, sd_b}{Positive group standard deviations.}
 
@@ -54,4 +57,8 @@ Simulate a two-group design
 result <- simulate_ttest(n_a = 40, n_b = 40, mean_a = 0, mean_b = 0.6, seed = 1)
 head(result)
 as.data.frame(result, what = "parameters")
+
+# With no arguments, the group means are drawn and reported.
+drawn <- simulate_ttest(seed = 1)
+as.data.frame(drawn, what = "parameters")
 }

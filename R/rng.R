@@ -125,3 +125,8 @@
   }
   fit$root
 }
+
+# Parameters a caller leaves NULL are drawn inside the caller's seeded block,
+# rounded to two decimals so the reported truth is exactly the value used.
+.draw_means <- function(k) round(stats::rnorm(k), 2)
+.draw_slopes <- function(k) round(stats::runif(k, -1, 1), 2)

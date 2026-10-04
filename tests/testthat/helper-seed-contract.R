@@ -57,6 +57,7 @@
                                  emission = emission),
     group_sequences       = list(groups = 2, actors = 3, chain_length = 4),
     group_tna             = list(groups = 2, actors = 3, chain_length = 4),
+    tna                   = list(n = 6, chain_length = 4, n_states = 3),
     event_log             = list(n = 6),
     until_event           = list(data = panel,
                                  definition = define_variable("event", 1,

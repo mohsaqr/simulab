@@ -5,15 +5,15 @@
 \title{Simulate sequences and fit a grouped TNA model}
 \usage{
 simulate_group_tna(
-  groups,
-  actors,
+  groups = 2L,
+  actors = 50L,
   transitions = NULL,
-  chain_length,
+  chain_length = 20L,
   initial = NULL,
   group_names = NULL,
   states = NULL,
   n_states = 5L,
-  state_categories = NULL,
+  state_categories = c("metacognitive", "cognitive"),
   model = c("tna", "ftna", "ctna", "atna"),
   seed = NULL,
   ...,
@@ -21,15 +21,16 @@ simulate_group_tna(
 )
 }
 \arguments{
-\item{groups}{Number of groups.}
+\item{groups}{Number of groups, defaulting to \code{2}.}
 
-\item{actors}{Actors per group, scalar or one value per group.}
+\item{actors}{Actors per group, scalar or one value per group, defaulting
+to \code{50}.}
 
 \item{transitions}{A common transition matrix, one matrix per group, or
 \code{NULL} for randomly generated matrices. A tidy data frame with columns
 \code{group}, \code{from}, \code{to} and \code{probability} gives one matrix per group.}
 
-\item{chain_length}{Sequence length.}
+\item{chain_length}{Sequence length, defaulting to \code{20}.}
 
 \item{initial}{Common initial probabilities, one vector per group, or
 \code{NULL}. A tidy data frame with columns \code{group}, \code{state} and \code{probability}
@@ -73,5 +74,9 @@ if (requireNamespace("tna", quietly = TRUE)) {
   )
   head(result)
   components(result)
+
+  # With no arguments, one transition matrix per group is drawn and fitted.
+  drawn <- simulate_group_tna(seed = 1)
+  as.data.frame(drawn, what = "true_transitions")
 }
 }

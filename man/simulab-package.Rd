@@ -20,13 +20,19 @@ to retrieve them.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://pak.dynasite.org/simulab/}
   \item \url{https://github.com/mohsaqr/simulab}
   \item Report bugs at \url{https://github.com/mohsaqr/simulab/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Mohammed Saqr \email{saqr@saqr.me} [copyright holder]
+\strong{Maintainer}: Mohammed Saqr \email{saqr@saqr.me} (\href{https://orcid.org/0000-0001-5881-3109}{ORCID}) [copyright holder]
+
+Authors:
+\itemize{
+  \item Sonsoles López-Pernas \email{sonsoles.lopez@uef.fi} (\href{https://orcid.org/0000-0002-9621-1392}{ORCID}) [copyright holder]
+}
 
 }
 \keyword{internal}

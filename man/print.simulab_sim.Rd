@@ -17,7 +17,12 @@
 \description{
 Prints a one-line header giving the simulation type and the full dimensions,
 then at most the first 10 rows of the primary data, then a count of the rows
-not shown.
+not shown. The table of generating values follows under the heading
+\code{Truth}: the first of \code{coefficients}, \code{fixed_effects}, \code{parameters},
+\code{transition}, \code{transitions}, \code{true_transitions}, \code{definitions},
+\code{probabilities}, \code{survival_definitions} and \code{settings} that the result
+stores, again at most 10 rows. A last line names the other stored tables,
+which \code{as.data.frame()} returns with \code{what}.
 }
 \examples{
 result <- simulate_ttest(n_a = 30, n_b = 30, mean_a = 0, mean_b = 0.5, seed = 1)

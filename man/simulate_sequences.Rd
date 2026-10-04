@@ -5,13 +5,13 @@
 \title{Simulate basic or perturbed state sequences}
 \usage{
 simulate_sequences(
-  n,
+  n = 100L,
   transition = NULL,
-  chain_length,
+  chain_length = 20L,
   initial = NULL,
   states = NULL,
   n_states = 5L,
-  state_categories = NULL,
+  state_categories = c("metacognitive", "cognitive"),
   concentration = 1,
   missing_tail = c(0L, 0L),
   stable_transitions = NULL,
@@ -25,12 +25,12 @@ simulate_sequences(
 )
 }
 \arguments{
-\item{n}{Number of sequences.}
+\item{n}{Number of sequences, defaulting to \code{100}.}
 
 \item{transition}{Optional transition matrix. When \code{NULL}, a random matrix
 is generated.}
 
-\item{chain_length}{Maximum sequence length.}
+\item{chain_length}{Maximum sequence length, defaulting to \code{20}.}
 
 \item{initial}{Initial probabilities or a fixed starting state. When \code{NULL}
 and \code{transition} is supplied, every sequence starts in the first state.}
@@ -39,8 +39,11 @@ and \code{transition} is supplied, every sequence starts in the first state.}
 
 \item{n_states}{Number of automatically generated states.}
 
-\item{state_categories}{Optional learning-state categories used to name an
-automatically generated state space.}
+\item{state_categories}{Learning-state categories that name a generated state
+space, defaulting to \code{c("metacognitive", "cognitive")}; see
+\code{\link[=learning_state_categories]{learning_state_categories()}}. \code{NULL} labels the states \verb{State 1},
+\verb{State 2}, and so on. Ignored when \code{transition} or \code{states} names the
+states.}
 
 \item{concentration}{Positive Dirichlet concentration used for automatic
 transition and initial probabilities.}
@@ -87,13 +90,17 @@ result <- simulate_sequences(n = 40, n_states = 4, chain_length = 20, seed = 1)
 head(result)
 components(result)
 
+# With no arguments, a random transition matrix is drawn and reported.
+drawn <- simulate_sequences(seed = 1)
+as.data.frame(drawn, what = "transitions")
+
 # Preferred transitions followed with a given probability.
 stable <- data.frame(
   from = sprintf("State \%d", 1:4),
   to = sprintf("State \%d", c(2, 3, 4, 1))
 )
 head(simulate_sequences(
-  n = 40, n_states = 4, chain_length = 20,
+  n = 40, n_states = 4, chain_length = 20, state_categories = NULL,
   stable_transitions = stable, stability_probability = 0.85, seed = 1
 ))
 }

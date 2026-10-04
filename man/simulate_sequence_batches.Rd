@@ -4,10 +4,11 @@
 \alias{simulate_sequence_batches}
 \title{Simulate repeated sequence datasets}
 \usage{
-simulate_sequence_batches(repetitions, ..., seed = NULL)
+simulate_sequence_batches(repetitions = 1L, ..., seed = NULL)
 }
 \arguments{
-\item{repetitions}{Number of datasets. A single positive whole number.}
+\item{repetitions}{Number of datasets. A single positive whole number,
+defaulting to \code{1}.}
 
 \item{...}{Arguments passed to \code{\link[=simulate_sequences]{simulate_sequences()}}.}
 

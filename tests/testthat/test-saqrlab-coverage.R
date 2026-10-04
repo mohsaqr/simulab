@@ -158,7 +158,7 @@ test_that("sequence batches and TNA estimation, reliability, bootstrap, and CV w
   networks <- simulate_tna_batches(
     2, model = "tna", n = 20, chain_length = 8, n_states = 3, seed = 1610
   )
-  expect_equal(length(unique(networks$network)), 2L)
+  expect_equal(length(unique(networks$dataset)), 2L)
   expect_true(all(c("sequences", "true_transitions") %in% components(networks)$table))
 
   bootstrap <- bootstrap_tna(sequences, repetitions = 3, seed = 162)

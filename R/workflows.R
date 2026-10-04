@@ -69,9 +69,12 @@ parameter_grid <- function(..., n = 10L,
 #' @param inputs List with at least one element, commonly data frames or
 #'   simulation results. Element names label the batches; when `inputs` is
 #'   unnamed the positions `"1"`, `"2"`, ... are used instead.
-#' @param fun Function applied to each element. It must return a base
-#'   `data.frame`, and every call must return the same columns, otherwise the
-#'   run is an error.
+#' @param fun Function applied to each element. When `fun` has a `data`
+#'   argument, as `lm()` and `glm()` do, the element is passed as `data`;
+#'   otherwise it is the first argument. `fun` returns a base `data.frame`, or
+#'   a fitted model with named coefficients, which becomes a data frame with
+#'   columns `term` and `estimate`. Every call must give the same columns,
+#'   otherwise the run is an error.
 #' @param ... Arguments passed to `fun`.
 #' @param id Single string naming the batch-label column, default
 #'   `"batch_id"`.
@@ -87,6 +90,10 @@ parameter_grid <- function(..., n = 10L,
 #'   large = simulate_ttest(n_a = 60, n_b = 60, mean_a = 0, mean_b = 0.5, seed = 2)
 #' )
 #' apply_batch(inputs, fun = summary)
+#'
+#' # A model function is applied to each data set and tidied to coefficients.
+#' datasets <- simulate_regression(seed = 1, batch = 3)
+#' apply_batch(datasets, lm, formula = outcome ~ x1 + x2)
 apply_batch <- function(inputs, fun, ..., id = "batch_id") {
   stopifnot(
     "`inputs` must be a list, with at least one element" =
@@ -100,9 +107,16 @@ apply_batch <- function(inputs, fun, ..., id = "batch_id") {
   )
   labels <- names(inputs)
   if (is.null(labels)) labels <- as.character(seq_along(inputs))
+  formal_names <- names(formals(args(fun)))
+  extra <- list(...)
+  as_data <- "data" %in% formal_names && !"data" %in% names(extra)
   outputs <- Map(function(input, label) {
-    value <- fun(input, ...)
-    if (!is.data.frame(value)) stop("Batch functions must return data frames.", call. = FALSE)
+    value <- if (as_data) fun(..., data = input) else fun(input, ...)
+    value <- .tidy_batch_value(value)
+    if (!is.data.frame(value)) {
+      stop("Batch functions must return data frames or fitted models with coefficients.",
+           call. = FALSE)
+    }
     data.frame(batch_value = label, value, check.names = FALSE, row.names = NULL)
   }, inputs, labels)
   column_sets <- lapply(outputs, names)
@@ -113,6 +127,18 @@ apply_batch <- function(inputs, fun, ..., id = "batch_id") {
   names(result)[1L] <- id
   rownames(result) <- NULL
   result
+}
+
+# A fitted model (a list-based object whose coef() is a named numeric vector)
+# becomes its coefficients as term/estimate rows; anything else is returned
+# unchanged for the caller's data-frame check.
+.tidy_batch_value <- function(value) {
+  if (inherits(value, "simulab_tna")) return(as.data.frame(value))
+  if (is.data.frame(value) || !is.list(value)) return(value)
+  coefficients <- stats::coef(value)
+  if (!is.numeric(coefficients) || is.null(names(coefficients))) return(value)
+  data.frame(term = names(coefficients), estimate = unname(coefficients),
+             stringsAsFactors = FALSE, row.names = NULL)
 }
 
 #' Fit TNA models to multiple datasets

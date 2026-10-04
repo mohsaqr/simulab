@@ -19,11 +19,15 @@
 #' components(result)
 components <- function(x) {
   stopifnot(
-    "`x` must be a `simulab_sim` object" =
-      inherits(x, "simulab_sim")
+    "`x` must be a `simulab_sim` or `simulab_tna` object" =
+      inherits(x, c("simulab_sim", "simulab_tna"))
   )
 
-  tables <- c(list(data = .plain_data(x)), attr(x, "simulab_tables"))
+  tables <- if (inherits(x, "simulab_tna")) {
+    attr(x, "simulab_tables")
+  } else {
+    c(list(data = .plain_data(x)), attr(x, "simulab_tables"))
+  }
   data.frame(
     table = names(tables),
     rows = vapply(tables, nrow, integer(1)),
@@ -127,7 +131,12 @@ as.data.frame.simulab_sim <- function(x, row.names = NULL, optional = FALSE,
 #'
 #' Prints a one-line header giving the simulation type and the full dimensions,
 #' then at most the first 10 rows of the primary data, then a count of the rows
-#' not shown.
+#' not shown. The table of generating values follows under the heading
+#' `Truth`: the first of `coefficients`, `fixed_effects`, `parameters`,
+#' `transition`, `transitions`, `true_transitions`, `definitions`,
+#' `probabilities`, `survival_definitions` and `settings` that the result
+#' stores, again at most 10 rows. A last line names the other stored tables,
+#' which `as.data.frame()` returns with `what`.
 #'
 #' @param x A `simulab_sim` object.
 #' @param ... Arguments passed to the base data-frame print method.
@@ -155,7 +164,36 @@ print.simulab_sim <- function(x, ...) {
   if (nrow(x) > nrow(shown)) {
     cat(sprintf("... %d more rows\n", nrow(x) - nrow(shown)))
   }
+  tables <- attr(x, "simulab_tables")
+  truth_name <- .truth_table_name(names(tables))
+  if (!is.null(truth_name)) {
+    truth <- tables[[truth_name]]
+    truth_shown <- utils::head(truth, 10L)
+    rownames(truth_shown) <- NULL
+    cat(sprintf("\nTruth (%s):\n", truth_name))
+    print(truth_shown, ...)
+    if (nrow(truth) > nrow(truth_shown)) {
+      cat(sprintf("... %d more rows\n", nrow(truth) - nrow(truth_shown)))
+    }
+  }
+  others <- setdiff(names(tables), truth_name)
+  if (length(others)) {
+    cat(sprintf(
+      "\nOther tables: %s. Read one with as.data.frame(x, what = \"%s\").\n",
+      paste(others, collapse = ", "), others[1L]
+    ))
+  }
   invisible(x)
+}
+
+# The table a reader means by "the true values" of a result, by precedence;
+# NULL when the result stores none of them.
+.truth_table_name <- function(table_names) {
+  precedence <- c("coefficients", "fixed_effects", "parameters", "transition",
+                  "transitions", "true_transitions", "definitions",
+                  "probabilities", "survival_definitions", "settings")
+  found <- intersect(precedence, table_names)
+  if (length(found)) found[1L] else NULL
 }
 
 #' Summarize simulated variables

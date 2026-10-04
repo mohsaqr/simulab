@@ -86,5 +86,5 @@ test_that("TNA batches use the same registry dispatch when tna is available", {
     chain_length = 5, n_states = 2, seed = 308
   )
   expect_s3_class(result, "simulab_sim")
-  expect_equal(unique(result$network), 1L)
+  expect_equal(unique(result$dataset), 1L)
 })

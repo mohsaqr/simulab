@@ -4,7 +4,8 @@
 #' each dataset is drawn from its own transition system rather than from a
 #' shared one.
 #'
-#' @param repetitions Number of datasets. A single positive whole number.
+#' @param repetitions Number of datasets. A single positive whole number,
+#'   defaulting to `1`.
 #' @param ... Arguments passed to [simulate_sequences()].
 #' @param seed Optional base seed. A single number, or `NULL` (the default).
 #'   Dataset `i` uses `seed + i - 1`.
@@ -23,7 +24,7 @@
 #'   repetitions = 3, n = 20, n_states = 3, chain_length = 10, seed = 1
 #' )
 #' head(result)
-simulate_sequence_batches <- function(repetitions, ..., seed = NULL) {
+simulate_sequence_batches <- function(repetitions = 1L, ..., seed = NULL) {
   stopifnot(
     "`repetitions` must be a single positive whole number" =
       is.numeric(repetitions) &&
@@ -60,7 +61,9 @@ simulate_sequence_batches <- function(repetitions, ..., seed = NULL) {
 #' and fits one transition network to each with [fit_tna()], so the estimated
 #' networks can be held against the transition systems that generated them.
 #'
-#' @param repetitions Number of fitted networks. A single positive whole number.
+#' @param repetitions Number of fitted networks. A single positive whole number,
+#'   defaulting to `1`, so a call with no arguments draws one transition
+#'   system, generates sequences from it and fits one network.
 #' @param model TNA estimator, one of `"tna"` (the default), `"ftna"`, `"ctna"`
 #'   or `"atna"`.
 #' @param ... Arguments passed to [simulate_sequences()].
@@ -68,11 +71,12 @@ simulate_sequence_batches <- function(repetitions, ..., seed = NULL) {
 #'   Dataset `i` uses `seed + i - 1`.
 #'
 #' @return A `simulab_sim` base `data.frame` of fitted edges, one row per
-#'   network and from/to pair, with columns `network`, `from`, `to` and
-#'   `weight`. Components: `sequences`, the generated sequences in long form
+#'   dataset and from/to pair, with columns `dataset`, `from`, `to` and
+#'   `weight`. Printing it shows `true_transitions` as the truth, keyed by the
+#'   same `dataset`. Components: `sequences`, the generated sequences in long form
 #'   with columns `dataset`, `id`, `period` and `state`; `true_transitions`, the
 #'   generating probabilities with columns `dataset`, `from`, `to` and
-#'   `probability`; and `model_info`, one row per network describing the fit.
+#'   `probability`; and `model_info`, one row per dataset describing the fit.
 #' @export
 #'
 #' @examples
@@ -80,8 +84,12 @@ simulate_sequence_batches <- function(repetitions, ..., seed = NULL) {
 #'   head(simulate_tna_batches(
 #'     repetitions = 2, model = "tna", n = 20, n_states = 3, chain_length = 10, seed = 1
 #'   ))
+#'
+#'   # One network with no arguments, recovered against its own truth.
+#'   network <- simulate_tna_batches(seed = 1)
+#'   head(validate_recovery(network, network, term = "to", estimate = "weight"))
 #' }
-simulate_tna_batches <- function(repetitions, model = c("tna", "ftna", "ctna", "atna"),
+simulate_tna_batches <- function(repetitions = 1L, model = c("tna", "ftna", "ctna", "atna"),
                                  ..., seed = NULL) {
   model <- match.arg(model)
   sequences <- simulate_sequence_batches(repetitions, ..., seed = seed)
@@ -90,15 +98,20 @@ simulate_tna_batches <- function(repetitions, model = c("tna", "ftna", "ctna", "
     value$dataset <- NULL
     fit_tna(value, model = model, format = "long")
   })
-  edges <- do.call(rbind, Map(function(result, dataset) {
-    data.frame(network = as.integer(dataset), .plain_data(result),
+  # `dataset` is the identifier of the sequences and the true transitions too,
+  # so fitted edges and truth can be matched; unname() keeps rbind() from
+  # building "1.1"-style row names.
+  edges <- do.call(rbind, unname(Map(function(result, dataset) {
+    data.frame(dataset = as.integer(dataset), .plain_data(result),
                check.names = FALSE, row.names = NULL)
-  }, fitted, names(fitted)))
-  info <- do.call(rbind, Map(function(result, dataset) {
-    data.frame(network = as.integer(dataset),
+  }, fitted, names(fitted))))
+  info <- do.call(rbind, unname(Map(function(result, dataset) {
+    data.frame(dataset = as.integer(dataset),
                as.data.frame(result, what = "model_info"),
                check.names = FALSE, row.names = NULL)
-  }, fitted, names(fitted)))
+  }, fitted, names(fitted))))
+  rownames(edges) <- NULL
+  rownames(info) <- NULL
   result <- .new_simulab_sim(
     edges, "tna_batches", seed,
     list(

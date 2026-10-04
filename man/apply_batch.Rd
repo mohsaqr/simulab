@@ -11,9 +11,12 @@ apply_batch(inputs, fun, ..., id = "batch_id")
 simulation results. Element names label the batches; when \code{inputs} is
 unnamed the positions \code{"1"}, \code{"2"}, ... are used instead.}
 
-\item{fun}{Function applied to each element. It must return a base
-\code{data.frame}, and every call must return the same columns, otherwise the
-run is an error.}
+\item{fun}{Function applied to each element. When \code{fun} has a \code{data}
+argument, as \code{lm()} and \code{glm()} do, the element is passed as \code{data};
+otherwise it is the first argument. \code{fun} returns a base \code{data.frame}, or
+a fitted model with named coefficients, which becomes a data frame with
+columns \code{term} and \code{estimate}. Every call must give the same columns,
+otherwise the run is an error.}
 
 \item{...}{Arguments passed to \code{fun}.}
 
@@ -34,4 +37,8 @@ inputs <- list(
   large = simulate_ttest(n_a = 60, n_b = 60, mean_a = 0, mean_b = 0.5, seed = 2)
 )
 apply_batch(inputs, fun = summary)
+
+# A model function is applied to each data set and tidied to coefficients.
+datasets <- simulate_regression(seed = 1, batch = 3)
+apply_batch(datasets, lm, formula = outcome ~ x1 + x2)
 }

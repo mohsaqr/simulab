@@ -5,8 +5,8 @@
 \title{Simulate a one-way group design}
 \usage{
 simulate_anova(
-  n,
-  means,
+  n = 30L,
+  means = NULL,
   sds = 1,
   labels = NULL,
   outcome = "outcome",
@@ -15,9 +15,12 @@ simulate_anova(
 )
 }
 \arguments{
-\item{n}{Group sample size or one size per group.}
+\item{n}{Group sample size or one size per group, defaulting to \code{30}.}
 
-\item{means}{Group means.}
+\item{means}{Group means. \code{NULL} (the default) draws one mean per group from
+the standard normal distribution, rounded to two decimals, inside the
+same seeded draw as the data. The number of groups is then the length of
+\code{n}, \code{sds} or \code{labels}, or \code{3} when all of them have length one.}
 
 \item{sds}{Group standard deviations.}
 

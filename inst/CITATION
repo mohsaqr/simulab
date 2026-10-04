@@ -1,0 +1,12 @@
+bibentry(
+  bibtype = "Manual",
+  title = "{simulab}: Simulates a Wide Variety of Data Shapes, Sizes and Distributions",
+  author = c(person("Mohammed", "Saqr"), person("Sonsoles", "L\u00f3pez-Pernas")),
+  year = "2026",
+  note = paste("R package version", meta$Version),
+  url = "https://pak.dynasite.org/simulab/",
+  textVersion = paste0(
+    "Saqr, M., & L\u00f3pez-Pernas, S. (2026). simulab: Simulates a Wide Variety of Data Shapes, Sizes and Distributions. ",
+    "R package version ", meta$Version, ". https://pak.dynasite.org/simulab/"
+  )
+)

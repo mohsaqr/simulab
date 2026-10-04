@@ -9,25 +9,33 @@ validate_recovery(
   truth,
   term = "term",
   estimate = "estimate",
-  true_value = "truth",
+  true_value = NULL,
   tolerance = 0.1
 )
 }
 \arguments{
 \item{estimates}{Tidy base \code{data.frame} with a term column and an estimate
-column.}
+column, or a fitted model with named coefficients, such as the result of
+\code{lm()}, whose coefficients become the \code{term} and \code{estimate} columns.}
 
-\item{truth}{Tidy base \code{data.frame} with a term column and a true-value
-column.}
+\item{truth}{The generating values. A tidy base \code{data.frame} with a term
+column and a true-value column; a \code{simulab_sim} result, whose table of
+generating values (the one its print method shows under \code{Truth}) is used;
+or a batch of results from \code{batch = n}, whose tables are stacked with a
+\code{batch_id} column numbered as \code{\link[=apply_batch]{apply_batch()}} numbers the data sets, so
+each estimate is compared with the truth of its own data set.}
 
-\item{term}{Name of the term column in both frames, default \code{"term"}. It is
-the key the two frames are merged on.}
+\item{term}{Name of the term column in both frames, default \code{"term"}. The
+frames are merged on it and on every other column the two share, such as
+\code{batch_id}.}
 
 \item{estimate}{Name of the estimate column in \code{estimates}, default
 \code{"estimate"}.}
 
-\item{true_value}{Name of the true-value column in \code{truth}, default
-\code{"truth"}.}
+\item{true_value}{Name of the true-value column in \code{truth}. \code{NULL} (the
+default) uses a column named \code{truth} when there is one, and otherwise the
+only numeric column of \code{truth} other than the shared identifiers; it is an
+error when there are several.}
 
 \item{tolerance}{Single non-negative absolute-error tolerance for successful
 recovery, default \code{0.1}.}
@@ -48,4 +56,17 @@ Compare recovered estimates with known simulation truth
 estimates <- data.frame(term = c("x1", "x2"), estimate = c(0.52, -0.28))
 truth <- data.frame(term = c("x1", "x2"), truth = c(0.5, -0.3))
 validate_recovery(estimates, truth, tolerance = 0.1)
+
+# One data set: the fitted model against the result's own truth.
+data_set <- simulate_regression(seed = 1)
+validate_recovery(lm(outcome ~ x1 + x2, data = data_set), data_set)
+
+# A batch with drawn coefficients: each data set is compared with its own.
+datasets <- simulate_regression(seed = 1, batch = 20)
+fit_coefficients <- function(data) {
+  fit <- lm(outcome ~ x1 + x2, data = data)
+  data.frame(term = names(coef(fit)), estimate = unname(coef(fit)))
+}
+estimates <- apply_batch(datasets, fit_coefficients)
+head(validate_recovery(estimates, datasets))
 }

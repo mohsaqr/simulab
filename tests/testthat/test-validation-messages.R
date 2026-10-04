@@ -9,7 +9,7 @@ test_that("a rejected argument is named in the message", {
   )
   expect_error(
     simulate_regression(n = 10, coefficients = c(1, 0.5)),
-    regexp = "`coefficients` must be a named numeric vector"
+    regexp = "`coefficients` must be NULL or a named numeric vector"
   )
   expect_error(
     simulate_lca(n = 10, probabilities = list(c(0.8, 0.7))),
