@@ -38,7 +38,7 @@ simulate_ordinal(
 
   Correlation arguments for the latent normal variables. `structure`
   follows the same resolution rule as
-  [`simulate_correlated()`](https://mohsaqr.github.io/simulab/reference/simulate_correlated.md):
+  [`simulate_correlated()`](https://pak.dynasite.org/simulab/reference/simulate_correlated.md):
   leaving it unset selects `"exchangeable"` when a non-zero `rho` is
   given. Passed to the latent Gaussian generator.
 
@@ -92,6 +92,17 @@ head(result)
 #> 4  4  3  2
 #> 5  5  2  1
 #> 6  6  2  3
+#> 
+#> Truth (probabilities):
+#>   variable category probability
+#> 1       V1        1         0.2
+#> 2       V1        2         0.5
+#> 3       V1        3         0.3
+#> 4       V2        1         0.2
+#> 5       V2        2         0.5
+#> 6       V2        3         0.3
+#> 
+#> Other tables: correlation. Read one with as.data.frame(x, what = "correlation").
 as.data.frame(result, what = "probabilities")
 #>   variable category probability
 #> 1       V1        1         0.2

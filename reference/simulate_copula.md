@@ -29,7 +29,7 @@ simulate_copula(
 - specification:
 
   Variable definitions from
-  [`define_variables()`](https://mohsaqr.github.io/simulab/reference/define_variables.md).
+  [`define_variables()`](https://pak.dynasite.org/simulab/reference/define_variables.md).
   In the distribution-call form every marginal must carry a quantile
   function; `list_distributions(copula = TRUE)` reports which do. The
   `formula`/`variance` column form covers twelve marginals: `formula` is
@@ -128,6 +128,16 @@ head(result)
 #> 4  4 12.667842      4 0.2524626
 #> 5  5  9.347847      0 0.1384510
 #> 6  6  9.453232      9 0.2715592
+#> 
+#> Truth (definitions):
+#>   variable distribution parameter value
+#> 1    score       normal      mean    10
+#> 2    score       normal        sd     2
+#> 3   visits      poisson    lambda     4
+#> 4     rate         beta    shape1     2
+#> 5     rate         beta    shape2     5
+#> 
+#> Other tables: latent_correlation. Read one with as.data.frame(x, what = "latent_correlation").
 
 specification <- define_variables(
   define_variable("normal_var", formula = "0", variance = "1", distribution = "normal"),
@@ -143,6 +153,13 @@ head(result)
 #> 4  4  1.4552777         3
 #> 5  5 -0.2731824         0
 #> 6  6 -0.1460692         7
+#> 
+#> Truth (definitions):
+#>     variable distribution formula variance     link
+#> 1 normal_var       normal       0        1 identity
+#> 2  count_var      poisson       3        0 identity
+#> 
+#> Other tables: latent_correlation. Read one with as.data.frame(x, what = "latent_correlation").
 components(result)
 #>                table rows columns
 #> 1               data  200       3

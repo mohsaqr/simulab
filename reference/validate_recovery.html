@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -48,7 +48,7 @@
 <span>  <span class="va">truth</span>,</span>
 <span>  term <span class="op">=</span> <span class="st">"term"</span>,</span>
 <span>  estimate <span class="op">=</span> <span class="st">"estimate"</span>,</span>
-<span>  true_value <span class="op">=</span> <span class="st">"truth"</span>,</span>
+<span>  true_value <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tolerance <span class="op">=</span> <span class="fl">0.1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -59,17 +59,23 @@
 
 <dl><dt id="arg-estimates">estimates<a class="anchor" aria-label="anchor" href="#arg-estimates"></a></dt>
 <dd><p>Tidy base <code>data.frame</code> with a term column and an estimate
-column.</p></dd>
+column, or a fitted model with named coefficients, such as the result of
+<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, whose coefficients become the <code>term</code> and <code>estimate</code> columns.</p></dd>
 
 
 <dt id="arg-truth">truth<a class="anchor" aria-label="anchor" href="#arg-truth"></a></dt>
-<dd><p>Tidy base <code>data.frame</code> with a term column and a true-value
-column.</p></dd>
+<dd><p>The generating values. A tidy base <code>data.frame</code> with a term
+column and a true-value column; a <code>simulab_sim</code> result, whose table of
+generating values (the one its print method shows under <code>Truth</code>) is used;
+or a batch of results from <code>batch = n</code>, whose tables are stacked with a
+<code>batch_id</code> column numbered as <code><a href="apply_batch.html">apply_batch()</a></code> numbers the data sets, so
+each estimate is compared with the truth of its own data set.</p></dd>
 
 
 <dt id="arg-term">term<a class="anchor" aria-label="anchor" href="#arg-term"></a></dt>
-<dd><p>Name of the term column in both frames, default <code>"term"</code>. It is
-the key the two frames are merged on.</p></dd>
+<dd><p>Name of the term column in both frames, default <code>"term"</code>. The
+frames are merged on it and on every other column the two share, such as
+<code>batch_id</code>.</p></dd>
 
 
 <dt id="arg-estimate">estimate<a class="anchor" aria-label="anchor" href="#arg-estimate"></a></dt>
@@ -78,8 +84,10 @@ the key the two frames are merged on.</p></dd>
 
 
 <dt id="arg-true-value">true_value<a class="anchor" aria-label="anchor" href="#arg-true-value"></a></dt>
-<dd><p>Name of the true-value column in <code>truth</code>, default
-<code>"truth"</code>.</p></dd>
+<dd><p>Name of the true-value column in <code>truth</code>. <code>NULL</code> (the
+default) uses a column named <code>truth</code> when there is one, and otherwise the
+only numeric column of <code>truth</code> other than the shared identifiers; it is an
+error when there are several.</p></dd>
 
 
 <dt id="arg-tolerance">tolerance<a class="anchor" aria-label="anchor" href="#arg-tolerance"></a></dt>
@@ -106,6 +114,41 @@ that is <code>TRUE</code> when <code>absolute_error</code> is at most <code>tole
 <span class="r-out co"><span class="r-pr">#&gt;</span>   term estimate truth bias absolute_error relative_error recovered</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   x1     0.52   0.5 0.02           0.02     0.04000000      TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   x2    -0.28  -0.3 0.02           0.02    -0.06666667      TRUE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># One data set: the fitted model against the result's own truth.</span></span></span>
+<span class="r-in"><span><span class="va">data_set</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_regression.html">simulate_regression</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">validate_recovery</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span>, data <span class="op">=</span> <span class="va">data_set</span><span class="op">)</span>, <span class="va">data_set</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          term   estimate truth         bias absolute_error relative_error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 (Intercept) -0.6252180 -0.63  0.004782022    0.004782022   -0.007590511</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          x1  0.1652958  0.15  0.015295795    0.015295795    0.101971968</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          x2  0.7541006  0.82 -0.065899429    0.065899429   -0.080365157</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   recovered</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      TRUE</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># A batch with drawn coefficients: each data set is compared with its own.</span></span></span>
+<span class="r-in"><span><span class="va">datasets</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_regression.html">simulate_regression</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">1</span>, batch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit_coefficients</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">outcome</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>term <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span>, estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">estimates</span> <span class="op">&lt;-</span> <span class="fu"><a href="apply_batch.html">apply_batch</a></span><span class="op">(</span><span class="va">datasets</span>, <span class="va">fit_coefficients</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">validate_recovery</span><span class="op">(</span><span class="va">estimates</span>, <span class="va">datasets</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   batch_id        term   estimate truth        bias absolute_error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        1 (Intercept)  0.4871271  0.52 -0.03287288     0.03287288</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        1          x1  0.4291198  0.46 -0.03088022     0.03088022</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        1          x2 -0.4881249 -0.34 -0.14812486     0.14812486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        2 (Intercept) -0.5419140 -0.53 -0.01191397     0.01191397</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        2          x1  0.4818146  0.45  0.03181463     0.03181463</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        2          x2  0.5997644  0.76 -0.16023560     0.16023560</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   relative_error recovered</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    -0.06321708      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    -0.06713092      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     0.43566136     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     0.02247919      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     0.07069917      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    -0.21083632     FALSE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -113,7 +156,7 @@ that is <code>TRUE</code> when <code>absolute_error</code> is at most <code>tole
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

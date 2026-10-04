@@ -13,7 +13,7 @@ learning_states(categories = "all")
 - categories:
 
   A character vector of one or more category identifiers from
-  [`learning_state_categories()`](https://mohsaqr.github.io/simulab/reference/learning_state_categories.md),
+  [`learning_state_categories()`](https://pak.dynasite.org/simulab/reference/learning_state_categories.md),
   or `"all"` (the default) for every category. Unknown identifiers raise
   an error.
 

@@ -20,7 +20,7 @@ observed_data(data, missingness, id = NULL)
 - missingness:
 
   A logical mask returned by
-  [`missingness_matrix()`](https://mohsaqr.github.io/simulab/reference/missingness_matrix.md),
+  [`missingness_matrix()`](https://pak.dynasite.org/simulab/reference/missingness_matrix.md),
   with one row per row of `data`. Its columns that also name columns of
   `data`, other than those listed in `id`, are the targets, and each
   must be logical.
@@ -61,4 +61,6 @@ head(result)
 #> 4  4 -0.2482471
 #> 5  5         NA
 #> 6  6  0.4048710
+#> 
+#> Other tables: missingness. Read one with as.data.frame(x, what = "missingness").
 ```

@@ -6,7 +6,7 @@ period. A row is treated from `treatment_start + lag` onwards, and the
 `lag` periods from `treatment_start` up to that point are flagged as
 transition periods instead. The period values are compared as they
 stand, so they must be on the same scale as `start`. Periods created by
-[`expand_periods()`](https://mohsaqr.github.io/simulab/reference/expand_periods.md)
+[`expand_periods()`](https://pak.dynasite.org/simulab/reference/expand_periods.md)
 are numbered from `0`.
 
 ## Usage
@@ -115,4 +115,6 @@ head(result)
 #> 4  1       1      3    3         1
 #> 5  1       1      4    4         1
 #> 6  2       1      0    0         0
+#> 
+#> Other tables: schedule. Read one with as.data.frame(x, what = "schedule").
 ```

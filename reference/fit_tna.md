@@ -54,7 +54,7 @@ are the estimated transition probabilities and sum to one within each
 weights. `as.data.frame(x, what = )` also returns
 `initial_probabilities` (`state`, `probability`) and `model_info`
 (`model`, `grouped`, `group`, `observations`, `sequence_positions`). Use
-[`as_tna_model()`](https://mohsaqr.github.io/simulab/reference/as_tna_model.md)
+[`as_tna_model()`](https://pak.dynasite.org/simulab/reference/as_tna_model.md)
 when a native model object is required by `tna` plotting or inference
 functions.
 
@@ -66,11 +66,13 @@ if (requireNamespace("tna", quietly = TRUE)) {
   head(fit_tna(data, model = "tna"))
 }
 #> <simulab_sim:tna_model> 6 rows x 3 columns
-#>      from      to    weight
-#> 1 State 1 State 1 0.1104651
-#> 2 State 2 State 1 0.5637584
-#> 3 State 3 State 1 0.6386555
-#> 4 State 1 State 2 0.3720930
-#> 5 State 2 State 2 0.3288591
-#> 6 State 3 State 2 0.3277311
+#>      from    to     weight
+#> 1   Learn Learn 0.53112033
+#> 2    Plan Learn 0.17187500
+#> 3 Reflect Learn 0.90370370
+#> 4   Learn  Plan 0.10788382
+#> 5    Plan  Plan 0.17187500
+#> 6 Reflect  Plan 0.03703704
+#> 
+#> Other tables: initial_probabilities, model_info. Read one with as.data.frame(x, what = "initial_probabilities").
 ```

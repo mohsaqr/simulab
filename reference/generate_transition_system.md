@@ -10,7 +10,7 @@ generate_transition_system(
   states = NULL,
   concentration = 1,
   diagonal_concentration = 0,
-  state_categories = NULL,
+  state_categories = c("metacognitive", "cognitive"),
   seed = NULL,
   batch = NULL
 )
@@ -39,9 +39,12 @@ generate_transition_system(
 
 - state_categories:
 
-  Optional learning-state categories, used only when `states` is `NULL`,
-  to draw state labels with
-  [`sample_learning_states()`](https://mohsaqr.github.io/simulab/reference/sample_learning_states.md).
+  Learning-state categories the state labels are drawn from with
+  [`sample_learning_states()`](https://pak.dynasite.org/simulab/reference/sample_learning_states.md)
+  when `states` is `NULL`, defaulting to
+  `c("metacognitive", "cognitive")`; see
+  [`learning_state_categories()`](https://pak.dynasite.org/simulab/reference/learning_state_categories.md).
+  `NULL` labels the states `State 1`, `State 2`, and so on.
 
 - seed:
 
@@ -72,13 +75,15 @@ result <- generate_transition_system(n_states = 3, seed = 1)
 result
 #> <simulab_sim:transition_system> 9 rows x 3 columns
 #>      from      to probability
-#> 1 State 1 State 1  0.07830127
-#> 2 State 2 State 1  0.55164885
-#> 3 State 3 State 1  0.59019469
-#> 4 State 1 State 2  0.42202656
-#> 5 State 2 State 2  0.35827360
-#> 6 State 3 State 2  0.37885862
-#> 7 State 1 State 3  0.49967217
-#> 8 State 2 State 3  0.09007756
-#> 9 State 3 State 3  0.03094669
+#> 1 Reflect Reflect  0.07830127
+#> 2   Learn Reflect  0.55164885
+#> 3    Plan Reflect  0.59019469
+#> 4 Reflect   Learn  0.42202656
+#> 5   Learn   Learn  0.35827360
+#> 6    Plan   Learn  0.37885862
+#> 7 Reflect    Plan  0.49967217
+#> 8   Learn    Plan  0.09007756
+#> 9    Plan    Plan  0.03094669
+#> 
+#> Other tables: initial_probabilities. Read one with as.data.frame(x, what = "initial_probabilities").
 ```

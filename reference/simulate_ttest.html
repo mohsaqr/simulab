@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -44,10 +44,10 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">simulate_ttest</span><span class="op">(</span></span>
-<span>  <span class="va">n_a</span>,</span>
-<span>  <span class="va">n_b</span>,</span>
-<span>  <span class="va">mean_a</span>,</span>
-<span>  <span class="va">mean_b</span>,</span>
+<span>  n_a <span class="op">=</span> <span class="fl">50L</span>,</span>
+<span>  n_b <span class="op">=</span> <span class="fl">50L</span>,</span>
+<span>  mean_a <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  mean_b <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sd_a <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  sd_b <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>,</span>
@@ -62,11 +62,14 @@
 
 
 <dl><dt id="arg-n-a-n-b">n_a, n_b<a class="anchor" aria-label="anchor" href="#arg-n-a-n-b"></a></dt>
-<dd><p>Group sample sizes.</p></dd>
+<dd><p>Group sample sizes, each defaulting to <code>50</code>.</p></dd>
 
 
 <dt id="arg-mean-a-mean-b">mean_a, mean_b<a class="anchor" aria-label="anchor" href="#arg-mean-a-mean-b"></a></dt>
-<dd><p>Group means.</p></dd>
+<dd><p>Group means. A mean left <code>NULL</code> (the default) is drawn
+from the standard normal distribution and rounded to two decimals, inside
+the same seeded draw as the data, and is reported in the <code>parameters</code>
+table.</p></dd>
 
 
 <dt id="arg-sd-a-sd-b">sd_a, sd_b<a class="anchor" aria-label="anchor" href="#arg-sd-a-sd-b"></a></dt>
@@ -118,10 +121,24 @@ standard deviation.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4  4     A  1.5952808</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5  5     A  0.3295078</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6  6     A -0.8204684</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Truth (parameters):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   group  n mean sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     A 40  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     B 40  0.6  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Other tables: effects. Read one with as.data.frame(x, what = "effects").</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">result</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   group  n mean sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     A 40  0.0  1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2     B 40  0.6  1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># With no arguments, the group means are drawn and reported.</span></span></span>
+<span class="r-in"><span><span class="va">drawn</span> <span class="op">&lt;-</span> <span class="fu">simulate_ttest</span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">drawn</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   group  n  mean sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     A 50 -0.63  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     B 50  0.18  1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -129,7 +146,7 @@ standard deviation.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

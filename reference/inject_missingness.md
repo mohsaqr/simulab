@@ -89,6 +89,8 @@ head(result)
 #> 4  4 -0.3908678  0.5421914
 #> 5  5 -0.4162220 -0.1366734
 #> 6  6 -0.3756574 -1.1367339
+#> 
+#> Other tables: missingness, missingness_summary. Read one with as.data.frame(x, what = "missingness").
 
 # MAR missingness in `y` driven by the observed predictor `x`.
 head(inject_missingness(
@@ -103,4 +105,6 @@ head(inject_missingness(
 #> 4  4 -0.3908678  0.5421914
 #> 5  5 -0.4162220 -0.1366734
 #> 6  6 -0.3756574 -1.1367339
+#> 
+#> Other tables: missingness, missingness_summary. Read one with as.data.frame(x, what = "missingness").
 ```

@@ -5,7 +5,7 @@ and each categorical predictor by sampling its levels with replacement,
 then forms the outcome as the intercept plus the continuous linear
 predictor plus the level effects plus normal residual noise. With no
 categorical predictor the call is simply
-[`simulate_regression()`](https://mohsaqr.github.io/simulab/reference/simulate_regression.md).
+[`simulate_regression()`](https://pak.dynasite.org/simulab/reference/simulate_regression.md).
 
 ## Usage
 
@@ -90,7 +90,7 @@ simulate_prediction(
 ## Value
 
 When `categorical_levels` is `NULL`, whatever
-[`simulate_regression()`](https://mohsaqr.github.io/simulab/reference/simulate_regression.md)
+[`simulate_regression()`](https://pak.dynasite.org/simulab/reference/simulate_regression.md)
 returns. Otherwise a `simulab_sim` base `data.frame` with one row per
 unit and columns `id`, one column per continuous coefficient name, one
 character column per categorical predictor, and the outcome named by
@@ -120,6 +120,14 @@ head(result)
 #> 4  4  1.5952808 -0.3309078  2.0353208
 #> 5  5  0.3295078 -2.2852355  2.6985213
 #> 6  6 -0.8204684  2.4976616 -3.1937874
+#> 
+#> Truth (coefficients):
+#>          term coefficient
+#> 1 (Intercept)         0.5
+#> 2          x1         1.0
+#> 3          x2        -1.0
+#> 
+#> Other tables: effects, predictor_correlation. Read one with as.data.frame(x, what = "effects").
 as.data.frame(result, what = "coefficients")
 #>          term coefficient
 #> 1 (Intercept)         0.5

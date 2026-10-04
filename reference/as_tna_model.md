@@ -13,9 +13,9 @@ as_tna_model(x, group = NULL)
 - x:
 
   A result from
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md)
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md)
   or
-  [`simulate_group_tna()`](https://mohsaqr.github.io/simulab/reference/simulate_group_tna.md).
+  [`simulate_group_tna()`](https://pak.dynasite.org/simulab/reference/simulate_group_tna.md).
 
 - group:
 
@@ -25,7 +25,7 @@ as_tna_model(x, group = NULL)
 ## Value
 
 A native `tna` or `group_tna` model object. For a
-[`compare_tna_models()`](https://mohsaqr.github.io/simulab/reference/compare_tna_models.md)
+[`compare_tna_models()`](https://pak.dynasite.org/simulab/reference/compare_tna_models.md)
 result the stored models are returned as a list named by model type
 instead.
 

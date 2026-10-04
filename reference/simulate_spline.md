@@ -97,4 +97,16 @@ head(result)
 #> 4  4 0.1073091 0.2323486
 #> 5  5 0.3887622 0.4466184
 #> 6  6 0.9774780 0.8660810
+#> 
+#> Truth (parameters):
+#>     basis coefficient
+#> 1 basis_1         0.1
+#> 2 basis_2         0.2
+#> 3 basis_3         0.5
+#> 4 basis_4         0.4
+#> 5 basis_5         0.7
+#> 6 basis_6         0.6
+#> 7 basis_7         0.9
+#> 
+#> Other tables: basis. Read one with as.data.frame(x, what = "basis").
 ```

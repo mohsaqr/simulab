@@ -2,10 +2,10 @@
 
 Draws one latent event time per process for every row of `data`, from
 the Weibull hazard of
-[`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md).
+[`define_survival()`](https://pak.dynasite.org/simulab/reference/define_survival.md).
 The times are uncensored: censoring and competing-risk coding are
 applied afterwards, for example with
-[`combine_competing_risks()`](https://mohsaqr.github.io/simulab/reference/combine_competing_risks.md).
+[`combine_competing_risks()`](https://pak.dynasite.org/simulab/reference/combine_competing_risks.md).
 An event with several rows in `specification` has a piecewise hazard,
 whose `scale` and `shape` must stay constant across its segments.
 
@@ -32,7 +32,7 @@ augment_survival(
 - specification:
 
   Definitions from
-  [`define_survivals()`](https://mohsaqr.github.io/simulab/reference/define_survivals.md),
+  [`define_survivals()`](https://pak.dynasite.org/simulab/reference/define_survivals.md),
   a `simulab_survival_spec` object.
 
 - seed:
@@ -80,4 +80,8 @@ head(result)
 #> 4  4         0  5.462235
 #> 5  5         0 12.694901
 #> 6  6         0  5.640350
+#> 
+#> Truth (survival_definitions):
+#>   event              formula scale shape transition
+#> 1  time -8 + 0.5 * treatment     1   0.3          0
 ```

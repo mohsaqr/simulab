@@ -46,7 +46,7 @@ bootstrap_tna(
   Arguments describing the shape and column names of `data`. They are
   used to reshape `data` before resampling; the resampled sequences are
   then fitted in wide form, so only `group` is forwarded to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
   `group` resamples within each group.
 
 - seed:
@@ -56,13 +56,13 @@ bootstrap_tna(
 - ...:
 
   Further arguments passed to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
 
 ## Value
 
 A `simulab_sim` edge list with one row per repetition and transition: a
 leading `iteration` column followed by the columns
-[`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md)
+[`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md)
 returns. The `summary` component holds one row per edge (per group, when
 `group` is given) with the bootstrap `mean`, `sd`, and the 2.5% and
 97.5% percentiles as `lower` and `upper`.
@@ -75,11 +75,13 @@ if (requireNamespace("tna", quietly = TRUE)) {
   head(bootstrap_tna(data, model = "tna", repetitions = 5, seed = 1))
 }
 #> <simulab_sim:tna_bootstrap> 6 rows x 4 columns
-#>   iteration    from      to    weight
-#> 1         1 State 1 State 1 0.1071429
-#> 2         1 State 2 State 1 0.5414013
-#> 3         1 State 3 State 1 0.5652174
-#> 4         1 State 1 State 2 0.3928571
-#> 5         1 State 2 State 2 0.3757962
-#> 6         1 State 3 State 2 0.3739130
+#>   iteration    from    to     weight
+#> 1         1   Learn Learn 0.57661290
+#> 2         1    Plan Learn 0.16666667
+#> 3         1 Reflect Learn 0.88636364
+#> 4         1   Learn  Plan 0.08870968
+#> 5         1    Plan  Plan 0.21666667
+#> 6         1 Reflect  Plan 0.02272727
+#> 
+#> Other tables: summary. Read one with as.data.frame(x, what = "summary").
 ```

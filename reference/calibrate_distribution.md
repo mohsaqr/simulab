@@ -4,7 +4,7 @@
 parameterization used by the `formula`/`variance` specification columns
 into the shape parameters base R's samplers take. For a mean and a
 *variance*, and for the wider catalogue, use
-[`calibrate_moments()`](https://mohsaqr.github.io/simulab/reference/calibrate_moments.md).
+[`calibrate_moments()`](https://pak.dynasite.org/simulab/reference/calibrate_moments.md).
 
 ## Usage
 

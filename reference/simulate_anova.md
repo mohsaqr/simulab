@@ -6,8 +6,8 @@ Simulate a one-way group design
 
 ``` r
 simulate_anova(
-  n,
-  means,
+  n = 30L,
+  means = NULL,
   sds = 1,
   labels = NULL,
   outcome = "outcome",
@@ -20,11 +20,14 @@ simulate_anova(
 
 - n:
 
-  Group sample size or one size per group.
+  Group sample size or one size per group, defaulting to `30`.
 
 - means:
 
-  Group means.
+  Group means. `NULL` (the default) draws one mean per group from the
+  standard normal distribution, rounded to two decimals, inside the same
+  seeded draw as the data. The number of groups is then the length of
+  `n`, `sds` or `labels`, or `3` when all of them have length one.
 
 - sds:
 
@@ -80,6 +83,14 @@ head(result)
 #> 4  4 Group 1  1.5952808
 #> 5  5 Group 1  0.3295078
 #> 6  6 Group 1 -0.8204684
+#> 
+#> Truth (parameters):
+#>     group  n mean sd
+#> 1 Group 1 90  0.0  1
+#> 2 Group 2 90  0.4  1
+#> 3 Group 3 90  0.9  1
+#> 
+#> Other tables: effects. Read one with as.data.frame(x, what = "effects").
 as.data.frame(result, what = "parameters")
 #>     group  n mean sd
 #> 1 Group 1 90  0.0  1

@@ -21,10 +21,10 @@ update_definition(
 
   A `simulab_spec` object in the `formula`/`variance` column form, as
   created by
-  [`define_variable()`](https://mohsaqr.github.io/simulab/reference/define_variable.md),
-  [`repeat_variables()`](https://mohsaqr.github.io/simulab/reference/repeat_variables.md)
+  [`define_variable()`](https://pak.dynasite.org/simulab/reference/define_variable.md),
+  [`repeat_variables()`](https://pak.dynasite.org/simulab/reference/repeat_variables.md)
   or
-  [`read_definitions()`](https://mohsaqr.github.io/simulab/reference/read_definitions.md).
+  [`read_definitions()`](https://pak.dynasite.org/simulab/reference/read_definitions.md).
 
 - variable:
 

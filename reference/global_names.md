@@ -13,7 +13,7 @@ global_names(regions = "all")
 - regions:
 
   Region names from
-  [`global_name_regions()`](https://mohsaqr.github.io/simulab/reference/global_name_regions.md),
+  [`global_name_regions()`](https://pak.dynasite.org/simulab/reference/global_name_regions.md),
   or `"all"`, the default, for every region.
 
 ## Value

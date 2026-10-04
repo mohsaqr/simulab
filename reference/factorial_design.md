@@ -65,4 +65,6 @@ factorial_design(factors = c(dose = 3L, timing = 2L), replications = 2)
 #> 9   9    1      1
 #> 10 10    1      1
 #> ... 2 more rows
+#> 
+#> Other tables: factors. Read one with as.data.frame(x, what = "factors").
 ```

@@ -95,6 +95,17 @@ head(result)
 #> 4  1      4     2 Sequence cluster 2
 #> 5  1      5     2 Sequence cluster 2
 #> 6  1      6     1 Sequence cluster 2
+#> 
+#> Truth (transitions):
+#>     sequence_cluster from to probability
+#> 1 Sequence cluster 1    1  1         0.8
+#> 2 Sequence cluster 1    2  1         0.3
+#> 3 Sequence cluster 1    1  2         0.2
+#> 4 Sequence cluster 1    2  2         0.7
+#> 5 Sequence cluster 2    1  1         0.3
+#> 6 Sequence cluster 2    2  1         0.6
+#> 7 Sequence cluster 2    1  2         0.7
+#> 8 Sequence cluster 2    2  2         0.4
 components(result)
 #>         table rows columns
 #> 1        data  720       4

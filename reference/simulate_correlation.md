@@ -1,11 +1,11 @@
 # Simulate a correlation design
 
 A thin wrapper around
-[`simulate_correlated()`](https://mohsaqr.github.io/simulab/reference/simulate_correlated.md)
+[`simulate_correlated()`](https://pak.dynasite.org/simulab/reference/simulate_correlated.md)
 that supplies defaults for `means` and `sds`, so
 `simulate_correlation(n)` generates a single standard normal variable.
 `structure` is forwarded only when it is supplied, which keeps
-[`simulate_correlated()`](https://mohsaqr.github.io/simulab/reference/simulate_correlated.md)'s
+[`simulate_correlated()`](https://pak.dynasite.org/simulab/reference/simulate_correlated.md)'s
 own default resolution intact: `"custom"` when `correlation` is given,
 `"exchangeable"` when a non-zero `rho` is given, and `"independent"`
 otherwise.
@@ -35,7 +35,7 @@ simulate_correlation(
 - means, sds, rho, structure, correlation, variable_names, seed:
 
   Arguments passed to
-  [`simulate_correlated()`](https://mohsaqr.github.io/simulab/reference/simulate_correlated.md).
+  [`simulate_correlated()`](https://pak.dynasite.org/simulab/reference/simulate_correlated.md).
   Unlike that function, `means` defaults to `0`. One variable is
   generated per element of `means`; `sds` must be a single value, which
   is recycled, or one value per mean.
@@ -57,7 +57,7 @@ A `simulab_sim` base `data.frame` with one row per observation and an
 `correlation` and `covariance` components hold the requested means and
 standard deviations and the tidy correlation and covariance matrices;
 use
-[`components()`](https://mohsaqr.github.io/simulab/reference/components.md)
+[`components()`](https://pak.dynasite.org/simulab/reference/components.md)
 to list them.
 
 ## Examples
@@ -74,6 +74,13 @@ head(result)
 #> 4  4  1.40877402  0.1905454
 #> 5  5 -0.41005641 -2.0637653
 #> 6  6  0.01146529  2.1100350
+#> 
+#> Truth (parameters):
+#>   variable mean sd
+#> 1       V1    0  1
+#> 2       V2    0  1
+#> 
+#> Other tables: correlation, covariance. Read one with as.data.frame(x, what = "correlation").
 as.data.frame(result, what = "correlation")
 #>   row column correlation
 #> 1  V1     V1         1.0

@@ -17,7 +17,7 @@ define_variables(...)
   **Distribution calls.** `age = normal(mean = 50, sd = 10)` names the
   variable with the argument name and states its distribution as a call.
   Parameters may be given positionally or by name, in the order
-  [`list_distributions()`](https://mohsaqr.github.io/simulab/reference/list_distributions.md)
+  [`list_distributions()`](https://pak.dynasite.org/simulab/reference/list_distributions.md)
   reports. A parameter may be any expression over variables defined
   earlier in the same call, so
   `outcome = normal(mean = 10 + 0.2 * age, sd = 2)` is a regression.
@@ -31,9 +31,9 @@ define_variables(...)
   `formula`, `variance`, `distribution`, `link`).
 
   **Objects** created by
-  [`define_variable()`](https://mohsaqr.github.io/simulab/reference/define_variable.md)
+  [`define_variable()`](https://pak.dynasite.org/simulab/reference/define_variable.md)
   or
-  [`repeat_variables()`](https://mohsaqr.github.io/simulab/reference/repeat_variables.md).
+  [`repeat_variables()`](https://pak.dynasite.org/simulab/reference/repeat_variables.md).
 
   The forms cannot be mixed in one call.
 
@@ -50,9 +50,9 @@ Distribution calls give one row per distribution parameter, with columns
 the constructor form give one row per variable, with columns `variable`,
 `distribution`, `formula`, `variance` and `link`. Both forms are
 accepted by
-[`simulate_study()`](https://mohsaqr.github.io/simulab/reference/simulate_study.md)
+[`simulate_study()`](https://pak.dynasite.org/simulab/reference/simulate_study.md)
 and
-[`augment_study()`](https://mohsaqr.github.io/simulab/reference/augment_study.md).
+[`augment_study()`](https://pak.dynasite.org/simulab/reference/augment_study.md).
 
 ## Examples
 

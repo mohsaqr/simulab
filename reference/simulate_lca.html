@@ -11,7 +11,7 @@ every indicator independently from that class's category probabilities
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,7 @@ every indicator independently from that class's category probabilities
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -149,6 +149,17 @@ with columns <code>latent_class</code>, <code>indicator</code>, <code>category</
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4  4      Class 2    yes     no</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5  5      Class 1     no    yes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6  6      Class 2    yes     no</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Truth (parameters):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   latent_class indicator category probability proportion</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      Class 1    item_1       no         0.8        0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      Class 2    item_1       no         0.2        0.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      Class 1    item_2       no         0.7        0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      Class 2    item_2       no         0.3        0.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      Class 1    item_1      yes         0.2        0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      Class 2    item_1      yes         0.8        0.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      Class 1    item_2      yes         0.3        0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      Class 2    item_2      yes         0.7        0.4</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">result</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   latent_class indicator category probability proportion</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      Class 1    item_1       no         0.8        0.6</span>
@@ -166,7 +177,7 @@ with columns <code>latent_class</code>, <code>indicator</code>, <code>category</
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

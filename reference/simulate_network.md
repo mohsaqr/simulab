@@ -137,7 +137,7 @@ and columns `from`, `to`, `weight` (plus `edge_class` when
 `nodes` (`node`, `type`), `adjacency` (a long `row`/`column`/`weight`
 table covering all `nodes^2` ordered pairs, symmetric when the generated
 graph is undirected), and a one-row `settings` table. Use
-[`as_igraph()`](https://mohsaqr.github.io/simulab/reference/as_igraph.md)
+[`as_igraph()`](https://pak.dynasite.org/simulab/reference/as_igraph.md)
 for native graph workflows.
 
 ## Examples
@@ -155,6 +155,12 @@ head(result)
 #> 4   46  2      1
 #> 5   53  2      1
 #> 6    4  3      1
+#> 
+#> Truth (settings):
+#>       model directed loops weight nodes edges
+#> 1 bernoulli     TRUE FALSE binary    60   228
+#> 
+#> Other tables: nodes, adjacency. Read one with as.data.frame(x, what = "nodes").
 components(result)
 #>       table rows columns
 #> 1      data  228       3
@@ -175,4 +181,10 @@ if (requireNamespace("igraph", quietly = TRUE)) {
 #> 4    1 60      1
 #> 5    2  3      1
 #> 6    2  4      1
+#> 
+#> Truth (settings):
+#>         model directed loops weight nodes edges
+#> 1 small_world    FALSE FALSE binary    60   120
+#> 
+#> Other tables: nodes, adjacency. Read one with as.data.frame(x, what = "nodes").
 ```

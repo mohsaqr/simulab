@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -81,13 +81,15 @@ observed state. A <code>mapping</code> table (<code>state</code>, <code>column</
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_sequences.html">simulate_sequences</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, n_states <span class="op">=</span> <span class="fl">3</span>, chain_length <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">encode_sequences</span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:one_hot_sequences&gt; 6 rows x 5 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   id period state_State.1 state_State.2 state_State.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  1      1             0             0             1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  1      2             0             1             0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  1      3             0             1             0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  1      4             0             1             0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  1      5             1             0             0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  2      1             0             1             0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   id period state_Learn state_Plan state_Reflect</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  1      1           0          0             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  1      2           1          0             0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  1      3           0          0             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  1      4           1          0             0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  1      5           0          0             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  2      1           0          1             0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Other tables: mapping. Read one with as.data.frame(x, what = "mapping").</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -95,7 +97,7 @@ observed state. A <code>mapping</code> table (<code>state</code>, <code>column</
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

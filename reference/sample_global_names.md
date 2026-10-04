@@ -18,7 +18,7 @@ sample_global_names(n, regions = "all", seed = NULL)
 - regions:
 
   Regions passed to
-  [`global_names()`](https://mohsaqr.github.io/simulab/reference/global_names.md).
+  [`global_names()`](https://pak.dynasite.org/simulab/reference/global_names.md).
 
 - seed:
 

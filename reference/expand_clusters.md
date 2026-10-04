@@ -60,4 +60,6 @@ head(result)
 #> 4  4       1 north
 #> 5  5       2 south
 #> 6  6       2 south
+#> 
+#> Other tables: clusters. Read one with as.data.frame(x, what = "clusters").
 ```

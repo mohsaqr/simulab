@@ -28,7 +28,7 @@ repeat_variables(
 - formula, variance, distribution, link:
 
   Arguments passed to
-  [`define_variable()`](https://mohsaqr.github.io/simulab/reference/define_variable.md).
+  [`define_variable()`](https://pak.dynasite.org/simulab/reference/define_variable.md).
 
 ## Value
 
@@ -54,4 +54,12 @@ head(simulate_study(n = 20, specification = specification, seed = 1))
 #> 4  4  1.5952808 -1.98935170  0.5566632
 #> 5  5  0.3295078  0.61982575 -0.6887557
 #> 6  6 -0.8204684 -0.05612874 -0.7074952
+#> 
+#> Truth (definitions):
+#>   variable distribution formula variance     link
+#> 1    item1       normal       0        1 identity
+#> 2    item2       normal       0        1 identity
+#> 3    item3       normal       0        1 identity
+#> 
+#> Other tables: metadata. Read one with as.data.frame(x, what = "metadata").
 ```

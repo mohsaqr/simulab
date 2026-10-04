@@ -26,7 +26,7 @@ simulate_survival(
 - specification:
 
   Survival definitions from
-  [`define_survivals()`](https://mohsaqr.github.io/simulab/reference/define_survivals.md),
+  [`define_survivals()`](https://pak.dynasite.org/simulab/reference/define_survivals.md),
   in either the `hazard()` call form or the column form.
 
 - covariates:
@@ -41,7 +41,7 @@ simulate_survival(
 - seed, digits, envir:
 
   Arguments passed to
-  [`augment_survival()`](https://mohsaqr.github.io/simulab/reference/augment_survival.md).
+  [`augment_survival()`](https://pak.dynasite.org/simulab/reference/augment_survival.md).
 
 - batch:
 
@@ -77,6 +77,10 @@ head(result)
 #> 4  4  5.462235
 #> 5  5 12.694901
 #> 6  6  5.640350
+#> 
+#> Truth (survival_definitions):
+#>   event formula scale shape transition
+#> 1  time      -8     1   0.3          0
 
 # A hazard call states the same process, with the log rate as an expression.
 head(simulate_survival(
@@ -92,4 +96,8 @@ head(simulate_survival(
 #> 4  4  5.462235
 #> 5  5 12.694901
 #> 6  6  5.640350
+#> 
+#> Truth (survival_definitions):
+#>   event formula scale shape transition
+#> 1  time      -8     1   0.3          0
 ```

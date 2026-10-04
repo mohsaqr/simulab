@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -86,6 +86,12 @@ row per network with its generator arguments and realized edge count.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4       1    3  2      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5       1    5  4      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6       1    4  5      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Truth (settings):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   network     model directed loops weight nodes edges</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       1 bernoulli     TRUE FALSE binary    20    35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2 bernoulli     TRUE FALSE binary    20    37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       3 bernoulli     TRUE FALSE binary    20    32</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -93,7 +99,7 @@ row per network with its generator arguments and realized edge count.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

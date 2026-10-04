@@ -33,7 +33,7 @@ augment_density(
 - use_limits, keep_missing, seed:
 
   Density-simulation arguments, as in
-  [`simulate_density()`](https://mohsaqr.github.io/simulab/reference/simulate_density.md).
+  [`simulate_density()`](https://pak.dynasite.org/simulab/reference/simulate_density.md).
 
 ## Value
 

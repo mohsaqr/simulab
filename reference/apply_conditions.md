@@ -18,7 +18,7 @@ apply_conditions(data, specification, seed = NULL, envir = parent.frame())
 - specification:
 
   Rules from
-  [`define_conditions()`](https://mohsaqr.github.io/simulab/reference/define_conditions.md),
+  [`define_conditions()`](https://pak.dynasite.org/simulab/reference/define_conditions.md),
   in either the rule form written with `when()` or the
   `formula`/`variance` column form.
 
@@ -59,6 +59,8 @@ head(result)
 #> 4  4     0       6
 #> 5  5     0       2
 #> 6  6     0       1
+#> 
+#> Other tables: conditions. Read one with as.data.frame(x, what = "conditions").
 
 specification <- define_conditions(
   define_condition("outcome", condition = "group == 1",
@@ -76,4 +78,6 @@ head(result)
 #> 4  4     0 -1.1293631
 #> 5  5     0  1.4330237
 #> 6  6     0  1.9803999
+#> 
+#> Other tables: conditions. Read one with as.data.frame(x, what = "conditions").
 ```

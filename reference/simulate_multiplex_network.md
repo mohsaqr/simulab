@@ -97,6 +97,12 @@ head(result)
 #> 4 Layer 1 Node 22 Node 1      1
 #> 5 Layer 1 Node 14 Node 3      1
 #> 6 Layer 1  Node 9 Node 4      1
+#> 
+#> Truth (settings):
+#>   layers directed loops weight
+#> 1      3     TRUE FALSE binary
+#> 
+#> Other tables: nodes, layers, adjacency. Read one with as.data.frame(x, what = "nodes").
 components(result)
 #>       table rows columns
 #> 1      data  182       4

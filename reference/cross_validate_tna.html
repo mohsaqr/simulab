@@ -11,7 +11,7 @@ compare_networks()."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,7 @@ compare_networks()."></head><body>
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -117,15 +117,15 @@ and <code>edges_y</code>. This is not a <code>simulab_sim</code>.</p>
 <span class="r-in"><span>  <span class="fu">cross_validate_tna</span><span class="op">(</span><span class="va">data</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tna"</span>, <span class="st">"ftna"</span><span class="op">)</span>, iterations <span class="op">=</span> <span class="fl">2</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   iteration model   pearson    cosine         mae        rmse   jaccard edges_x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1   tna 0.9923218 0.9950624  0.03939268  0.04322439 1.0000000       9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1  ftna 0.9916963 0.9945819 29.33333333 32.80582604 1.0000000       9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         2   tna 0.9780752 0.9925225  0.04101001  0.04970991 0.8888889       9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2  ftna 0.9688537 0.9905214 29.33333333 33.89854143 0.8888889       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1   tna 0.9838410 0.9929185  0.04560538  0.05282897 0.8888889       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1  ftna 0.9832673 0.9917742 29.77777778 42.07664963 0.8888889       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         2   tna 0.9903498 0.9954154  0.03047942  0.04354214 1.0000000       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         2  ftna 0.9929774 0.9947696 29.33333333 43.53542619 1.0000000       9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   edges_y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       9</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -133,7 +133,7 @@ and <code>edges_y</code>. This is not a <code>simulab_sim</code>.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

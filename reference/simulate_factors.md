@@ -104,6 +104,22 @@ head(result)
 #> 4  4  1.6015395  0.3177598 -0.7277263 -0.8715115  0.8076578  0.9074974
 #> 5  5  0.1816022  0.6955288  0.7558235  1.6466875  0.9582755  1.1390848
 #> 6  6 -1.3384150 -1.3119662  0.2336745  1.1005855  2.5066440  0.3849813
+#> 
+#> Truth (parameters):
+#>    variable   factor loading uniqueness intercept
+#> 1    item_1 factor_1     0.8       0.36         0
+#> 2    item_2 factor_1     0.7       0.51         0
+#> 3    item_3 factor_1     0.6       0.64         0
+#> 4    item_4 factor_1     0.0       0.36         0
+#> 5    item_5 factor_1     0.0       0.51         0
+#> 6    item_6 factor_1     0.0       0.64         0
+#> 7    item_1 factor_2     0.0       0.36         0
+#> 8    item_2 factor_2     0.0       0.51         0
+#> 9    item_3 factor_2     0.0       0.64         0
+#> 10   item_4 factor_2     0.8       0.36         0
+#> ... 2 more rows
+#> 
+#> Other tables: covariance. Read one with as.data.frame(x, what = "covariance").
 as.data.frame(result, what = "parameters")
 #>    variable   factor loading uniqueness intercept
 #> 1    item_1 factor_1     0.8       0.36         0

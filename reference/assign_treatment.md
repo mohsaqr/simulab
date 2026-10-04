@@ -82,6 +82,8 @@ head(result)
 #> 4  4 north         1
 #> 5  5 north         0
 #> 6  6 north         1
+#> 
+#> Other tables: allocation. Read one with as.data.frame(x, what = "allocation").
 as.data.frame(result, what = "allocation")
 #>   stratum treatment observations
 #> 1   north         0           25

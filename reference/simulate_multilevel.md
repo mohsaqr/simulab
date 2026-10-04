@@ -121,6 +121,13 @@ head(result)
 #> 4  4       1  0.02800216  0.08285919
 #> 5  5       1 -0.74327321 -0.04211799
 #> 6  6       1  0.18879230  1.20545128
+#> 
+#> Truth (fixed_effects):
+#>          term coefficient
+#> 1 (Intercept)         1.0
+#> 2          x1         0.5
+#> 
+#> Other tables: variance_components, random_effects. Read one with as.data.frame(x, what = "variance_components").
 as.data.frame(result, what = "fixed_effects")
 #>          term coefficient
 #> 1 (Intercept)         1.0

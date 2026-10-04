@@ -6,15 +6,16 @@ Simulate a linear regression design
 
 ``` r
 simulate_regression(
-  n,
-  coefficients,
+  n = 100L,
+  coefficients = NULL,
   predictor_means = 0,
   predictor_sds = 1,
   correlation = NULL,
   error_sd = 1,
   outcome = "outcome",
   seed = NULL,
-  batch = NULL
+  batch = NULL,
+  n_predictors = 2L
 )
 ```
 
@@ -22,11 +23,16 @@ simulate_regression(
 
 - n:
 
-  Sample size.
+  Sample size, defaulting to `100`.
 
 - coefficients:
 
-  Named coefficients including optional `(Intercept)`.
+  Named coefficients including optional `(Intercept)`. `NULL` (the
+  default) draws an intercept from the standard normal distribution and
+  `n_predictors` slopes, named `x1`, `x2`, ..., from the uniform
+  distribution on \\\[-1, 1\]\\, each rounded to two decimals, inside
+  the same seeded draw as the data. The drawn values are reported in the
+  `coefficients` table.
 
 - predictor_means, predictor_sds:
 
@@ -57,6 +63,11 @@ simulate_regression(
   is reproducible; without one the datasets are consecutive draws from
   the session's random-number stream. The default `NULL` returns a
   single result.
+
+- n_predictors:
+
+  Number of predictors when `coefficients` is `NULL`, a single positive
+  whole number defaulting to `2`. Ignored otherwise.
 
 ## Value
 
@@ -91,6 +102,14 @@ head(result)
 #> 4  4  1.5952808 -0.3309078  1.5060449
 #> 5  5  0.3295078 -2.2852355  1.4341025
 #> 6  6 -0.8204684  2.4976616 -0.5351901
+#> 
+#> Truth (coefficients):
+#>          term coefficient
+#> 1 (Intercept)         1.0
+#> 2          x1         0.5
+#> 3          x2        -0.3
+#> 
+#> Other tables: effects, predictor_correlation. Read one with as.data.frame(x, what = "effects").
 as.data.frame(result, what = "coefficients")
 #>          term coefficient
 #> 1 (Intercept)         1.0
@@ -99,4 +118,12 @@ as.data.frame(result, what = "coefficients")
 as.data.frame(result, what = "effects")
 #>   signal_variance residual_variance r_squared
 #> 1            0.34                 1 0.2537313
+
+# With no coefficients, they are drawn and reported as the truth.
+drawn <- simulate_regression(seed = 1)
+as.data.frame(drawn, what = "coefficients")
+#>          term coefficient
+#> 1 (Intercept)       -0.63
+#> 2          x1        0.15
+#> 3          x2        0.82
 ```

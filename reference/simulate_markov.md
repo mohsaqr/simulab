@@ -94,6 +94,15 @@ head(result)
 #> 4  1      4     B
 #> 5  1      5     B
 #> 6  1      6     A
+#> 
+#> Truth (transitions):
+#>   from to probability
+#> 1    A  A         0.7
+#> 2    B  A         0.4
+#> 3    A  B         0.3
+#> 4    B  B         0.6
+#> 
+#> Other tables: initial_probabilities, wide. Read one with as.data.frame(x, what = "initial_probabilities").
 summarize_transitions(result, normalize = TRUE)
 #>   from to count probability
 #> 1    A  A   392   0.6938053
@@ -118,4 +127,13 @@ head(simulate_markov(
 #> 4  1      4     B
 #> 5  1      5     B
 #> 6  1      6     A
+#> 
+#> Truth (transitions):
+#>   from to probability
+#> 1    A  A         0.7
+#> 2    B  A         0.4
+#> 3    A  B         0.3
+#> 4    B  B         0.6
+#> 
+#> Other tables: initial_probabilities, wide. Read one with as.data.frame(x, what = "initial_probabilities").
 ```

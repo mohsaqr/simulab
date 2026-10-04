@@ -108,6 +108,14 @@ head(result)
 #> 4 Node 18 Node 1     2        3      1    FALSE
 #> 5 Node 19 Node 1     1        5      1     TRUE
 #> 6  Node 3 Node 2     1        3      1    FALSE
+#> 
+#> Truth (settings):
+#>   periods directed loops initial_probability formation_probability
+#> 1       4     TRUE FALSE                 0.1                  0.05
+#>   dissolution_probability weight
+#> 1                     0.1 binary
+#> 
+#> Other tables: events, snapshots, nodes. Read one with as.data.frame(x, what = "events").
 components(result)
 #>       table rows columns
 #> 1      data   94       6

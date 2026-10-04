@@ -6,15 +6,15 @@ Simulate grouped actor sequences
 
 ``` r
 simulate_group_sequences(
-  groups,
-  actors,
+  groups = 2L,
+  actors = 50L,
   transitions = NULL,
-  chain_length,
+  chain_length = 20L,
   initial = NULL,
   group_names = NULL,
   states = NULL,
   n_states = 5L,
-  state_categories = NULL,
+  state_categories = c("metacognitive", "cognitive"),
   seed = NULL,
   ...,
   batch = NULL
@@ -25,11 +25,11 @@ simulate_group_sequences(
 
 - groups:
 
-  Number of groups.
+  Number of groups, defaulting to `2`.
 
 - actors:
 
-  Actors per group, scalar or one value per group.
+  Actors per group, scalar or one value per group, defaulting to `50`.
 
 - transitions:
 
@@ -39,7 +39,7 @@ simulate_group_sequences(
 
 - chain_length:
 
-  Sequence length.
+  Sequence length, defaulting to `20`.
 
 - initial:
 
@@ -54,7 +54,7 @@ simulate_group_sequences(
 - states, n_states, state_categories:
 
   State-space arguments passed to
-  [`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md).
+  [`simulate_sequences()`](https://pak.dynasite.org/simulab/reference/simulate_sequences.md).
 
 - seed:
 
@@ -64,7 +64,7 @@ simulate_group_sequences(
 - ...:
 
   Advanced sequence arguments passed to
-  [`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md).
+  [`simulate_sequences()`](https://pak.dynasite.org/simulab/reference/simulate_sequences.md).
 
 - batch:
 
@@ -94,12 +94,28 @@ result <- simulate_group_sequences(
 head(result)
 #> <simulab_sim:group_sequences> 6 rows x 4 columns
 #>     group    id period   state
-#> 1 Group 1 G1_A1      1 State 3
-#> 2 Group 1 G1_A1      2 State 2
-#> 3 Group 1 G1_A1      3 State 2
-#> 4 Group 1 G1_A1      4 State 2
-#> 5 Group 1 G1_A1      5 State 1
-#> 6 Group 1 G1_A1      6 State 2
+#> 1 Group 1 G1_A1      1    Plan
+#> 2 Group 1 G1_A1      2   Learn
+#> 3 Group 1 G1_A1      3   Learn
+#> 4 Group 1 G1_A1      4   Learn
+#> 5 Group 1 G1_A1      5 Reflect
+#> 6 Group 1 G1_A1      6   Learn
+#> 
+#> Truth (transitions):
+#>      group    from      to probability
+#> 1  Group 1 Reflect Reflect  0.07830127
+#> 2  Group 1   Learn Reflect  0.55164885
+#> 3  Group 1    Plan Reflect  0.59019469
+#> 4  Group 1 Reflect   Learn  0.42202656
+#> 5  Group 1   Learn   Learn  0.35827360
+#> 6  Group 1    Plan   Learn  0.37885862
+#> 7  Group 1 Reflect    Plan  0.49967217
+#> 8  Group 1   Learn    Plan  0.09007756
+#> 9  Group 1    Plan    Plan  0.03094669
+#> 10 Group 2 Reflect Reflect  0.08698614
+#> ... 8 more rows
+#> 
+#> Other tables: wide, groups. Read one with as.data.frame(x, what = "wide").
 components(result)
 #>         table rows columns
 #> 1        data  480       4

@@ -79,6 +79,22 @@ head(result)
 #> 15 G1_N3 G1_N2   0.3333333
 #> 20 G2_N4 G1_N2   0.3333333
 #> 23 G3_N3 G1_N2   0.3333333
+#> 
+#> Truth (transitions):
+#>     from    to probability
+#> 1  G1_N1 G1_N1   0.0000000
+#> 2  G1_N2 G1_N1   0.0000000
+#> 3  G1_N3 G1_N1   0.0000000
+#> 4  G1_N4 G1_N1   0.0000000
+#> 5  G2_N1 G1_N1   0.3333333
+#> 6  G2_N2 G1_N1   0.0000000
+#> 7  G2_N3 G1_N1   0.3333333
+#> 8  G2_N4 G1_N1   0.3333333
+#> 9  G3_N1 G1_N1   0.0000000
+#> 10 G3_N2 G1_N1   0.0000000
+#> ... 134 more rows
+#> 
+#> Other tables: nodes, adjacency. Read one with as.data.frame(x, what = "nodes").
 components(result)
 #>         table rows columns
 #> 1        data   27       3

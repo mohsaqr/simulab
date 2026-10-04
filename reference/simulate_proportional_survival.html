@@ -25,7 +25,7 @@ fraction equals censoring."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ fraction equals censoring."></head><body>
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -172,6 +172,15 @@ solved <code>censoring_rate</code>) and <code>diagnostics</code> (one row, colum
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4  4 0.4992354      1  1.5952808</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5  5 0.5960112      1  0.3295078</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6  6 1.1976905      0 -0.8204684</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Truth (parameters):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             term      value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             x1 0.70000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  baseline_rate 0.10000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          shape 1.50000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 censoring_rate 0.05520726</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Other tables: diagnostics. Read one with as.data.frame(x, what = "diagnostics").</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">result</span>, what <span class="op">=</span> <span class="st">"parameters"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             term      value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1             x1 0.70000000</span>
@@ -185,7 +194,7 @@ solved <code>censoring_rate</code>) and <code>diagnostics</code> (one row, colum
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -27,7 +27,7 @@ network_centrality(
 
   Treat edges as directed. `NULL` (the default) takes it from the
   network's `settings` table, as
-  [`as_igraph()`](https://mohsaqr.github.io/simulab/reference/as_igraph.md)
+  [`as_igraph()`](https://pak.dynasite.org/simulab/reference/as_igraph.md)
   does. This governs the graph conversion and the `betweenness`,
   `eigenvector`, and `pagerank` measures only; `degree`, `strength`, and
   `closeness` always combine incoming and outgoing ties. `betweenness`

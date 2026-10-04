@@ -18,9 +18,13 @@ apply_batch(inputs, fun, ..., id = "batch_id")
 
 - fun:
 
-  Function applied to each element. It must return a base `data.frame`,
-  and every call must return the same columns, otherwise the run is an
-  error.
+  Function applied to each element. When `fun` has a `data` argument, as
+  [`lm()`](https://rdrr.io/r/stats/lm.html) and
+  [`glm()`](https://rdrr.io/r/stats/glm.html) do, the element is passed
+  as `data`; otherwise it is the first argument. `fun` returns a base
+  `data.frame`, or a fitted model with named coefficients, which becomes
+  a data frame with columns `term` and `estimate`. Every call must give
+  the same columns, otherwise the run is an error.
 
 - ...:
 
@@ -58,4 +62,18 @@ apply_batch(inputs, fun = summary)
 #> 4  1.000000 120.00000
 #> 5        NA        NA
 #> 6 -2.451706   2.54804
+
+# A model function is applied to each data set and tidied to coefficients.
+datasets <- simulate_regression(seed = 1, batch = 3)
+apply_batch(datasets, lm, formula = outcome ~ x1 + x2)
+#>   batch_id        term   estimate
+#> 1        1 (Intercept)  0.4871271
+#> 2        1          x1  0.4291198
+#> 3        1          x2 -0.4881249
+#> 4        2 (Intercept) -0.5419140
+#> 5        2          x1  0.4818146
+#> 6        2          x2  0.5997644
+#> 7        3 (Intercept) -0.7321067
+#> 8        3          x1 -0.3789991
+#> 9        3          x2  0.7836967
 ```

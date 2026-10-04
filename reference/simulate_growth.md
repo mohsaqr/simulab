@@ -101,6 +101,15 @@ head(result)
 #> 4  4    0 11.264373
 #> 5  5    0  8.044272
 #> 6  6    0 11.677193
+#> 
+#> Truth (parameters):
+#>          term value
+#> 1   intercept  10.0
+#> 2       slope   0.5
+#> 3   quadratic   0.0
+#> 4 residual_sd   1.0
+#> 
+#> Other tables: random_effects. Read one with as.data.frame(x, what = "random_effects").
 as.data.frame(result, what = "parameters")
 #>          term value
 #> 1   intercept  10.0

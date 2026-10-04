@@ -72,4 +72,11 @@ head(result)
 #> 4  1      4     B     a
 #> 5  1      5     B     a
 #> 6  1      6     A     a
+#> 
+#> Truth (transitions):
+#>   from to probability
+#> 1    A  A         0.7
+#> 2    B  A         0.4
+#> 3    A  B         0.3
+#> 4    B  B         0.6
 ```

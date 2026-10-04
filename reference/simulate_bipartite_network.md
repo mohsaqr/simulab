@@ -83,6 +83,12 @@ head(result)
 #> 4 Actor 15 Event 1      1     actor   event
 #> 5 Actor 17 Event 1      1     actor   event
 #> 6 Actor 18 Event 1      1     actor   event
+#> 
+#> Truth (settings):
+#>   probability weight actors events
+#> 1         0.3 binary     20      6
+#> 
+#> Other tables: nodes, incidence. Read one with as.data.frame(x, what = "nodes").
 components(result)
 #>       table rows columns
 #> 1      data   37       5

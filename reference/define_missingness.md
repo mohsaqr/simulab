@@ -40,13 +40,13 @@ define_missingness(
   Replace every period's draw for a unit with its first period's draw,
   so the unit is either always or never missing. A single flag,
   defaulting to `FALSE`. It needs `id` and `period` in
-  [`missingness_matrix()`](https://mohsaqr.github.io/simulab/reference/missingness_matrix.md).
+  [`missingness_matrix()`](https://pak.dynasite.org/simulab/reference/missingness_matrix.md).
 
 - monotone:
 
   Once missing, remain missing at every later period. A single flag,
   defaulting to `FALSE`. It needs `id` and `period` in
-  [`missingness_matrix()`](https://mohsaqr.github.io/simulab/reference/missingness_matrix.md).
+  [`missingness_matrix()`](https://pak.dynasite.org/simulab/reference/missingness_matrix.md).
 
 ## Value
 

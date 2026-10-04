@@ -18,7 +18,7 @@ define_conditions(...)
   names the variable with the argument name, states the condition that
   selects the rows the rule writes, and states their distribution as a
   call. Any distribution in
-  [`list_distributions()`](https://mohsaqr.github.io/simulab/reference/list_distributions.md)
+  [`list_distributions()`](https://pak.dynasite.org/simulab/reference/list_distributions.md)
   may be used, and its parameters may be expressions over the data.
   Repeating the argument name gives one variable several rules, which is
   how a variable takes a different distribution in each group.
@@ -28,7 +28,7 @@ define_conditions(...)
   `condition`, `formula`, `variance`, `distribution`, `link`).
 
   **Objects** created by
-  [`define_condition()`](https://mohsaqr.github.io/simulab/reference/define_condition.md).
+  [`define_condition()`](https://pak.dynasite.org/simulab/reference/define_condition.md).
 
   The forms cannot be mixed in one call.
 

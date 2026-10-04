@@ -26,15 +26,15 @@ simulate_scenarios(
 - scenarios:
 
   A base `data.frame` with at least one row, commonly from
-  [`scenario_grid()`](https://mohsaqr.github.io/simulab/reference/scenario_grid.md),
+  [`scenario_grid()`](https://pak.dynasite.org/simulab/reference/scenario_grid.md),
   containing the `id` and `replication` columns.
 
 - simulator:
 
   Canonical simulator name, taken from the `simulator` column of
-  [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md)
+  [`list_simulators()`](https://pak.dynasite.org/simulab/reference/list_simulators.md)
   and dispatched through
-  [`simulate_data()`](https://mohsaqr.github.io/simulab/reference/simulate_data.md).
+  [`simulate_data()`](https://pak.dynasite.org/simulab/reference/simulate_data.md).
 
 - ...:
 
@@ -79,4 +79,6 @@ head(result)
 #> 4           1           1  4     A  1.5952808
 #> 5           1           1  5     A  0.3295078
 #> 6           1           1  6     A -0.8204684
+#> 
+#> Other tables: scenarios. Read one with as.data.frame(x, what = "scenarios").
 ```

@@ -19,13 +19,13 @@ fit_tna_batch(inputs, ...)
 - ...:
 
   Arguments passed to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
 
 ## Value
 
 A `simulab_sim` edge list with one row per dataset and transition: a
 leading `dataset` column followed by the columns
-[`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md)
+[`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md)
 returns (`from`, `to`, `weight`, and `group` when a grouped fit is
 requested). The `model_info` component holds one row per dataset
 describing the fitted model.
@@ -41,11 +41,13 @@ if (requireNamespace("tna", quietly = TRUE)) {
   head(fit_tna_batch(inputs, model = "tna"))
 }
 #> <simulab_sim:tna_batch> 6 rows x 4 columns
-#>         dataset    from      to    weight
-#> first.1   first State 1 State 1 0.0600000
-#> first.2   first State 2 State 1 0.5500000
-#> first.3   first State 3 State 1 0.6285714
-#> first.4   first State 1 State 2 0.4100000
-#> first.5   first State 2 State 2 0.3300000
-#> first.6   first State 3 State 2 0.3428571
+#>         dataset    from    to     weight
+#> first.1   first   Learn Learn 0.56849315
+#> first.2   first    Plan Learn 0.23809524
+#> first.3   first Reflect Learn 0.86585366
+#> first.4   first   Learn  Plan 0.04794521
+#> first.5   first    Plan  Plan 0.21428571
+#> first.6   first Reflect  Plan 0.08536585
+#> 
+#> Other tables: model_info. Read one with as.data.frame(x, what = "model_info").
 ```

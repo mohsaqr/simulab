@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -48,7 +48,7 @@
 <span>  states <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  concentration <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  diagonal_concentration <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  state_categories <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  state_categories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metacognitive"</span>, <span class="st">"cognitive"</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  batch <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -78,8 +78,11 @@ self-transitions no more likely than any other transition.</p></dd>
 
 
 <dt id="arg-state-categories">state_categories<a class="anchor" aria-label="anchor" href="#arg-state-categories"></a></dt>
-<dd><p>Optional learning-state categories, used only when
-<code>states</code> is <code>NULL</code>, to draw state labels with <code><a href="sample_learning_states.html">sample_learning_states()</a></code>.</p></dd>
+<dd><p>Learning-state categories the state labels are
+drawn from with <code><a href="sample_learning_states.html">sample_learning_states()</a></code> when <code>states</code> is <code>NULL</code>,
+defaulting to <code>c("metacognitive", "cognitive")</code>; see
+<code><a href="learning_state_categories.html">learning_state_categories()</a></code>. <code>NULL</code> labels the states <code>State 1</code>,
+<code>State 2</code>, and so on.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -110,15 +113,17 @@ single result.</p></dd>
 <span class="r-in"><span><span class="va">result</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:transition_system&gt; 9 rows x 3 columns</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      from      to probability</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 State 1 State 1  0.07830127</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 State 2 State 1  0.55164885</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 State 3 State 1  0.59019469</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 State 1 State 2  0.42202656</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 State 2 State 2  0.35827360</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 State 3 State 2  0.37885862</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 State 1 State 3  0.49967217</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 State 2 State 3  0.09007756</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9 State 3 State 3  0.03094669</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Reflect Reflect  0.07830127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Learn Reflect  0.55164885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    Plan Reflect  0.59019469</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Reflect   Learn  0.42202656</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   Learn   Learn  0.35827360</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    Plan   Learn  0.37885862</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Reflect    Plan  0.49967217</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   Learn    Plan  0.09007756</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9    Plan    Plan  0.03094669</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Other tables: initial_probabilities. Read one with as.data.frame(x, what = "initial_probabilities").</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -126,7 +131,7 @@ single result.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

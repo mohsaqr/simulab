@@ -26,7 +26,7 @@ assess_tna_reliability(
 - data:
 
   Sequence data accepted by
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md),
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md),
   with at least 4 rows.
 
 - model:
@@ -59,13 +59,13 @@ assess_tna_reliability(
 - ...:
 
   Arguments passed to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
 
 ## Value
 
 A plain base `data.frame`, not a `simulab_sim`, with one row per split,
 holding `iteration`, `model` and the
-[`compare_networks()`](https://mohsaqr.github.io/simulab/reference/compare_networks.md)
+[`compare_networks()`](https://pak.dynasite.org/simulab/reference/compare_networks.md)
 agreement metrics for the two halves.
 
 ## Examples
@@ -76,8 +76,8 @@ if (requireNamespace("tna", quietly = TRUE)) {
   assess_tna_reliability(data, model = "tna", iterations = 2, seed = 1)
 }
 #>   iteration model   pearson    cosine        mae       rmse jaccard edges_x
-#> 1         1   tna 0.9932296 0.9976692 0.02105045 0.02770700       1       9
-#> 2         2   tna 0.9806632 0.9937841 0.03506547 0.04483295       1       9
+#> 1         1   tna 0.9607100 0.9786973 0.07297625 0.09823926       1       9
+#> 2         2   tna 0.9930359 0.9966980 0.02929277 0.03707300       1       9
 #>   edges_y
 #> 1       9
 #> 2       9

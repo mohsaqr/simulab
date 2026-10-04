@@ -33,7 +33,7 @@ calibrate_moments(distribution = NULL, mean = NULL, variance = NULL)
 A base `data.frame` with one row per target and parameter, and columns
 `distribution`, `mean`, `variance`, `parameter` and `value`. The
 `parameter` names are those
-[`list_distributions()`](https://mohsaqr.github.io/simulab/reference/list_distributions.md)
+[`list_distributions()`](https://pak.dynasite.org/simulab/reference/list_distributions.md)
 reports, so the result states a distribution call. For a one-parameter
 family the reported `variance` is the one the solved parameters imply
 rather than a target. Called with no arguments the result is instead the

@@ -101,6 +101,13 @@ head(result)
 #> 4  4 Profile 2  2.66571864  2.74883541
 #> 5  5 Profile 1  0.15802877 -1.73321841
 #> 6  6 Profile 2  3.73275004  1.57000655
+#> 
+#> Truth (parameters):
+#>     profile    variable mean sd proportion
+#> 1 Profile 1 indicator_1    0  1        0.6
+#> 2 Profile 2 indicator_1    3  1        0.4
+#> 3 Profile 1 indicator_2    0  1        0.6
+#> 4 Profile 2 indicator_2    3  1        0.4
 as.data.frame(result, what = "parameters")
 #>     profile    variable mean sd proportion
 #> 1 Profile 1 indicator_1    0  1        0.6

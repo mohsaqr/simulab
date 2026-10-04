@@ -57,15 +57,14 @@ sample_tna(
 - ...:
 
   Further arguments passed to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md),
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md),
   such as `model`. The sampled sequences are always refitted in wide
   form, so `format` is consumed by the sampling step and is not
   forwarded.
 
 ## Value
 
-The
-[`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md)
+The [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md)
 result for the sampled sequences: a `simulab_sim` edge list with one row
 per transition and the columns `from`, `to` and `weight`, plus the
 `initial_probabilities` and `model_info` components.
@@ -78,11 +77,13 @@ if (requireNamespace("tna", quietly = TRUE)) {
   head(sample_tna(data, fraction = 0.5, seed = 1))
 }
 #> <simulab_sim:tna_model> 6 rows x 3 columns
-#>      from      to    weight
-#> 1 State 1 State 1 0.1411765
-#> 2 State 2 State 1 0.5526316
-#> 3 State 3 State 1 0.6440678
-#> 4 State 1 State 2 0.3529412
-#> 5 State 2 State 2 0.3289474
-#> 6 State 3 State 2 0.3220339
+#>      from    to     weight
+#> 1   Learn Learn 0.51282051
+#> 2    Plan Learn 0.15151515
+#> 3 Reflect Learn 0.87142857
+#> 4   Learn  Plan 0.11111111
+#> 5    Plan  Plan 0.27272727
+#> 6 Reflect  Plan 0.02857143
+#> 
+#> Other tables: initial_probabilities, model_info. Read one with as.data.frame(x, what = "initial_probabilities").
 ```

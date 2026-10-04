@@ -41,11 +41,13 @@ through [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html).
 data <- simulate_sequences(n = 10, n_states = 3, chain_length = 5, seed = 1)
 head(encode_sequences(data))
 #> <simulab_sim:one_hot_sequences> 6 rows x 5 columns
-#>   id period state_State.1 state_State.2 state_State.3
-#> 1  1      1             0             0             1
-#> 2  1      2             0             1             0
-#> 3  1      3             0             1             0
-#> 4  1      4             0             1             0
-#> 5  1      5             1             0             0
-#> 6  2      1             0             1             0
+#>   id period state_Learn state_Plan state_Reflect
+#> 1  1      1           0          0             1
+#> 2  1      2           1          0             0
+#> 3  1      3           0          0             1
+#> 4  1      4           1          0             0
+#> 5  1      5           0          0             1
+#> 6  2      1           0          1             0
+#> 
+#> Other tables: mapping. Read one with as.data.frame(x, what = "mapping").
 ```

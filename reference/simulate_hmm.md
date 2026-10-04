@@ -99,6 +99,15 @@ head(result)
 #> 4  1        4 State 2 Observation 2
 #> 5  1        5 State 2 Observation 2
 #> 6  1        6 State 1 Observation 1
+#> 
+#> Truth (transitions):
+#>      from      to probability
+#> 1 State 1 State 1         0.7
+#> 2 State 2 State 1         0.4
+#> 3 State 1 State 2         0.3
+#> 4 State 2 State 2         0.6
+#> 
+#> Other tables: emissions, initial_probabilities. Read one with as.data.frame(x, what = "emissions").
 components(result)
 #>                   table rows columns
 #> 1                  data 1000       4

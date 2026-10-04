@@ -2,7 +2,14 @@
 
 Prints a one-line header giving the simulation type and the full
 dimensions, then at most the first 10 rows of the primary data, then a
-count of the rows not shown.
+count of the rows not shown. The table of generating values follows
+under the heading `Truth`: the first of `coefficients`, `fixed_effects`,
+`parameters`, `transition`, `transitions`, `true_transitions`,
+`definitions`, `probabilities`, `survival_definitions` and `settings`
+that the result stores, again at most 10 rows. A last line names the
+other stored tables, which
+[`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) returns
+with `what`.
 
 ## Usage
 
@@ -43,4 +50,11 @@ print(result)
 #> 9   9     A  0.5757814
 #> 10 10     A -0.3053884
 #> ... 50 more rows
+#> 
+#> Truth (parameters):
+#>   group  n mean sd
+#> 1     A 30  0.0  1
+#> 2     B 30  0.5  1
+#> 
+#> Other tables: effects. Read one with as.data.frame(x, what = "effects").
 ```

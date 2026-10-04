@@ -28,9 +28,9 @@ augment_correlated(
 
   New variable definitions, in the `formula`/`variance` column form
   built by
-  [`define_variable()`](https://mohsaqr.github.io/simulab/reference/define_variable.md).
+  [`define_variable()`](https://pak.dynasite.org/simulab/reference/define_variable.md).
   Unlike
-  [`simulate_copula()`](https://mohsaqr.github.io/simulab/reference/simulate_copula.md),
+  [`simulate_copula()`](https://pak.dynasite.org/simulab/reference/simulate_copula.md),
   `augment_correlated()` does not accept the distribution-call form, and
   one row of `specification` is one new variable. None of the named
   variables may already exist in `data`.
@@ -39,7 +39,7 @@ augment_correlated(
 
   Copula correlation arguments. `structure` follows the same resolution
   rule as
-  [`simulate_copula()`](https://mohsaqr.github.io/simulab/reference/simulate_copula.md):
+  [`simulate_copula()`](https://pak.dynasite.org/simulab/reference/simulate_copula.md):
   leaving it unset selects `"exchangeable"` when a non-zero `rho` or
   `tau` is given. `tau` is converted to the latent Pearson correlation
   `sin(pi * tau / 2)`.
@@ -88,4 +88,11 @@ head(result)
 #> 4  4  1.5818238  0.5655331
 #> 5  5  0.1488611 -0.5469973
 #> 6  6 -0.3351040  1.4947156
+#> 
+#> Truth (definitions):
+#>   variable distribution formula variance     link
+#> 1        a       normal       0        1 identity
+#> 2        b       normal       0        1 identity
+#> 
+#> Other tables: latent_correlation. Read one with as.data.frame(x, what = "latent_correlation").
 ```

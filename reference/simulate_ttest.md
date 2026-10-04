@@ -6,10 +6,10 @@ Simulate a two-group design
 
 ``` r
 simulate_ttest(
-  n_a,
-  n_b,
-  mean_a,
-  mean_b,
+  n_a = 50L,
+  n_b = 50L,
+  mean_a = NULL,
+  mean_b = NULL,
   sd_a = 1,
   sd_b = 1,
   labels = c("A", "B"),
@@ -23,11 +23,14 @@ simulate_ttest(
 
 - n_a, n_b:
 
-  Group sample sizes.
+  Group sample sizes, each defaulting to `50`.
 
 - mean_a, mean_b:
 
-  Group means.
+  Group means. A mean left `NULL` (the default) is drawn from the
+  standard normal distribution and rounded to two decimals, inside the
+  same seeded draw as the data, and is reported in the `parameters`
+  table.
 
 - sd_a, sd_b:
 
@@ -80,8 +83,22 @@ head(result)
 #> 4  4     A  1.5952808
 #> 5  5     A  0.3295078
 #> 6  6     A -0.8204684
+#> 
+#> Truth (parameters):
+#>   group  n mean sd
+#> 1     A 40  0.0  1
+#> 2     B 40  0.6  1
+#> 
+#> Other tables: effects. Read one with as.data.frame(x, what = "effects").
 as.data.frame(result, what = "parameters")
 #>   group  n mean sd
 #> 1     A 40  0.0  1
 #> 2     B 40  0.6  1
+
+# With no arguments, the group means are drawn and reported.
+drawn <- simulate_ttest(seed = 1)
+as.data.frame(drawn, what = "parameters")
+#>   group  n  mean sd
+#> 1     A 50 -0.63  1
+#> 2     B 50  0.18  1
 ```

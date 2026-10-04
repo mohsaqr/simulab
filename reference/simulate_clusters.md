@@ -82,6 +82,15 @@ head(result)
 #> 4  4 Cluster 1  0.074341324  0.1971934
 #> 5  5 Cluster 2  3.410479054  4.2631756
 #> 6  6 Cluster 1 -0.568668733 -0.9858267
+#> 
+#> Truth (parameters):
+#>     cluster variable center sd proportion
+#> 1 Cluster 1       V1      0  1  0.3333333
+#> 2 Cluster 2       V1      4  1  0.3333333
+#> 3 Cluster 3       V1      0  1  0.3333333
+#> 4 Cluster 1       V2      0  1  0.3333333
+#> 5 Cluster 2       V2      4  1  0.3333333
+#> 6 Cluster 3       V2      4  1  0.3333333
 as.data.frame(result, what = "parameters")
 #>     cluster variable center sd proportion
 #> 1 Cluster 1       V1      0  1  0.3333333

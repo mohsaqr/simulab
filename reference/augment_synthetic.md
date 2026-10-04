@@ -49,4 +49,6 @@ head(result)
 #> 4  4 -1.5625184
 #> 5  5 -0.9414981
 #> 6  6  1.1001897
+#> 
+#> Other tables: provenance. Read one with as.data.frame(x, what = "provenance").
 ```

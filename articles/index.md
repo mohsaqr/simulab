@@ -2,5 +2,5 @@
 
 ### All vignettes
 
-- [Simulating Data with Known Parameters in
-  simulab](https://mohsaqr.github.io/simulab/articles/getting-started.md):
+- [Simulating a Wide Variety of Data Shapes, Sizes and
+  Distributions](https://pak.dynasite.org/simulab/articles/getting-started.md):

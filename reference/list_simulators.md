@@ -26,7 +26,7 @@ list_simulators(family = NULL, kind = NULL, dispatchable = NULL)
 
   Optional single logical filter: `TRUE` keeps only the verbs that can
   be called through
-  [`simulate_data()`](https://mohsaqr.github.io/simulab/reference/simulate_data.md),
+  [`simulate_data()`](https://pak.dynasite.org/simulab/reference/simulate_data.md),
   `FALSE` keeps only those that cannot.
 
 ## Value

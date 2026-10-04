@@ -14,7 +14,7 @@ simulate_data(type, ...)
 - type:
 
   Dispatchable simulator name, taken from the `simulator` column of
-  [`list_simulators()`](https://mohsaqr.github.io/simulab/reference/list_simulators.md).
+  [`list_simulators()`](https://pak.dynasite.org/simulab/reference/list_simulators.md).
   An unknown name, or a name whose `dispatchable` entry is `FALSE`, is
   an error.
 
@@ -42,6 +42,13 @@ head(result)
 #> 4  4     A  1.5952808
 #> 5  5     A  0.3295078
 #> 6  6     A -0.8204684
+#> 
+#> Truth (parameters):
+#>   group  n mean sd
+#> 1     A 30  0.0  1
+#> 2     B 30  0.5  1
+#> 
+#> Other tables: effects. Read one with as.data.frame(x, what = "effects").
 # Five independent datasets from one call.
 datasets <- simulate_data("ttest", n_a = 30, n_b = 30, mean_a = 0,
                           mean_b = 0.5, seed = 1, batch = 5)

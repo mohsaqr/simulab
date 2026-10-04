@@ -19,7 +19,7 @@ augment_study(data, specification, seed = NULL, envir = parent.frame())
 - specification:
 
   A tidy definition table created with
-  [`define_variables()`](https://mohsaqr.github.io/simulab/reference/define_variables.md),
+  [`define_variables()`](https://pak.dynasite.org/simulab/reference/define_variables.md),
   in either the distribution-call form or the `formula`/`variance`
   column form.
 
@@ -66,6 +66,12 @@ head(augment_study(
 #> 4  4       0 1.847868      4
 #> 5  5       0 3.195783      6
 #> 6  6       0 3.030124      3
+#> 
+#> Truth (definitions):
+#>   variable distribution parameter           value
+#> 1  outcome       normal      mean 3 + 2 * treated
+#> 2  outcome       normal        sd               1
+#> 3   visits      poisson    lambda               4
 
 base <- simulate_study(
   n = 100,
@@ -92,4 +98,10 @@ head(result)
 #> 4  4  1.5952808  2.06018593
 #> 5  5  0.3295078  0.57876379
 #> 6  6 -0.8204684 -1.50851648
+#> 
+#> Truth (definitions):
+#>   variable distribution      formula variance     link
+#> 1  outcome       normal 2 * baseline        1 identity
+#> 
+#> Other tables: metadata. Read one with as.data.frame(x, what = "metadata").
 ```

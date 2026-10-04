@@ -19,7 +19,7 @@ sample_learning_states(n, categories = "all", seed = NULL)
 - categories:
 
   Categories passed to
-  [`learning_states()`](https://mohsaqr.github.io/simulab/reference/learning_states.md),
+  [`learning_states()`](https://pak.dynasite.org/simulab/reference/learning_states.md),
   defaulting to `"all"`.
 
 - seed:

@@ -24,7 +24,7 @@ simulate_study(
 - specification:
 
   A tidy definition table created with
-  [`define_variables()`](https://mohsaqr.github.io/simulab/reference/define_variables.md),
+  [`define_variables()`](https://pak.dynasite.org/simulab/reference/define_variables.md),
   in either the distribution-call form or the `formula`/`variance`
   column form.
 
@@ -89,4 +89,12 @@ simulate_study(
 #> 9   9 45.75781       1 14.200051
 #> 10 10 36.94612       1 13.526351
 #> ... 10 more rows
+#> 
+#> Truth (definitions):
+#>   variable distribution          formula variance     link
+#> 1      age       normal               40      100 identity
+#> 2  treated       binary              0.5        0 identity
+#> 3  outcome       normal 10 + 2 * treated        4 identity
+#> 
+#> Other tables: metadata. Read one with as.data.frame(x, what = "metadata").
 ```

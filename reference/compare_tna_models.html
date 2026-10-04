@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -92,18 +92,20 @@ returned by <code><a href="as_tna_model.html">as_tna_model()</a></code>.</p>
 <span class="r-in"><span>  <span class="fu">compare_tna_models</span><span class="op">(</span><span class="va">data</span>, models <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tna"</span>, <span class="st">"ftna"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;simulab_sim:tna_comparison&gt; 18 rows x 4 columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    model    from      to      weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    tna State 1 State 1  0.11046512</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    tna State 2 State 1  0.56375839</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    tna State 3 State 1  0.63865546</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    tna State 1 State 2  0.37209302</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    tna State 2 State 2  0.32885906</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    tna State 3 State 2  0.32773109</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7    tna State 1 State 3  0.51744186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8    tna State 2 State 3  0.10738255</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9    tna State 3 State 3  0.03361345</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10  ftna State 1 State 1 19.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    model    from      to       weight</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    tna   Learn   Learn   0.53112033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    tna    Plan   Learn   0.17187500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    tna Reflect   Learn   0.90370370</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4    tna   Learn    Plan   0.10788382</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    tna    Plan    Plan   0.17187500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    tna Reflect    Plan   0.03703704</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7    tna   Learn Reflect   0.36099585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8    tna    Plan Reflect   0.65625000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9    tna Reflect Reflect   0.05925926</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  ftna   Learn   Learn 128.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... 8 more rows</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Other tables: model_info. Read one with as.data.frame(x, what = "model_info").</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -111,7 +113,7 @@ returned by <code><a href="as_tna_model.html">as_tna_model()</a></code>.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

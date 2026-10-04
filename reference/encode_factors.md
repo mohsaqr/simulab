@@ -77,4 +77,6 @@ encode_factors(data, variables = "arm", coding = "dummy")
 #> 4  4   b       0       1       0
 #> 5  5   c       0       0       1
 #> 6  6   c       0       0       1
+#> 
+#> Other tables: encoding. Read one with as.data.frame(x, what = "encoding").
 ```

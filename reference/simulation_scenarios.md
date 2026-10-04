@@ -12,7 +12,7 @@ simulation_scenarios()
 
 A base `data.frame` with one row per scenario and columns `scenario`,
 `family` and `description`. Every `scenario` is accepted by
-[`run_simulation_scenario()`](https://mohsaqr.github.io/simulab/reference/run_simulation_scenario.md).
+[`run_simulation_scenario()`](https://pak.dynasite.org/simulab/reference/run_simulation_scenario.md).
 
 ## Examples
 

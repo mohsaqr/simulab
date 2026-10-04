@@ -60,4 +60,6 @@ evaluate_edge_recovery(truth, estimate)
 #> 9      FALSE          FALSE           TRUE
 #> 10      TRUE          FALSE          FALSE
 #> ... 161 more rows
+#> 
+#> Other tables: summary. Read one with as.data.frame(x, what = "summary").
 ```

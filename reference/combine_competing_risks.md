@@ -96,4 +96,6 @@ head(result)
 #> 4  4         0  3.406859     2   time_death
 #> 5  5         0 11.760588     2   time_death
 #> 6  6         0  5.640350     1 time_relapse
+#> 
+#> Other tables: events. Read one with as.data.frame(x, what = "events").
 ```

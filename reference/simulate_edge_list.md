@@ -100,6 +100,12 @@ head(result)
 #> 4    2  3      1
 #> 5   27  3      1
 #> 6   32  3      1
+#> 
+#> Truth (settings):
+#>       model directed loops weight nodes edges
+#> 1 bernoulli     TRUE FALSE binary    40   138
+#> 
+#> Other tables: nodes, adjacency. Read one with as.data.frame(x, what = "nodes").
 components(result)
 #>       table rows columns
 #> 1      data  138       3

@@ -26,7 +26,7 @@ simulate_until_event(
 - definition:
 
   One binary variable definition from
-  [`define_variable()`](https://mohsaqr.github.io/simulab/reference/define_variable.md).
+  [`define_variable()`](https://pak.dynasite.org/simulab/reference/define_variable.md).
 
 - occurrence, id, period:
 

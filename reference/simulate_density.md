@@ -80,4 +80,6 @@ head(result)
 #> 4  4 4.753282
 #> 5  5 4.587366
 #> 6  6 4.722838
+#> 
+#> Other tables: source. Read one with as.data.frame(x, what = "source").
 ```

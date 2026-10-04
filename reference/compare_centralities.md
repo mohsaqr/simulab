@@ -23,7 +23,7 @@ compare_centralities(
 - measures:
 
   Centralities passed to
-  [`network_centrality()`](https://mohsaqr.github.io/simulab/reference/network_centrality.md).
+  [`network_centrality()`](https://pak.dynasite.org/simulab/reference/network_centrality.md).
 
 - method:
 

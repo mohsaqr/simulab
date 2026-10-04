@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -36,6 +36,39 @@
       <small>Source: <a href="https://github.com/mohsaqr/simulab/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.8" id="simulab-048">simulab 0.4.8<a class="anchor" aria-label="anchor" href="#simulab-048"></a></h2>
+<div class="section level3">
+<h3 id="one-transition-network-in-one-call-0-4-8">One transition network in one call<a class="anchor" aria-label="anchor" href="#one-transition-network-in-one-call-0-4-8"></a></h3>
+<ul><li>New <code><a href="../reference/simulate_tna.html">simulate_tna()</a></code> takes or draws a transition matrix, generates sequences from it and fits one transition network with the <code>tna</code> package. The result is the native <code>tna</code> model (class <code>c("simulab_tna", "tna")</code>), so <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, <code>centralities()</code> and every other <code>tna</code> function apply to it. It prints the native <code>tna</code> output, then the generating transition matrix and initial probabilities; <code><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame()</a></code> gives the fitted edges, and <code>what = "transitions"</code> the truth. A drawn matrix is labeled with metacognitive and cognitive learning states by default, as in Saqrlab, and the printed truth follows the fitted network’s state order. It restores the single-network verb of Saqrlab, where it was <code><a href="../reference/simulate_tna_network.html">simulate_tna_network()</a></code>; in simulab that name remains the node-grouped matrix generator. Like every simulator, it takes <code>batch</code> and runs with no arguments.</li>
+<li>Without the <code>tna</code> package, TNA fitting raises the classed condition <code>simulab_missing_tna</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="learning-state-labels-by-default-0-4-8">Learning-state labels by default<a class="anchor" aria-label="anchor" href="#learning-state-labels-by-default-0-4-8"></a></h3>
+<ul><li>
+<code><a href="../reference/simulate_sequences.html">simulate_sequences()</a></code>, <code><a href="../reference/simulate_group_sequences.html">simulate_group_sequences()</a></code>, <code><a href="../reference/simulate_group_tna.html">simulate_group_tna()</a></code>, <code><a href="../reference/generate_transition_system.html">generate_transition_system()</a></code> and <code><a href="../reference/simulate_tna.html">simulate_tna()</a></code> label a drawn state space with metacognitive and cognitive states from the learning-state catalogue by default (<code>state_categories = c("metacognitive", "cognitive")</code>), as Saqrlab did. <code>state_categories = NULL</code> restores <code>State 1</code>, <code>State 2</code>, and so on. Because the labels are drawn, seeded output of these generators differs from 0.4.7 when they draw their own state space.</li>
+<li>Grouped sequences draw their labels once and share them, so every group has the same state space. Before, groups given <code>state_categories</code> each drew their own labels.</li>
+<li>The README is generated from <code>README.Rmd</code>, so its printed output is run, and it is rewritten around the current interface. The title is now “Simulates a Wide Variety of Data Shapes, Sizes and Distributions”, and the description leads with the range of data and with parameters that are drawn or given, and in both cases recoverable. Sonsoles López-Pernas is an author and copyright holder.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="simulation-with-no-parameters-0-4-8">Simulation with no parameters<a class="anchor" aria-label="anchor" href="#simulation-with-no-parameters-0-4-8"></a></h3>
+<ul><li>
+<code><a href="../reference/simulate_regression.html">simulate_regression()</a></code>, <code><a href="../reference/simulate_ttest.html">simulate_ttest()</a></code>, <code><a href="../reference/simulate_anova.html">simulate_anova()</a></code>, <code><a href="../reference/simulate_sequences.html">simulate_sequences()</a></code>, <code><a href="../reference/simulate_group_sequences.html">simulate_group_sequences()</a></code> and <code><a href="../reference/simulate_group_tna.html">simulate_group_tna()</a></code> run with no arguments. Sizes have defaults (100 observations; 50 per group for a t-test; 3 groups of 30 for an analysis of variance; 100 sequences of length 20; 2 groups of 50 actors with sequences of length 20).</li>
+<li>A parameter left <code>NULL</code> is drawn inside the same seeded block as the data and reported as the truth in the result’s tables. Regression draws an intercept from the standard normal distribution and <code>n_predictors</code> (new, default 2) slopes from the uniform distribution on [-1, 1]; group designs draw each mean from the standard normal distribution. Drawn values are rounded to two decimals, so the reported value is the value used.</li>
+<li>Printing a result shows its generating values under the data, headed <code>Truth</code>, and names the other stored tables.</li>
+<li>
+<code><a href="../reference/validate_recovery.html">validate_recovery()</a></code> takes a result, or a whole batch, as <code>truth</code>. A batch is matched by <code>batch_id</code> and <code>term</code>, so each estimate is compared with the truth of its own data set, which a batch with drawn parameters needs. <code>true_value</code> defaults to <code>NULL</code>: a <code>truth</code> column, or else the single numeric column of the truth table.</li>
+<li>
+<code><a href="../reference/apply_batch.html">apply_batch()</a></code> takes a model function directly: <code>apply_batch(datasets, lm, formula = outcome ~ x1 + x2)</code>. Each data set is passed as <code>data</code> when the function has that argument, and a fitted model is returned as its coefficients, with columns <code>term</code> and <code>estimate</code>.</li>
+<li>
+<code><a href="../reference/simulate_tna_batches.html">simulate_tna_batches()</a></code> and <code><a href="../reference/simulate_sequence_batches.html">simulate_sequence_batches()</a></code> take <code>repetitions = 1</code> by default, so <code><a href="../reference/simulate_tna_batches.html">simulate_tna_batches()</a></code> with no arguments draws a transition system, generates sequences and fits one network.</li>
+<li>
+<code><a href="../reference/simulate_tna_batches.html">simulate_tna_batches()</a></code> identifies data sets by <code>dataset</code> in the fitted edges and <code>model_info</code>, as its <code>sequences</code> and <code>true_transitions</code> tables already did. The column was <code>network</code>, which kept fitted edges and truth from being matched. Its rows are numbered 1 to n instead of <code>1.1</code>, <code>1.2</code>.</li>
+<li>
+<code><a href="../reference/validate_recovery.html">validate_recovery()</a></code> handles an estimate column and a true-value column of the same name, such as <code>probability</code>, and takes a fitted model, such as <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> or <code>coxph()</code>, as <code>estimates</code>. Grouped TNA tables are numbered 1 to n instead of <code>Group 1.1</code>.</li>
+<li>Calls that supply the parameters produce the same data as in 0.4.7, and positional calls keep their meaning: <code>n_predictors</code> is the last argument of <code><a href="../reference/simulate_regression.html">simulate_regression()</a></code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.7" id="simulab-047">simulab 0.4.7<a class="anchor" aria-label="anchor" href="#simulab-047"></a></h2>
 <div class="section level3">
@@ -283,7 +316,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

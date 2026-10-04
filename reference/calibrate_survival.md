@@ -6,9 +6,9 @@ passes as closely as possible through the supplied points. The fit is a
 least-squares fit of `log(time)` on `log(-log(survival))`, run with
 `L-BFGS-B`, and the returned `formula` and `shape` can be handed
 straight to
-[`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md)
+[`define_survival()`](https://pak.dynasite.org/simulab/reference/define_survival.md)
 or
-[`survival_curve()`](https://mohsaqr.github.io/simulab/reference/survival_curve.md).
+[`survival_curve()`](https://pak.dynasite.org/simulab/reference/survival_curve.md).
 
 ## Usage
 

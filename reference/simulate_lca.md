@@ -105,6 +105,17 @@ head(result)
 #> 4  4      Class 2    yes     no
 #> 5  5      Class 1     no    yes
 #> 6  6      Class 2    yes     no
+#> 
+#> Truth (parameters):
+#>   latent_class indicator category probability proportion
+#> 1      Class 1    item_1       no         0.8        0.6
+#> 2      Class 2    item_1       no         0.2        0.4
+#> 3      Class 1    item_2       no         0.7        0.6
+#> 4      Class 2    item_2       no         0.3        0.4
+#> 5      Class 1    item_1      yes         0.2        0.6
+#> 6      Class 2    item_1      yes         0.8        0.4
+#> 7      Class 1    item_2      yes         0.3        0.6
+#> 8      Class 2    item_2      yes         0.7        0.4
 as.data.frame(result, what = "parameters")
 #>   latent_class indicator category probability proportion
 #> 1      Class 1    item_1       no         0.8        0.6

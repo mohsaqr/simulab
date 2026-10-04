@@ -22,7 +22,7 @@ augment_factorial(data, factors, coding = c("dummy", "effect", "level"))
 - coding:
 
   Factor coding passed to
-  [`factorial_design()`](https://mohsaqr.github.io/simulab/reference/factorial_design.md):
+  [`factorial_design()`](https://pak.dynasite.org/simulab/reference/factorial_design.md):
   `"dummy"` (the default), `"effect"` or `"level"`.
 
 ## Value
@@ -46,4 +46,6 @@ head(result)
 #> 4  4    0      0
 #> 5  5    0      0
 #> 6  6    0      0
+#> 
+#> Other tables: design. Read one with as.data.frame(x, what = "design").
 ```

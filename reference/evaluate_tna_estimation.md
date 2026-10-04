@@ -54,13 +54,13 @@ evaluate_tna_estimation(
 - concentration, diagonal_concentration:
 
   Transition-system parameters passed to
-  [`generate_transition_system()`](https://mohsaqr.github.io/simulab/reference/generate_transition_system.md),
+  [`generate_transition_system()`](https://pak.dynasite.org/simulab/reference/generate_transition_system.md),
   defaulting to `1` and `0`.
 
 - missing_tail:
 
   Trailing missing positions passed to
-  [`simulate_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_sequences.md),
+  [`simulate_sequences()`](https://pak.dynasite.org/simulab/reference/simulate_sequences.md),
   defaulting to `c(0L, 5L)`.
 
 - threshold:
@@ -78,15 +78,15 @@ evaluate_tna_estimation(
 - ...:
 
   Arguments passed to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
 
 ## Value
 
 A `simulab_sim` base `data.frame` with one row per replication and
 model, holding `iteration`, `model`, the
-[`compare_networks()`](https://mohsaqr.github.io/simulab/reference/compare_networks.md)
+[`compare_networks()`](https://pak.dynasite.org/simulab/reference/compare_networks.md)
 agreement metrics and the
-[`evaluate_edge_recovery()`](https://mohsaqr.github.io/simulab/reference/evaluate_edge_recovery.md)
+[`evaluate_edge_recovery()`](https://pak.dynasite.org/simulab/reference/evaluate_edge_recovery.md)
 summary. Components: `truth`, the generating probabilities with columns
 `iteration`, `from`, `to` and `weight`; and `estimated_edges`, the
 row-normalized fitted edges with columns `iteration`, `model`, `from`,
@@ -111,4 +111,6 @@ if (requireNamespace("tna", quietly = TRUE)) {
 #>   false_negative
 #> 1              0
 #> 2              1
+#> 
+#> Other tables: truth, estimated_edges. Read one with as.data.frame(x, what = "truth").
 ```

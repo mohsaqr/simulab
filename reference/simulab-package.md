@@ -9,7 +9,7 @@ sequences, and networks.
 
 Every simulator returns a data-frame-native `simulab_sim`. Primary data
 can be passed directly to base-R and modeling functions. Use
-[`components()`](https://mohsaqr.github.io/simulab/reference/components.md)
+[`components()`](https://pak.dynasite.org/simulab/reference/components.md)
 to discover ground-truth and design tables, then
 `as.data.frame(x, what = ...)` to retrieve them.
 
@@ -17,10 +17,18 @@ to discover ground-truth and design tables, then
 
 Useful links:
 
+- <https://pak.dynasite.org/simulab/>
+
 - <https://github.com/mohsaqr/simulab>
 
 - Report bugs at <https://github.com/mohsaqr/simulab/issues>
 
 ## Author
 
-**Maintainer**: Mohammed Saqr <saqr@saqr.me> \[copyright holder\]
+**Maintainer**: Mohammed Saqr <saqr@saqr.me>
+([ORCID](https://orcid.org/0000-0001-5881-3109)) \[copyright holder\]
+
+Authors:
+
+- Sonsoles López-Pernas <sonsoles.lopez@uef.fi>
+  ([ORCID](https://orcid.org/0000-0002-9621-1392)) \[copyright holder\]

@@ -134,6 +134,15 @@ head(result)
 #> 4  1        4 -0.01764584  1.2340777
 #> 5  1        5  1.75519038 -0.7926695
 #> 6  1        6  0.81688808  0.1331193
+#> 
+#> Truth (transition):
+#>          row     column coefficient
+#> 1 variable_1 variable_1         0.5
+#> 2 variable_2 variable_1         0.0
+#> 3 variable_1 variable_2         0.1
+#> 4 variable_2 variable_2         0.4
+#> 
+#> Other tables: wide, innovation_covariance, between_covariance, person_means. Read one with as.data.frame(x, what = "wide").
 components(result)
 #>                   table rows columns
 #> 1                  data  600       4

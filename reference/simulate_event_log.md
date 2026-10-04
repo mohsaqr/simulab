@@ -80,7 +80,7 @@ simulate_event_log(
 - ...:
 
   Advanced options passed to
-  [`simulate_group_sequences()`](https://mohsaqr.github.io/simulab/reference/simulate_group_sequences.md).
+  [`simulate_group_sequences()`](https://pak.dynasite.org/simulab/reference/simulate_group_sequences.md).
 
 - batch:
 
@@ -108,13 +108,29 @@ per actor, columns `id`, `S1`, ..., plus actor metadata), and `one_hot`
 result <- simulate_event_log(groups = 2, actors = 10, sequence_length = 8, seed = 1)
 head(result)
 #> <simulab_sim:event_log> 6 rows x 7 columns
-#>     group    id   course achievement period         state           timestamp
-#> 1 Group 1 G1_A1 Course 1        high      1     Encourage 2020-01-01 00:00:00
-#> 2 Group 1 G1_A1 Course 1        high      2         Doubt 2020-01-01 00:01:10
-#> 3 Group 1 G1_A1 Course 1        high      3 Differentiate 2020-01-01 00:05:15
-#> 4 Group 1 G1_A1 Course 1        high      4      Practice 2020-01-01 00:06:32
-#> 5 Group 1 G1_A1 Course 1        high      5     Encourage 2020-01-01 00:09:06
-#> 6 Group 1 G1_A1 Course 1        high      6         Track 2020-01-01 00:10:24
+#>     group    id   course achievement period    state           timestamp
+#> 1 Group 1 G1_A1 Course 1        high      1 Continue 2020-01-01 00:00:00
+#> 2 Group 1 G1_A1 Course 1        high      2 Complete 2020-01-01 00:01:10
+#> 3 Group 1 G1_A1 Course 1        high      3 Practice 2020-01-01 00:05:15
+#> 4 Group 1 G1_A1 Course 1        high      4    Track 2020-01-01 00:06:32
+#> 5 Group 1 G1_A1 Course 1        high      5    Track 2020-01-01 00:09:06
+#> 6 Group 1 G1_A1 Course 1        high      6 Complete 2020-01-01 00:10:24
+#> 
+#> Truth (transitions):
+#>      group          from        to probability
+#> 1  Group 1      Complete  Complete  0.05326849
+#> 2  Group 1     Encourage  Complete  0.21668978
+#> 3  Group 1      Continue  Complete  0.29212077
+#> 4  Group 1         Doubt  Complete  0.12525831
+#> 5  Group 1 Differentiate  Complete  0.20205291
+#> 6  Group 1         Track  Complete  0.12203496
+#> 7  Group 1         Forum  Complete  0.09929164
+#> 8  Group 1      Practice  Complete  0.06490684
+#> 9  Group 1      Complete Encourage  0.03248789
+#> 10 Group 1     Encourage Encourage  0.01809601
+#> ... 118 more rows
+#> 
+#> Other tables: actors, groups, wide, one_hot. Read one with as.data.frame(x, what = "actors").
 components(result)
 #>         table rows columns
 #> 1        data  160       7
@@ -122,5 +138,5 @@ components(result)
 #> 3      actors   20       4
 #> 4      groups    2       2
 #> 5        wide   20      12
-#> 6     one_hot  160      22
+#> 6     one_hot  160      14
 ```

@@ -114,4 +114,6 @@ head(result)
 #> 4  1      3    3
 #> 5  2      0    0
 #> 6  2      1    1
+#> 
+#> Other tables: schedule. Read one with as.data.frame(x, what = "schedule").
 ```

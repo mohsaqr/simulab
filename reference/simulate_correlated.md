@@ -48,7 +48,7 @@ simulate_correlated(
 - correlation:
 
   A custom correlation matrix or tidy table returned by
-  [`correlation_structure()`](https://mohsaqr.github.io/simulab/reference/correlation_structure.md).
+  [`correlation_structure()`](https://pak.dynasite.org/simulab/reference/correlation_structure.md).
 
 - variable_names:
 
@@ -104,4 +104,12 @@ simulate_correlated(
 #> 9   9  0.6440032  1.9009305  2.1876256
 #> 10 10  0.2346483  4.3605248  2.8663294
 #> ... 90 more rows
+#> 
+#> Truth (parameters):
+#>   variable mean sd
+#> 1       V1    0  1
+#> 2       V2    1  2
+#> 3       V3    2  1
+#> 
+#> Other tables: correlation, covariance. Read one with as.data.frame(x, what = "correlation").
 ```

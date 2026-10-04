@@ -1,7 +1,7 @@
 # Simulate repeated networks
 
 Calls
-[`simulate_network()`](https://mohsaqr.github.io/simulab/reference/simulate_network.md)
+[`simulate_network()`](https://pak.dynasite.org/simulab/reference/simulate_network.md)
 `repetitions` times and stacks the edge lists.
 
 ## Usage
@@ -19,7 +19,7 @@ simulate_network_batches(repetitions, ..., seed = NULL)
 - ...:
 
   Arguments passed to
-  [`simulate_network()`](https://mohsaqr.github.io/simulab/reference/simulate_network.md).
+  [`simulate_network()`](https://pak.dynasite.org/simulab/reference/simulate_network.md).
 
 - seed:
 
@@ -30,7 +30,7 @@ simulate_network_batches(repetitions, ..., seed = NULL)
 
 A `simulab_sim` base `data.frame` edge list, one row per network and
 edge, with the column `network` followed by the columns
-[`simulate_network()`](https://mohsaqr.github.io/simulab/reference/simulate_network.md)
+[`simulate_network()`](https://pak.dynasite.org/simulab/reference/simulate_network.md)
 returns (`from`, `to` and `weight`). The component `settings`, reached
 with `as.data.frame(x, what = "settings")`, holds one row per network
 with its generator arguments and realized edge count.
@@ -50,4 +50,10 @@ head(result)
 #> 4       1    3  2      1
 #> 5       1    5  4      1
 #> 6       1    4  5      1
+#> 
+#> Truth (settings):
+#>   network     model directed loops weight nodes edges
+#> 1       1 bernoulli     TRUE FALSE binary    20    35
+#> 2       2 bernoulli     TRUE FALSE binary    20    37
+#> 3       3 bernoulli     TRUE FALSE binary    20    32
 ```

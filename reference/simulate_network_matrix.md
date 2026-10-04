@@ -93,6 +93,12 @@ head(result)
 #> 4 Node 4 Node 1 0.0000000
 #> 5 Node 5 Node 1 0.3846445
 #> 6 Node 6 Node 1 0.0000000
+#> 
+#> Truth (settings):
+#>        type directed loops weighted
+#> 1 adjacency     TRUE FALSE     TRUE
+#> 
+#> Other tables: edges, nodes, matrix. Read one with as.data.frame(x, what = "edges").
 components(result)
 #>      table rows columns
 #> 1     data   64       3

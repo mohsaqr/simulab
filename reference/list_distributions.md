@@ -5,7 +5,7 @@ names one distribution, the parameters it takes in the order a
 positional call supplies them, and whether it carries a quantile
 function. Only a distribution with a quantile function can be a marginal
 in
-[`simulate_copula()`](https://mohsaqr.github.io/simulab/reference/simulate_copula.md).
+[`simulate_copula()`](https://pak.dynasite.org/simulab/reference/simulate_copula.md).
 
 ## Usage
 

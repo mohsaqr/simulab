@@ -22,7 +22,7 @@ compare_tna_models(
 - data:
 
   Sequence data accepted by
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
 
 - models:
 
@@ -31,7 +31,7 @@ compare_tna_models(
 - format, id, period, state, group:
 
   Input arguments passed to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
 
 - ...:
 
@@ -45,7 +45,7 @@ model/group/edge and columns `model`, `from`, `to`, and `weight` (with
 table, one row per fitted model and group, is available through
 [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html). The
 fitted native models are stored as a named list and returned by
-[`as_tna_model()`](https://mohsaqr.github.io/simulab/reference/as_tna_model.md).
+[`as_tna_model()`](https://pak.dynasite.org/simulab/reference/as_tna_model.md).
 
 ## Examples
 
@@ -55,16 +55,18 @@ if (requireNamespace("tna", quietly = TRUE)) {
   compare_tna_models(data, models = c("tna", "ftna"))
 }
 #> <simulab_sim:tna_comparison> 18 rows x 4 columns
-#>    model    from      to      weight
-#> 1    tna State 1 State 1  0.11046512
-#> 2    tna State 2 State 1  0.56375839
-#> 3    tna State 3 State 1  0.63865546
-#> 4    tna State 1 State 2  0.37209302
-#> 5    tna State 2 State 2  0.32885906
-#> 6    tna State 3 State 2  0.32773109
-#> 7    tna State 1 State 3  0.51744186
-#> 8    tna State 2 State 3  0.10738255
-#> 9    tna State 3 State 3  0.03361345
-#> 10  ftna State 1 State 1 19.00000000
+#>    model    from      to       weight
+#> 1    tna   Learn   Learn   0.53112033
+#> 2    tna    Plan   Learn   0.17187500
+#> 3    tna Reflect   Learn   0.90370370
+#> 4    tna   Learn    Plan   0.10788382
+#> 5    tna    Plan    Plan   0.17187500
+#> 6    tna Reflect    Plan   0.03703704
+#> 7    tna   Learn Reflect   0.36099585
+#> 8    tna    Plan Reflect   0.65625000
+#> 9    tna Reflect Reflect   0.05925926
+#> 10  ftna   Learn   Learn 128.00000000
 #> ... 8 more rows
+#> 
+#> Other tables: model_info. Read one with as.data.frame(x, what = "model_info").
 ```

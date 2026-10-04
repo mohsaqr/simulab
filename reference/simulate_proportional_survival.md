@@ -114,6 +114,15 @@ head(result)
 #> 4  4 0.4992354      1  1.5952808
 #> 5  5 0.5960112      1  0.3295078
 #> 6  6 1.1976905      0 -0.8204684
+#> 
+#> Truth (parameters):
+#>             term      value
+#> 1             x1 0.70000000
+#> 2  baseline_rate 0.10000000
+#> 3          shape 1.50000000
+#> 4 censoring_rate 0.05520726
+#> 
+#> Other tables: diagnostics. Read one with as.data.frame(x, what = "diagnostics").
 as.data.frame(result, what = "parameters")
 #>             term      value
 #> 1             x1 0.70000000

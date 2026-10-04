@@ -1,7 +1,7 @@
 # Compute a tidy Weibull survival curve
 
 Evaluates the simstudy Weibull curve of
-[`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md),
+[`define_survival()`](https://pak.dynasite.org/simulab/reference/define_survival.md),
 `S(t) = exp(-exp(formula) * t^(1 / shape) / scale)`, at `n` survival
 probabilities spread evenly from `1 - 1 / n` down to `1 / n`, inverting
 it for the matching times. The points are therefore equally spaced in

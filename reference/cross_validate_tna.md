@@ -3,7 +3,7 @@
 Each iteration splits the sequences once into a training and a testing
 set, fits every estimator to both halves, and compares the two networks
 with
-[`compare_networks()`](https://mohsaqr.github.io/simulab/reference/compare_networks.md).
+[`compare_networks()`](https://pak.dynasite.org/simulab/reference/compare_networks.md).
 
 ## Usage
 
@@ -58,13 +58,13 @@ cross_validate_tna(
 - ...:
 
   Further arguments passed to
-  [`fit_tna()`](https://mohsaqr.github.io/simulab/reference/fit_tna.md).
+  [`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md).
 
 ## Value
 
 A plain base `data.frame` with one row per iteration and estimator and
 the columns `iteration`, `model`, and the
-[`compare_networks()`](https://mohsaqr.github.io/simulab/reference/compare_networks.md)
+[`compare_networks()`](https://pak.dynasite.org/simulab/reference/compare_networks.md)
 agreement metrics `pearson`, `cosine`, `mae`, `rmse`, `jaccard`,
 `edges_x` and `edges_y`. This is not a `simulab_sim`.
 
@@ -76,13 +76,13 @@ if (requireNamespace("tna", quietly = TRUE)) {
   cross_validate_tna(data, models = c("tna", "ftna"), iterations = 2, seed = 1)
 }
 #>   iteration model   pearson    cosine         mae        rmse   jaccard edges_x
-#> 1         1   tna 0.9923218 0.9950624  0.03939268  0.04322439 1.0000000       9
-#> 2         1  ftna 0.9916963 0.9945819 29.33333333 32.80582604 1.0000000       9
-#> 3         2   tna 0.9780752 0.9925225  0.04101001  0.04970991 0.8888889       9
-#> 4         2  ftna 0.9688537 0.9905214 29.33333333 33.89854143 0.8888889       9
+#> 1         1   tna 0.9838410 0.9929185  0.04560538  0.05282897 0.8888889       9
+#> 2         1  ftna 0.9832673 0.9917742 29.77777778 42.07664963 0.8888889       9
+#> 3         2   tna 0.9903498 0.9954154  0.03047942  0.04354214 1.0000000       9
+#> 4         2  ftna 0.9929774 0.9947696 29.33333333 43.53542619 1.0000000       9
 #>   edges_y
-#> 1       9
-#> 2       9
-#> 3       8
-#> 4       8
+#> 1       8
+#> 2       8
+#> 3       9
+#> 4       9
 ```

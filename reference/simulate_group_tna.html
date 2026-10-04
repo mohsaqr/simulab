@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">simulab</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating Data with Known Parameters in simulab</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Simulating a Wide Variety of Data Shapes, Sizes and Distributions</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -44,15 +44,15 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">simulate_group_tna</span><span class="op">(</span></span>
-<span>  <span class="va">groups</span>,</span>
-<span>  <span class="va">actors</span>,</span>
+<span>  groups <span class="op">=</span> <span class="fl">2L</span>,</span>
+<span>  actors <span class="op">=</span> <span class="fl">50L</span>,</span>
 <span>  transitions <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">chain_length</span>,</span>
+<span>  chain_length <span class="op">=</span> <span class="fl">20L</span>,</span>
 <span>  initial <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  states <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_states <span class="op">=</span> <span class="fl">5L</span>,</span>
-<span>  state_categories <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  state_categories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metacognitive"</span>, <span class="st">"cognitive"</span><span class="op">)</span>,</span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tna"</span>, <span class="st">"ftna"</span>, <span class="st">"ctna"</span>, <span class="st">"atna"</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
@@ -65,11 +65,12 @@
 
 
 <dl><dt id="arg-groups">groups<a class="anchor" aria-label="anchor" href="#arg-groups"></a></dt>
-<dd><p>Number of groups.</p></dd>
+<dd><p>Number of groups, defaulting to <code>2</code>.</p></dd>
 
 
 <dt id="arg-actors">actors<a class="anchor" aria-label="anchor" href="#arg-actors"></a></dt>
-<dd><p>Actors per group, scalar or one value per group.</p></dd>
+<dd><p>Actors per group, scalar or one value per group, defaulting
+to <code>50</code>.</p></dd>
 
 
 <dt id="arg-transitions">transitions<a class="anchor" aria-label="anchor" href="#arg-transitions"></a></dt>
@@ -79,7 +80,7 @@
 
 
 <dt id="arg-chain-length">chain_length<a class="anchor" aria-label="anchor" href="#arg-chain-length"></a></dt>
-<dd><p>Sequence length.</p></dd>
+<dd><p>Sequence length, defaulting to <code>20</code>.</p></dd>
 
 
 <dt id="arg-initial">initial<a class="anchor" aria-label="anchor" href="#arg-initial"></a></dt>
@@ -138,14 +139,62 @@ accessible through <code><a href="as_tna_model.html">as_tna_model()</a></code>. 
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="components.html">components</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># With no arguments, one transition matrix per group is drawn and fitted.</span></span></span>
+<span class="r-in"><span>  <span class="va">drawn</span> <span class="op">&lt;-</span> <span class="fu">simulate_group_tna</span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">drawn</span>, what <span class="op">=</span> <span class="st">"true_transitions"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              table rows columns</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             data  480       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 true_transitions   18       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  estimated_edges   18       4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       model_info    2       5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5             wide   40      14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           groups    2       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      group      from        to probability</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  Group 1   Reflect   Reflect 0.049788256</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  Group 1     Learn   Reflect 0.394948479</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  Group 1      Plan   Reflect 0.585611026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Group 1 Elaborate   Reflect 0.219063793</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  Group 1   Analyze   Reflect 0.298431569</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  Group 1   Reflect     Learn 0.371741544</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  Group 1     Learn     Learn 0.207717030</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  Group 1      Plan     Learn 0.099750600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  Group 1 Elaborate     Learn 0.024788532</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 Group 1   Analyze     Learn 0.038374010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 Group 1   Reflect      Plan 0.099744248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 Group 1     Learn      Plan 0.098345088</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 Group 1      Plan      Plan 0.022131805</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 Group 1 Elaborate      Plan 0.327292502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 Group 1   Analyze      Plan 0.246092007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 Group 1   Reflect Elaborate 0.436757023</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 Group 1     Learn Elaborate 0.253029533</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 Group 1      Plan Elaborate 0.179824790</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 Group 1 Elaborate Elaborate 0.316213388</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 Group 1   Analyze Elaborate 0.381412115</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 Group 1   Reflect   Analyze 0.041968930</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 Group 1     Learn   Analyze 0.045959871</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 Group 1      Plan   Analyze 0.112681779</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 Group 1 Elaborate   Analyze 0.112641786</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 Group 1   Analyze   Analyze 0.035690299</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 Group 2   Reflect   Reflect 0.026229926</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 Group 2     Learn   Reflect 0.009143277</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 Group 2      Plan   Reflect 0.010820782</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 Group 2 Elaborate   Reflect 0.228929820</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 Group 2   Analyze   Reflect 0.027846525</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 Group 2   Reflect     Learn 0.135217000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32 Group 2     Learn     Learn 0.019558256</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33 Group 2      Plan     Learn 0.450717596</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34 Group 2 Elaborate     Learn 0.554263237</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35 Group 2   Analyze     Learn 0.058571272</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36 Group 2   Reflect      Plan 0.107633351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37 Group 2     Learn      Plan 0.612337006</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38 Group 2      Plan      Plan 0.019373649</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39 Group 2 Elaborate      Plan 0.004433527</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40 Group 2   Analyze      Plan 0.281040051</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41 Group 2   Reflect Elaborate 0.103269753</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42 Group 2     Learn Elaborate 0.244923406</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43 Group 2      Plan Elaborate 0.054592182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44 Group 2 Elaborate Elaborate 0.081621468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45 Group 2   Analyze Elaborate 0.014692743</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46 Group 2   Reflect   Analyze 0.627649970</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47 Group 2     Learn   Analyze 0.114038055</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48 Group 2      Plan   Analyze 0.464495791</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49 Group 2 Elaborate   Analyze 0.130751948</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50 Group 2   Analyze   Analyze 0.617849410</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -153,7 +202,7 @@ accessible through <code><a href="as_tna_model.html">as_tna_model()</a></code>. 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mohammed Saqr.</p>
+  <p>Developed by Mohammed Saqr, Sonsoles López-Pernas.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -15,7 +15,7 @@ define_missingnesses(...)
   Either the columns of a specification given as named vectors
   (`variable`, `formula`, `link`, `baseline`, `monotone`), or objects
   created by
-  [`define_missingness()`](https://mohsaqr.github.io/simulab/reference/define_missingness.md).
+  [`define_missingness()`](https://pak.dynasite.org/simulab/reference/define_missingness.md).
   The two forms cannot be mixed in one call.
 
   In the column form, `variable` and `formula` are required. A column
@@ -26,7 +26,7 @@ define_missingnesses(...)
 
 A `simulab_missing_spec` base `data.frame` with one row per target
 variable, in the order given, and the columns of
-[`define_missingness()`](https://mohsaqr.github.io/simulab/reference/define_missingness.md):
+[`define_missingness()`](https://pak.dynasite.org/simulab/reference/define_missingness.md):
 `variable`, `formula`, `link`, `baseline` and `monotone`. Target
 variables must be unique.
 

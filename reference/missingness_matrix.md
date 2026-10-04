@@ -4,7 +4,7 @@ Draws, for every row of `data` and every variable in `specification`,
 whether that cell is missing, by comparing a uniform draw against the
 row's probability. The mask is returned rather than applied, so the
 complete data and the mask that hides part of it can both be kept;
-[`observed_data()`](https://mohsaqr.github.io/simulab/reference/observed_data.md)
+[`observed_data()`](https://pak.dynasite.org/simulab/reference/observed_data.md)
 joins them.
 
 ## Usage
@@ -30,7 +30,7 @@ missingness_matrix(
 - specification:
 
   Definitions from
-  [`define_missingnesses()`](https://mohsaqr.github.io/simulab/reference/define_missingnesses.md),
+  [`define_missingnesses()`](https://pak.dynasite.org/simulab/reference/define_missingnesses.md),
   a `simulab_missing_spec` object.
 
 - id:

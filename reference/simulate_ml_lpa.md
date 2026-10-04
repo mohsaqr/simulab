@@ -155,6 +155,17 @@ head(result)
 #> 4  4       1       Class 2 Profile 2  1.7537948 1.5942530
 #> 5  5       1       Class 2 Profile 3  2.0557372 0.7941748
 #> 6  6       1       Class 2 Profile 3  1.4398808 1.8352831
+#> 
+#> Truth (parameters):
+#>     profile variable mean sd proportion
+#> 1 Profile 1  reading -1.5  1       0.35
+#> 2 Profile 2  reading  0.0  1       0.30
+#> 3 Profile 3  reading  1.5  1       0.35
+#> 4 Profile 1    maths -1.2  1       0.35
+#> 5 Profile 2    maths  0.2  1       0.30
+#> 6 Profile 3    maths  1.2  1       0.35
+#> 
+#> Other tables: profile_probabilities, clusters. Read one with as.data.frame(x, what = "profile_probabilities").
 as.data.frame(result, what = "profile_probabilities")
 #>   cluster_class   profile probability cluster_class_proportion
 #> 1       Class 1 Profile 1         0.6                      0.5

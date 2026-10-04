@@ -48,5 +48,12 @@ head(simulate_study(n = 50, specification = specification, seed = 1))
 #> 4  4  1.5952808 -0.33172270
 #> 5  5  0.3295078  1.59777759
 #> 6  6 -0.8204684  1.57016571
+#> 
+#> Truth (definitions):
+#>   variable distribution        formula variance     link
+#> 1 baseline       normal              0        1 identity
+#> 2  outcome       normal 0.5 * baseline        1 identity
+#> 
+#> Other tables: metadata. Read one with as.data.frame(x, what = "metadata").
 unlink(file)
 ```

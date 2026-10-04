@@ -18,7 +18,7 @@ define_survivals(...)
   `time = hazard(log_rate = -8 + 0.5 * treatment, shape = 0.3)` names
   the event with the argument name and states its hazard as a call.
   `log_rate` is the linear predictor on the log scale, the `formula` of
-  [`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md),
+  [`define_survival()`](https://pak.dynasite.org/simulab/reference/define_survival.md),
   so a coefficient inside it is a log hazard ratio. It may be any
   expression over the covariates; `shape` and `scale` default to 1 and
   `from`, the time at which the segment begins, to 0. Arguments may be
@@ -30,7 +30,7 @@ define_survivals(...)
   `scale`, `shape`, `transition`).
 
   **Objects** created by
-  [`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md).
+  [`define_survival()`](https://pak.dynasite.org/simulab/reference/define_survival.md).
 
   The forms cannot be mixed in one call.
 
@@ -43,7 +43,7 @@ define_survivals(...)
 
 A `simulab_survival_spec` base `data.frame` with one row per hazard
 segment and the columns of
-[`define_survival()`](https://mohsaqr.github.io/simulab/reference/define_survival.md):
+[`define_survival()`](https://pak.dynasite.org/simulab/reference/define_survival.md):
 `event`, `formula`, `scale`, `shape` and `transition`. Rows written by
 the column form and by the hazard-call form are ordered by `event` and
 then `transition`.

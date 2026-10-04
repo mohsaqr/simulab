@@ -3,19 +3,24 @@
 ## Authors
 
 - **Mohammed Saqr**. Author, maintainer, copyright holder.
+  [](https://orcid.org/0000-0001-5881-3109)
+
+- **Sonsoles López-Pernas**. Author, copyright holder.
+  [](https://orcid.org/0000-0002-9621-1392)
 
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/mohsaqr/simulab/blob/main/DESCRIPTION)
+[`inst/CITATION`](https://github.com/mohsaqr/simulab/blob/main/inst/CITATION)
 
-Saqr M (2026). *simulab: Unified Simulation of Statistical and Study
-Data*. R package version 0.4.7, <https://github.com/mohsaqr/simulab>.
+Saqr, M., & López-Pernas, S. (2026). simulab: Simulates a Wide Variety
+of Data Shapes, Sizes and Distributions. R package version 0.4.8.
+https://pak.dynasite.org/simulab/
 
     @Manual{,
-      title = {simulab: Unified Simulation of Statistical and Study Data},
-      author = {Mohammed Saqr},
+      title = {{simulab}: Simulates a Wide Variety of Data Shapes, Sizes and Distributions},
+      author = {Mohammed Saqr and Sonsoles López-Pernas},
       year = {2026},
-      note = {R package version 0.4.7},
-      url = {https://github.com/mohsaqr/simulab},
+      note = {R package version 0.4.8},
+      url = {https://pak.dynasite.org/simulab/},
     }

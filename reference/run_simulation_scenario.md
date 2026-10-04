@@ -13,7 +13,7 @@ run_simulation_scenario(scenario, seed = NULL)
 - scenario:
 
   A single scenario name from
-  [`simulation_scenarios()`](https://mohsaqr.github.io/simulab/reference/simulation_scenarios.md).
+  [`simulation_scenarios()`](https://pak.dynasite.org/simulab/reference/simulation_scenarios.md).
 
 - seed:
 
@@ -37,4 +37,11 @@ head(result)
 #> 4  4     A  1.5952808
 #> 5  5     A  0.3295078
 #> 6  6     A -0.8204684
+#> 
+#> Truth (parameters):
+#>   group   n mean sd
+#> 1     A 100  0.0  1
+#> 2     B 100  0.2  1
+#> 
+#> Other tables: effects. Read one with as.data.frame(x, what = "effects").
 ```
