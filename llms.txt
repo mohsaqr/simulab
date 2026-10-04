@@ -235,18 +235,11 @@ The vignette describes the data each generator produces, and
 [`list_simulators()`](https://pak.dynasite.org/simulab/reference/list_simulators.md)
 lists them with the shape of their results.
 
-## Relationship to other packages
-
-simulab supersedes Saqrlab, which has never been on CRAN, and continues
-its version numbering. simstudy is an equivalence oracle rather than a
-dependency: under the same seed, simulab reproduces simstudy 0.9.2
-values exactly for normal, binary and gamma declarative generation.
-
 ## Citation
 
 ``` R
 Saqr M, López-Pernas S (2026). _simulab: Simulates a Wide Variety of
-Data Shapes, Sizes and Distributions_. R package version 0.4.8,
+Data Shapes, Sizes and Distributions_. R package version 0.4.9,
 <https://pak.dynasite.org/simulab/>.
 ```
 

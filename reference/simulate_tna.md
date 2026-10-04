@@ -3,9 +3,7 @@
 Takes or draws a transition matrix, generates sequences from it with
 [`simulate_sequences()`](https://pak.dynasite.org/simulab/reference/simulate_sequences.md),
 and fits one transition network to the sequences with the `tna` package,
-all in one call. It is the single-network verb of Saqrlab (there named
-[`simulate_tna_network()`](https://pak.dynasite.org/simulab/reference/simulate_tna_network.md);
-in simulab that name belongs to the node-grouped matrix generator).
+all in one call.
 
 ## Usage
 
@@ -57,7 +55,7 @@ simulate_tna(
 - state_categories:
 
   Learning-state categories the labels of a drawn matrix come from,
-  defaulting to `c("metacognitive", "cognitive")` as in Saqrlab; see
+  defaulting to `c("metacognitive", "cognitive")`; see
   [`learning_state_categories()`](https://pak.dynasite.org/simulab/reference/learning_state_categories.md).
   `NULL` labels the states `State 1`, `State 2`, and so on. Ignored when
   `transition` or `states` names the states.
