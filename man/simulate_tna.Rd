@@ -35,8 +35,8 @@ and \code{transition} is supplied, every sequence starts in the first state.}
 \item{n_states}{Number of automatically generated states.}
 
 \item{state_categories}{Learning-state categories the labels of a drawn
-matrix come from, defaulting to \code{c("metacognitive", "cognitive")} as in
-Saqrlab; see \code{\link[=learning_state_categories]{learning_state_categories()}}. \code{NULL} labels the states
+matrix come from, defaulting to \code{c("metacognitive", "cognitive")}; see
+\code{\link[=learning_state_categories]{learning_state_categories()}}. \code{NULL} labels the states
 \verb{State 1}, \verb{State 2}, and so on. Ignored when \code{transition} or \code{states}
 names the states.}
 
@@ -71,9 +71,7 @@ and \code{model_info}. Requires the suggested \code{tna} package, and raises
 \description{
 Takes or draws a transition matrix, generates sequences from it with
 \code{\link[=simulate_sequences]{simulate_sequences()}}, and fits one transition network to the sequences
-with the \code{tna} package, all in one call. It is the single-network verb of
-Saqrlab (there named \code{simulate_tna_network()}; in simulab that name belongs
-to the node-grouped matrix generator).
+with the \code{tna} package, all in one call.
 }
 \examples{
 if (requireNamespace("tna", quietly = TRUE)) {

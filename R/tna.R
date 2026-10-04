@@ -426,9 +426,7 @@ simulate_group_tna <- function(groups = 2L, actors = 50L, transitions = NULL,
 #'
 #' Takes or draws a transition matrix, generates sequences from it with
 #' [simulate_sequences()], and fits one transition network to the sequences
-#' with the `tna` package, all in one call. It is the single-network verb of
-#' Saqrlab (there named `simulate_tna_network()`; in simulab that name belongs
-#' to the node-grouped matrix generator).
+#' with the `tna` package, all in one call.
 #'
 #' @param n Number of sequences, defaulting to `100`.
 #' @param transition Generating transition matrix, or a tidy data frame with
@@ -436,8 +434,8 @@ simulate_group_tna <- function(groups = 2L, actors = 50L, transitions = NULL,
 #'   over `n_states` states from a Dirichlet distribution.
 #' @param chain_length Sequence length, defaulting to `20`.
 #' @param state_categories Learning-state categories the labels of a drawn
-#'   matrix come from, defaulting to `c("metacognitive", "cognitive")` as in
-#'   Saqrlab; see [learning_state_categories()]. `NULL` labels the states
+#'   matrix come from, defaulting to `c("metacognitive", "cognitive")`; see
+#'   [learning_state_categories()]. `NULL` labels the states
 #'   `State 1`, `State 2`, and so on. Ignored when `transition` or `states`
 #'   names the states.
 #' @param model TNA estimator, one of `"tna"` (the default), `"ftna"`,
