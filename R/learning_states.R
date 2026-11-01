@@ -109,7 +109,9 @@ learning_states <- function(categories = "all") {
 #'   at most the number of distinct states in the selected categories.
 #' @param categories Categories passed to [learning_states()], defaulting to
 #'   `"all"`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy base `data.frame` with `n` rows, one per sampled state, and
 #'   columns `order` (the selection order, `1:n`), `category` and `state`. A

@@ -8,7 +8,9 @@
 #' @param sd_a,sd_b Positive group standard deviations.
 #' @param labels Two group labels.
 #' @param outcome Name of the outcome variable.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id`, `group` and `outcome` (renamed by `outcome`). Two tidy tables
@@ -127,7 +129,9 @@ simulate_ttest <- function(n_a = 50L, n_b = 50L, mean_a = NULL, mean_b = NULL,
 #' @param sds Group standard deviations.
 #' @param labels Optional group labels.
 #' @param outcome Name of the outcome variable.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id`, `group` and `outcome` (renamed by `outcome`). Two tidy tables
@@ -246,7 +250,9 @@ simulate_anova <- function(n = 30L, means = NULL, sds = 1, labels = NULL,
 #' @param correlation Optional predictor correlation matrix or tidy table.
 #' @param error_sd Positive residual standard deviation.
 #' @param outcome Name of the outcome variable.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id`, one column per predictor, and `outcome` (renamed by
@@ -406,7 +412,9 @@ simulate_regression <- function(n = 100L, coefficients = NULL, predictor_means =
 #'   tidy data frame with columns `cluster`, `variable` and `sd`.
 #' @param proportions Optional cluster proportions.
 #' @param labels Optional cluster labels.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id`, `cluster` (the true membership label) and one column per

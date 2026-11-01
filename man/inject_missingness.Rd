@@ -34,7 +34,9 @@ set.}
 single string naming a column of \code{data}, required when \code{mechanism} is
 \code{"MAR"} and ignored otherwise. Defaults to \code{NULL}.}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with the columns and rows of
@@ -59,6 +61,7 @@ probability equal \code{proportion}, and capped at 1. Each MAR target therefore
 shares one probability vector, while each MNAR target gets its own.
 }
 \examples{
+set.seed(1)
 data <- data.frame(id = 1:200, x = stats::rnorm(200), y = stats::rnorm(200))
 
 result <- inject_missingness(
@@ -71,4 +74,8 @@ head(inject_missingness(
   data, mechanism = "MAR", proportion = 0.2,
   variables = "y", predictor = "x", seed = 1
 ))
+}
+\references{
+Rubin, D. B. (1976). Inference and missing data. \emph{Biometrika}, 63(3),
+581--592. \doi{10.1093/biomet/63.3.581}
 }

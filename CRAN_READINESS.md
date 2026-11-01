@@ -1,70 +1,119 @@
-# CRAN readiness — simulab 0.4.2
+# CRAN readiness — simulab 0.4.10
 
-## Completed locally
+Checked 2026-10-03 on R 4.5.2, aarch64-apple-darwin20, macOS Tahoe 26.3.1.
 
-- Package metadata, maintainer identity, MIT license, and informative
-  description validated.
-- `NEWS.md` and `cran-comments.md` updated for 0.4.2; `Language: en-US` and
-  `inst/WORDLIST` present.
-- `DESCRIPTION` declares `Imports: stats, utils`, the only two namespaces the
-  `NAMESPACE` imports from. There are no non-base hard dependencies.
-- Documentation regenerated into 127 Rd topics. All 123 exports have matching
-  Rd documentation; every documented `\usage` argument corresponds to a real
-  formal and every export carries `\value` and a runnable example, verified by
-  walking `tools::Rd_db()` against `formals()` rather than by inspection.
-- Every exported function's documentation was audited against its
-  implementation this release, and the five behavioural defects that audit
-  exposed were fixed. See `NEWS.md` for the list.
-- All test suites pass: **785 assertions, zero failures, zero errors, zero
-  skips** with every suggested package installed. 30 test files.
-- Coverage **90.9%** of package lines, measured with `covr` on this commit.
-- All 127 Rd topics' examples were additionally executed with `igraph`, `tna`
-  and `simstudy` reported as unavailable, to confirm that every use of a
-  suggested package is guarded. All pass.
-- `LC_ALL=C _R_CHECK_FORCE_SUGGESTS_=true R CMD check --as-cran` on the built artifact,
-  including the PDF reference manual, reports **Status: 1 NOTE** — the
-  new-submission note only. The C locale is used deliberately: the package
-  sources and all 127 Rd files are ASCII-only, so the check does not depend
-  on a UTF-8 locale.
-  R 4.5.2 (oldrel-1), aarch64-apple-darwin20.
+## R CMD check
 
-  Note: when the check is run inside the repository directory on macOS, a
-  second NOTE reports `.DS_Store` in the check directory. That file is created
-  by the operating system inside `simulab.Rcheck/` during the run; it is absent
-  from the tarball, and the note does not appear when the check writes its
-  output elsewhere with `-o`. It will not occur on CRAN's machines.
+`LC_ALL=C _R_CHECK_FORCE_SUGGESTS_=true _R_CHECK_CRAN_INCOMING_=true
+R CMD check --as-cran simulab_0.4.7.tar.gz`, including the PDF reference
+manual, run with the output directory outside the repository:
 
-## PDF reference manual
+**0 errors, 0 warnings, 1 NOTE** (`New submission`), on the final tarball
+below. The `unable to verify current time` NOTE seen on 2026-09-25 did not
+recur. Examples, tests, vignette
+re-build, PDF and HTML manual, and the incoming URL/DOI checks all pass.
 
-- The PDF reference manual builds successfully with TinyTeX. The TinyTeX binary
-  directory is not in the default shell `PATH`, so local checks prepend
-  `~/Library/TinyTeX/bin/universal-darwin` explicitly. A dedicated CI job
-  installs TinyTeX and runs the complete manual-enabled check.
+## Tests
 
-## Continuous integration
+- With every suggested package installed: **1188 passed, 0 failed, 0 errors,
+  0 skips, 0 warnings**.
+- With `tna`, `igraph`, `simstudy` and `survival` made unavailable: **1089
+  passed, 0 failed, 0 errors, 19 skips**; every Rd example and the vignette
+  run.
 
-`R-CMD-check` covers five matrix entries: ubuntu-latest (release, devel,
-oldrel-1), macos-latest (release) and windows-latest (release), plus a separate
-Ubuntu release job that performs the full manual-enabled check. The
-cross-platform matrix uses `--no-manual`.
+The no-Suggests environment is reproduced by tracing `loadNamespace()` so that
+it raises `packageNotFoundError` for the hidden packages, before running
+`devtools::test()` and `devtools::run_examples(run_donttest = TRUE)`:
 
-The submission commit must pass both jobs, including current R release and
-R-devel, before upload. CI has not yet been run on this commit.
+```r
+trace(loadNamespace, tracer = quote(
+  if (as.character(package) %in% c("tna", "igraph", "simstudy", "survival"))
+    stop(errorCondition("hidden", class = "packageNotFoundError"))),
+  print = FALSE, where = baseenv())
+```
+
+This pass found a real defect, which is now fixed: the seed-contract test
+errored without `tna` because `simulate_group_tna()` calls `fit_tna()`.
+
+## Posit extra checks (posit-dev/skills, r-lib/cran-extrachecks)
+
+| Item | State |
+|---|---|
+| `NEWS.md`, `cran-comments.md` present | yes |
+| README.Rmd edited, then knitted to README.md (cran-extrachecks item 3) | yes |
+| README gives `install.packages("simulab")` | added this pass |
+| README has no relative links | yes |
+| Title in title case, no redundancy, < 65 chars (64: "Simulates a Wide Variety of Data Shapes, Sizes and Distributions") | yes |
+| Description does not open with "This package" / package name; 4 sentences; no unexpanded acronyms | yes |
+| `Authors@R` has a `cph` role | yes; Sonsoles López-Pernas added as `aut`, `cph` with ORCID (2026-10-04); LICENSE names both |
+| `LICENSE` year 2026 | yes |
+| Every export has `\value` and `\examples` (128 Rd topics, 124 exports; only `simulab-package.Rd` lacks them, as expected) | yes |
+| No `\dontrun`, `\donttest`, `:::` or commented-out code in examples | yes |
+| Every example using a Suggests package guarded with `requireNamespace()` | yes, and verified by execution with them hidden |
+| `urlchecker::url_check()` | all URLs correct |
+| All URLs `https://` | yes |
+| Methods reference | explained in `cran-comments.md`; `simulate_ml_lpa()` cites Vermunt (2003) with a DOI |
+| Spelling under `Language: en-US` (`spelling::spell_check_package()`) | clean (2026-10-03: `labelling` fixed, vignette terms added to WORDLIST) |
+| Package name free on CRAN (current and archive) | yes, checked 2026-10-03 |
+| `pkgdown::check_pkgdown()` | no problems. Site served at https://pak.dynasite.org/simulab/ (Dynasite mirrors the `gh-pages` branch; `deploy/sites.conf`), now in DESCRIPTION `URL:` and `_pkgdown.yml` |
+| `inst/CITATION` | added; version read from DESCRIPTION |
+| README | generated from `README.Rmd` (in `.Rbuildignore`), every output run; rewritten 2026-10-04 |
+| Upstream posit-dev skill re-read 2026-10-03 | no items beyond this table |
 
 ## Release artifact
 
-Built 2026-09-13 at version 0.4.2, after the documentation audit and the
-correctness fixes it exposed.
+- File: `simulab_0.4.9.tar.gz`, 325,542 bytes, built 2026-10-04
+- SHA-256: `e86c63bf9a9f4dfdf308e1171922a574c78086c08c7248040d3c299169ee968d`
 
-- File: `simulab_0.4.2.tar.gz`
-- Size: 248,998 bytes
-- SHA-256: `48bc5b0967f62f7951a7564069e49e1cac5234bb41d244ed2d46d32cf7e92dd0`
+## Submission
 
-## External checks recommended before upload
+- **Submitted 2026-10-04 15:01:59 UTC:** simulab 0.4.10, commit df0e976,
+  uploaded with `devtools:::upload_cran()` and cran-comments.md
+  (`CRAN-SUBMISSION` written). Pending: the maintainer clicks the confirmation
+  link CRAN emails to saqr@saqr.me. Tag v0.4.10 once accepted.
 
-- Win-builder for Windows R-devel, and R-hub for a Linux R-devel image, as a
-  cross-check on the GitHub Actions matrix.
-- Confirm both GitHub Actions jobs pass on the submission commit.
-- `URL` and `BugReports` point at https://github.com/mohsaqr/simulab.
+## External checks
 
-No package has been uploaded or submitted to CRAN.
+- **0.4.10, commit df0e976:** four large-sample calibration tests now
+  `skip_on_cran()` (they run on CI). CRAN-mode test time 24.6 s -> 9.1 s
+  locally; win-builder 0.4.8 R-release showed tests at 68 s of a 240 s check.
+  Local check 0/0/1 NOTE. Win-builder R-devel (2026-09-30 r90605 ucrt):
+  1 NOTE, New submission only; check 200 s, tests 43 s
+  (https://win-builder.r-project.org/EKLy0L5ieFS8). R-release: awaiting email.
+
+- **0.4.9, commit ad355b1:** documentation-only change from 0.4.8 (NEWS cut to
+  one entry, lineage references removed, version bump). Local check 0/0/1
+  NOTE. R-hub and win-builder results below are for 0.4.8, whose code is
+  identical.
+
+- **0.4.8, commit 49756e5 (2026-10-04):** GitHub Actions R-CMD-check green
+  on all 6 jobs, test-coverage and pkgdown green; site live at
+  pak.dynasite.org/simulab showing 0.4.8. R-hub `glandular-shorebird`
+  (37208272659): linux, macos, macos-arm64, windows (R-devel), nosuggests,
+  donttest all `Status: OK`; vnu passed. Win-builder R-release (R 4.6.1,
+  x86_64-w64-mingw32): 1 NOTE, New submission only
+  (https://win-builder.r-project.org/TDJ988ly3dsG). Win-builder R-devel:
+  awaiting email.
+
+- **0.4.7, commit 91d2bab (2026-10-03):** GitHub Actions R-CMD-check green on
+  all 6 jobs (Ubuntu release + PDF manual, release, devel, oldrel-1; macOS and
+  Windows release), plus test-coverage and pkgdown. R-hub run
+  `unauthorized-quoll` (37153091808): linux, macos, macos-arm64, windows
+  (R-devel), nosuggests and donttest all `Status: OK`; vnu passed. Win-builder R-devel and R-release uploads
+  queued (confirmed on the FTP listing); results go to the maintainer by
+  email.
+
+- R-hub v2 on 0.4.5 (run unthinking-antelope): linux, macos, macos-arm64,
+  windows (all R-devel), donttest and vnu passed; nosuggests failed on the
+  vignette, fixed in 0.4.6 by `VignetteBuilder: knitr, rmarkdown` and passed
+  on re-run (eastern-pupfish).
+- GitHub Actions on 0.4.6 (6e68c74): R-CMD-check, test-coverage, pkgdown green.
+- Win-builder devel and release submitted for 0.4.4; results go by email.
+
+## Still to do before upload
+
+- Read the two win-builder emails (R-devel, R-release) and add their result
+  lines to `cran-comments.md`.
+- `devtools::submit_cran()`, then confirm the CRAN email.
+
+Submitted to CRAN on 2026-10-04 (0.4.10).

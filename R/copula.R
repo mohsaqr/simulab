@@ -180,7 +180,9 @@
 #'   non-zero `rho` is a contradiction and raises an error.
 #' @param correlation Custom latent correlation matrix or tidy table.
 #' @param id Identifier name.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param envir Formula evaluation environment.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
@@ -192,6 +194,9 @@
 #'   the generated margins, which are pulled apart by their own quantile
 #'   transforms.
 #' @inheritParams simulate_correlation
+#' @references
+#' Nelsen, R. B. (2006). *An Introduction to Copulas* (2nd ed.). Springer.
+#'   \doi{10.1007/0-387-28678-0}
 #' @export
 #'
 #' @section Conditions:
@@ -311,7 +316,9 @@ simulate_copula <- function(n, specification, rho = 0, tau = NULL,
 #'   `sin(pi * tau / 2)`.
 #' @param group Optional grouping variable. With grouping, one definition is
 #'   generated as correlated observations within each group.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param envir Formula evaluation environment.
 #'
 #' @return A `simulab_sim` base `data.frame` holding every column of `data`

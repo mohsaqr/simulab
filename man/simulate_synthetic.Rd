@@ -23,7 +23,9 @@ variable.}
 
 \item{id}{Identifier variable in the result.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -42,6 +44,7 @@ gives the source row each synthetic row was drawn from.
 Simulate row-bootstrap synthetic data
 }
 \examples{
+set.seed(1)
 source_data <- data.frame(id = 1:100, x = stats::rnorm(100), y = stats::runif(100))
 result <- simulate_synthetic(source_data, n = 50, seed = 1)
 head(result)

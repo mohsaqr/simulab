@@ -11,7 +11,9 @@ read_definitions(file)
 \code{formula}, \code{variance}, and \code{link} columns.}
 }
 \value{
-A \code{simulab_spec} base \code{data.frame}.
+A \code{simulab_spec} base \code{data.frame} with one row per variable of
+the file and the columns of \code{\link[=define_variable]{define_variable()}}: \code{variable},
+\code{distribution}, \code{formula}, \code{variance} and \code{link}.
 }
 \description{
 Read variable definitions from a CSV file

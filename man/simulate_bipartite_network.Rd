@@ -26,11 +26,18 @@ simulate_bipartite_network(
 
 \item{probability}{Cross-mode edge probability when \code{edges} is \code{NULL}.}
 
-\item{weight}{Edge-weight distribution.}
+\item{weight}{Edge-weight distribution: \code{"binary"} (the default), every
+weight 1; \code{"uniform"} on \code{weight_range}; \code{"normal"} with \code{weight_mean}
+and \code{weight_sd}; or \code{"poisson"} with mean \code{weight_mean}.}
 
-\item{weight_mean, weight_sd, weight_range}{Weight parameters.}
+\item{weight_mean, weight_sd, weight_range}{Parameters of \code{weight}: the mean
+of normal and Poisson weights (default \code{1}), the standard deviation of
+normal weights (default \code{1}), and the lower and upper limits of uniform
+weights (default \code{c(0.1, 1)}). Unused by binary weights.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}

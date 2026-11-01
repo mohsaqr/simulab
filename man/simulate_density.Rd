@@ -30,7 +30,9 @@ the proportion is reproduced in expectation rather than exactly.}
 
 \item{id}{Identifier variable name.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -50,7 +52,12 @@ values.
 Simulate from an empirical kernel density
 }
 \examples{
+set.seed(1)
 values <- stats::rnorm(200, mean = 5, sd = 2)
 result <- simulate_density(n = 100, values = values, variable = "score", seed = 1)
 head(result)
+}
+\references{
+Silverman, B. W. (1986). \emph{Density Estimation for Statistics and Data
+Analysis}. Chapman and Hall.
 }

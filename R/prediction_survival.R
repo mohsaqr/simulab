@@ -29,7 +29,9 @@
 #'   defaulting to `1`.
 #' @param outcome Outcome-column name. A single non-empty string, defaulting to
 #'   `"outcome"`.
-#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return When `categorical_levels` is `NULL`, whatever [simulate_regression()]
 #'   returns. Otherwise a `simulab_sim` base `data.frame` with one row per unit
@@ -53,6 +55,17 @@
 #' )
 #' head(result)
 #' as.data.frame(result, what = "coefficients")
+#'
+#' # A categorical predictor whose level shifts the outcome.
+#' with_arm <- simulate_prediction(
+#'   n = 200,
+#'   coefficients = c("(Intercept)" = 0.5, x1 = 1),
+#'   categorical_levels = list(arm = c("control", "treated")),
+#'   categorical_effects = list(arm = c(0, 0.8)),
+#'   seed = 1
+#' )
+#' head(with_arm)
+#' as.data.frame(with_arm, what = "categorical_effects")
 simulate_prediction <- function(n, coefficients,
                                 categorical_levels = NULL,
                                 categorical_effects = NULL,
@@ -215,7 +228,9 @@ simulate_prediction <- function(n, coefficients,
 #' @param covariate_distribution Distribution the covariates are drawn from,
 #'   independently, one of `"normal"` (the default, standard normal) or
 #'   `"binary"` (Bernoulli with probability 0.5).
-#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per unit and columns
 #'   `id`, `time` (the observed time, the smaller of the event and censoring
@@ -226,6 +241,10 @@ simulate_prediction <- function(n, coefficients,
 #'   solved `censoring_rate`) and `diagnostics` (one row, columns
 #'   `target_censoring`, `realized_censoring` and `baseline`).
 #' @inheritParams simulate_correlation
+#' @references
+#' Bender, R., Augustin, T., & Blettner, M. (2005). Generating survival times to
+#'   simulate Cox proportional hazards models. *Statistics in Medicine*, 24(11),
+#'   1713--1723. \doi{10.1002/sim.2059}
 #' @export
 #'
 #' @examples

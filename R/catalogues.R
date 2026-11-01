@@ -59,7 +59,9 @@ global_names <- function(regions = "all") {
 #' @param n Number of unique names to draw, at most the number of distinct names
 #'   the chosen regions hold.
 #' @param regions Regions passed to `global_names()`.
-#' @param seed Optional seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy base `data.frame` with one row per sampled name and columns
 #'   `order`, `region` and `name`. A name belonging to more than one region
@@ -117,7 +119,9 @@ simulation_scenarios <- function() {
 #' Run a built-in simulation scenario
 #'
 #' @param scenario A single scenario name from [simulation_scenarios()].
-#' @param seed Optional seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return The `simulab_sim` base `data.frame` returned by the simulator the
 #'   scenario calls, whose columns depend on the scenario's family.

@@ -28,7 +28,9 @@ same seeded draw as the data. The number of groups is then the length of
 
 \item{outcome}{Name of the outcome variable.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}

@@ -35,7 +35,9 @@ value per group. Defaults to \code{NULL}, equal allocation.}
 \item{name}{Name of the treatment variable, which must not already exist in
 \code{data}. A single non-empty string, defaulting to \code{"treatment"}.}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with the columns of \code{data} followed

@@ -23,7 +23,9 @@ repeat_variables(
 }
 \value{
 A \code{simulab_spec} base \code{data.frame} with one row per repeated
-variable.
+variable, named \code{prefix} followed by \code{1} to \code{n}, and the columns of
+\code{\link[=define_variable]{define_variable()}}: \code{variable}, \code{distribution}, \code{formula}, \code{variance} and
+\code{link}.
 }
 \description{
 Define repeated variables

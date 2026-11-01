@@ -45,12 +45,13 @@ install.packages("simulab", repos = c("https://mohsaqr.r-universe.dev",
 remotes::install_github("mohsaqr/simulab")
 ```
 
-No suggested package is needed at run time. `tna` (1.2.3 or later) fits
-the transition networks of `simulate_tna()`, `simulate_group_tna()` and
-`fit_tna()`; `igraph` (2.0.0 or later) supplies the
-preferential-attachment and small-world generators and `as_igraph()`;
-`survival` fits the Cox model in the vignette; `simstudy` is an
-equivalence oracle in the tests.
+The suggested packages are needed only by the functions that use them.
+`tna` (1.2.3 or later) fits the transition networks of `simulate_tna()`,
+`simulate_group_tna()`, `fit_tna()` and the other TNA workflows;
+`igraph` (2.0.0 or later) supplies every `simulate_network()` model
+other than `"bernoulli"`, `as_igraph()` and the centrality and network
+summaries; `survival` fits the Cox model in the vignette; `simstudy` is
+an equivalence oracle in the tests.
 
 ## Data with and without parameters
 

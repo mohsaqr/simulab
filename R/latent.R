@@ -78,7 +78,9 @@
 #'   Defaults to the profile names given with `means` (the `profile` values of
 #'   a tidy table, or the row names of a matrix), else `"Profile 1"`,
 #'   `"Profile 2"` and so on.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id`, `profile` (the true profile label) and one numeric column
@@ -86,6 +88,8 @@
 #'   profile-by-variable combination with columns `profile`, `variable`,
 #'   `mean`, `sd` and `proportion`.
 #' @inheritParams simulate_correlation
+#' @references
+#' McLachlan, G., & Peel, D. (2000). *Finite Mixture Models*. Wiley.
 #' @export
 #'
 #' @examples
@@ -223,7 +227,9 @@ simulate_lpa <- function(n, means, sds = 1, proportions = NULL,
 #'   `"Profile 2"` and so on.
 #' @param cluster_class_labels Optional cluster-class labels, one unique value
 #'   per cluster class. Defaults to `"Class 1"`, `"Class 2"` and so on.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per individual
 #'   (`sum(cluster_size)` rows) and the columns `id`, `cluster` (the level-2
@@ -451,7 +457,9 @@ simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities
 #'   Without names there, `class_labels` defaults to `"Class 1"`, `"Class 2"`
 #'   and so on, and `category_labels` to the integers `1:categories`. The
 #'   category labels are the values written into the indicator columns.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id`, `latent_class` (the true class label) and one column per
@@ -460,6 +468,12 @@ simulate_ml_lpa <- function(clusters, cluster_size, means, profile_probabilities
 #'   with columns `latent_class`, `indicator`, `category`, `probability` and
 #'   `proportion`.
 #' @inheritParams simulate_correlation
+#' @references
+#' Lazarsfeld, P. F., & Henry, N. W. (1968). *Latent Structure Analysis*.
+#'   Houghton Mifflin.
+#'
+#' Collins, L. M., & Lanza, S. T. (2010). *Latent Class and Latent Transition
+#'   Analysis*. Wiley.
 #' @export
 #'
 #' @examples
@@ -585,7 +599,9 @@ simulate_lca <- function(n, probabilities, proportions = NULL,
 #' @param include_scores Single flag; when `TRUE` the true factor scores are
 #'   appended to the primary data as one column per factor. Defaults to
 #'   `FALSE`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id` and one per indicator, plus one column per factor when

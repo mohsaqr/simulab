@@ -13,7 +13,8 @@ linear_formula(coefficients, variables)
 the first is the intercept.}
 }
 \value{
-A one-row \code{simulab_formula} base \code{data.frame}.
+A one-row \code{simulab_formula} base \code{data.frame} with the character
+columns \code{type} and \code{formula}, the formula text a specification accepts.
 }
 \description{
 Construct a linear simulation formula

@@ -38,8 +38,13 @@ simulate_network(
 \item{nodes}{Number of nodes or node labels. A single number produces the
 integer labels \code{1:nodes}.}
 
-\item{model}{Graph model. Every model except \code{bernoulli} requires the
-suggested \code{igraph} package.}
+\item{model}{Graph model: \code{"bernoulli"} (the default; independent ties,
+Gilbert 1959, or a stochastic block model when \code{probability} is a type
+matrix), \code{"barabasi_albert"} (preferential attachment), \code{"small_world"}
+(Watts-Strogatz rewiring of a ring lattice), \code{"block"} (stochastic block
+model), \code{"regular"} (every node of degree \code{degree}), \code{"geometric"}
+(random geometric graph in the unit square) or \code{"forest_fire"}. Every
+model except \code{bernoulli} requires the suggested \code{igraph} package.}
 
 \item{probability}{Bernoulli edge probability, node matrix, or type matrix.
 A matrix may instead be given as a tidy data frame with columns \code{from},
@@ -53,32 +58,55 @@ the number of admissible dyads.}
 \code{geometric} models, which are always undirected; the \code{directed} column of
 the \code{settings} table reports what was actually generated.}
 
-\item{loops}{Permit self-loops.}
+\item{loops}{Single logical. \code{TRUE} permits self-loops; defaults to \code{FALSE}.}
 
-\item{weight}{Edge-weight distribution.}
+\item{weight}{Edge-weight distribution: \code{"binary"} (the default), every
+weight 1; \code{"uniform"} on \code{weight_range}; \code{"normal"} with \code{weight_mean}
+and \code{weight_sd}; or \code{"poisson"} with mean \code{weight_mean}.}
 
-\item{weight_mean, weight_sd, weight_range}{Weight parameters.}
+\item{weight_mean, weight_sd, weight_range}{Parameters of \code{weight}: the mean
+of normal and Poisson weights (default \code{1}), the standard deviation of
+normal weights (default \code{1}), and the lower and upper limits of uniform
+weights (default \code{c(0.1, 1)}). Unused by binary weights.}
 
 \item{node_type}{Optional type label for each node. With more than one type
 it also supplies the block membership used by the \code{block} model.}
 
-\item{edge_classes}{Optional number or labels of edge classes.}
+\item{edge_classes}{Optional number or labels of edge classes. Each edge
+is assigned one class at random, stored in the \code{edge_class} column; a
+single number \code{k} gives the labels \verb{Class 1} to \verb{Class k}.}
 
-\item{class_probabilities}{Optional edge-class probabilities.}
+\item{class_probabilities}{Optional probabilities of the edge classes, one
+per class and summing to one. \code{NULL} (the default) makes them equal.}
 
-\item{attachment, power}{Preferential-attachment parameters.}
+\item{attachment, power}{Preferential-attachment parameters: the number of
+edges each new node adds (default \code{2}) and the power of the attachment
+(default \code{1}, linear in degree).}
 
-\item{neighbors, rewire}{Small-world parameters.}
+\item{neighbors, rewire}{Small-world parameters: each node of the starting
+ring lattice is tied to the nodes within \code{neighbors} steps (default \code{2}),
+and each tie is rewired with probability \code{rewire} (default \code{0.05}).}
 
-\item{blocks, within_probability, between_probability}{Block-model parameters.}
+\item{blocks, within_probability, between_probability}{Block-model
+parameters: the number of blocks when \code{node_type} has fewer than two
+types (default \code{3}, nodes assigned to blocks in turn), and the tie
+probability within a block (default \code{0.3}) and between blocks (default
+\code{0.05}).}
 
-\item{degree}{Regular-graph degree.}
+\item{degree}{Degree of every node in the \code{regular} model, defaulting to
+\code{4}.}
 
-\item{radius}{Geometric-graph connection radius.}
+\item{radius}{Connection radius of the \code{geometric} model, defaulting to
+\code{0.25}. Nodes placed uniformly in the unit square are tied when closer
+than \code{radius}.}
 
-\item{forward_probability, backward_probability}{Forest-fire parameters.}
+\item{forward_probability, backward_probability}{Forward burning
+probability (default \code{0.35}) and backward burning probability (default
+\code{0.32}) of the \code{forest_fire} model.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -112,4 +140,23 @@ components(result)
 if (requireNamespace("igraph", quietly = TRUE)) {
   head(simulate_network(nodes = 60, model = "small_world", neighbors = 2, seed = 1))
 }
+}
+\references{
+Gilbert, E. N. (1959). Random graphs. \emph{The Annals of Mathematical
+Statistics}, 30(4), 1141--1144. \doi{10.1214/aoms/1177706098}
+
+Holland, P. W., Laskey, K. B., & Leinhardt, S. (1983). Stochastic
+blockmodels: First steps. \emph{Social Networks}, 5(2), 109--137.
+\doi{10.1016/0378-8733(83)90021-7}
+
+Watts, D. J., & Strogatz, S. H. (1998). Collective dynamics of 'small-world'
+networks. \emph{Nature}, 393, 440--442. \doi{10.1038/30918}
+
+\enc{Barabási}{Barabasi}, A.-L., & Albert, R. (1999). Emergence of scaling in
+random networks. \emph{Science}, 286(5439), 509--512.
+\doi{10.1126/science.286.5439.509}
+
+Leskovec, J., Kleinberg, J., & Faloutsos, C. (2007). Graph evolution:
+Densification and shrinking diameters. \emph{ACM Transactions on Knowledge
+Discovery from Data}, 1(1), 2. \doi{10.1145/1217299.1217301}
 }

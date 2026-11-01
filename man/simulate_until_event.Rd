@@ -22,7 +22,9 @@ simulate_until_event(
 
 \item{occurrence, id, period}{Event trimming arguments.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{envir}{Formula evaluation environment.}
 
@@ -35,8 +37,10 @@ from the session's random-number stream. The default \code{NULL} returns a
 single result.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with the generated event indicator
-and records through the requested occurrence.
+A \code{simulab_sim} base \code{data.frame} with the columns of \code{data}
+followed by the event indicator named by the variable of \code{definition}.
+Each unit keeps its rows up to and including the period of its
+\code{occurrence}-th event, and all its rows when that event never occurs.
 }
 \description{
 Simulate events and retain records through the nth event

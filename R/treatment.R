@@ -42,7 +42,9 @@
 #'   value per group. Defaults to `NULL`, equal allocation.
 #' @param name Name of the treatment variable, which must not already exist in
 #'   `data`. A single non-empty string, defaulting to `"treatment"`.
-#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with the columns of `data` followed
 #'   by the treatment variable named by `name`, one row per input row. The
@@ -155,7 +157,9 @@ assign_treatment <- function(data, groups = 2L, balanced = TRUE,
 #'   `0`, and `1` to the number of groups otherwise, the implicit group last.
 #' @param name Name of the exposure variable, which must not already exist in
 #'   `data`. A single non-empty string, defaulting to `"treatment"`.
-#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param envir Environment the formulas are evaluated in after the data
 #'   columns. Defaults to the caller's environment.
 #'
@@ -167,6 +171,7 @@ assign_treatment <- function(data, groups = 2L, balanced = TRUE,
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' data <- data.frame(id = 1:100, severity = stats::rnorm(100))
 #'
 #' result <- observe_treatment(
@@ -265,7 +270,9 @@ observe_treatment <- function(data, formulas,
 #' @param randomize Randomize the allocation of clusters to waves. A single
 #'   flag, defaulting to `TRUE`. `FALSE` fills the waves in the order the
 #'   clusters appear in `data`.
-#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with the columns of `data` followed
 #'   by the transition variable (only when `lag` is above `0`) and the treatment
@@ -273,6 +280,10 @@ observe_treatment <- function(data, formulas,
 #'   `as.data.frame(x, what = "schedule")`, holds one row per cluster with the
 #'   cluster identifier under its own name plus columns `wave` and
 #'   `treatment_start`.
+#' @references
+#' Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of stepped wedge
+#'   cluster randomized trials. *Contemporary Clinical Trials*, 28(2), 182--191.
+#'   \doi{10.1016/j.cct.2006.05.007}
 #' @export
 #'
 #' @examples

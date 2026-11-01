@@ -12,14 +12,21 @@ apply_conditions(data, specification, seed = NULL, envir = parent.frame())
 \item{specification}{Rules from \code{\link[=define_conditions]{define_conditions()}}, in either the rule
 form written with \code{when()} or the \code{formula}/\code{variance} column form.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{envir}{Environment used to resolve values a condition or formula names
 but the data does not carry. Distribution parameters inside \code{when()} are
 evaluated against the data alone, so they may only name columns.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with conditional variables added.
+A \code{simulab_sim} base \code{data.frame} with one row per row of \code{data}:
+the columns of \code{data}, then each new conditional variable. A rule
+overwrites an existing variable only in the rows that satisfy its
+condition; a new variable is \code{NA} in the rows no rule covers. The
+\code{conditions} component, reached with
+\code{as.data.frame(x, what = "conditions")}, restates the specification.
 }
 \description{
 Rules are evaluated in order, so later rules may intentionally replace

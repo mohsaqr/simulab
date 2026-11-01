@@ -39,7 +39,9 @@ effects uncorrelated.}
 \item{residual_sd}{Residual standard deviation. A single positive number,
 defaulting to \code{1}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}

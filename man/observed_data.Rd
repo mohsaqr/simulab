@@ -32,6 +32,7 @@ Sets every cell the mask flags to \code{NA}, leaving the complete data otherwise
 untouched, and keeps the mask alongside the result as a tidy component.
 }
 \examples{
+set.seed(1)
 data <- data.frame(id = 1:100, outcome = stats::rnorm(100))
 mask <- missingness_matrix(
   data,

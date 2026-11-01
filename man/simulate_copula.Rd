@@ -50,7 +50,9 @@ non-zero \code{rho} is a contradiction and raises an error.}
 
 \item{id}{Identifier name.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{envir}{Formula evaluation environment.}
 
@@ -102,4 +104,8 @@ specification <- define_variables(
 result <- simulate_copula(n = 200, specification = specification, rho = 0.5, seed = 1)
 head(result)
 components(result)
+}
+\references{
+Nelsen, R. B. (2006). \emph{An Introduction to Copulas} (2nd ed.). Springer.
+\doi{10.1007/0-387-28678-0}
 }

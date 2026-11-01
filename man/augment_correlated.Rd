@@ -34,7 +34,9 @@ is given. \code{tau} is converted to the latent Pearson correlation
 \item{group}{Optional grouping variable. With grouping, one definition is
 generated as correlated observations within each group.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{envir}{Formula evaluation environment.}
 }

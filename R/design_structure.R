@@ -153,8 +153,9 @@ expand_clusters <- function(data, cluster, size, unit = "id",
 #'   dropped. Defaults to `NULL`.
 #' @param value Name of the gathered time-varying value. A single non-empty
 #'   string, defaulting to `"value"`.
-#' @param seed Optional random seed for irregular intervals. A single number, or
-#'   `NULL` (the default).
+#' @param seed Optional random seed for irregular intervals. A single number
+#'   makes the call reproducible and restores the session's random-number state
+#'   afterwards; `NULL` (the default) draws from the session's stream.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per unit-period,
 #'   holding the columns of `data` plus the period and elapsed-time columns, and

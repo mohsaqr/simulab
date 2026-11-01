@@ -62,6 +62,10 @@ simulate_correlation <- function(n, means = 0, sds = 1, rho = 0,
 #'   column per event defined in `specification`. The `survival_definitions`
 #'   component holds the specification that generated it.
 #' @inheritParams simulate_correlation
+#' @references
+#' Bender, R., Augustin, T., & Blettner, M. (2005). Generating survival times to
+#'   simulate Cox proportional hazards models. *Statistics in Medicine*, 24(11),
+#'   1713--1723. \doi{10.1002/sim.2059}
 #' @export
 #'
 #' @examples
@@ -336,6 +340,10 @@ simulate_data <- function(type, ...) {
 #'   `truth`, `bias` (estimate minus truth), `absolute_error`,
 #'   `relative_error` (`NA` where truth is zero) and `recovered`, a logical
 #'   that is `TRUE` when `absolute_error` is at most `tolerance`.
+#' @references
+#' Morris, T. P., White, I. R., & Crowther, M. J. (2019). Using simulation
+#'   studies to evaluate statistical methods. *Statistics in Medicine*, 38(11),
+#'   2074--2102. \doi{10.1002/sim.8086}
 #' @export
 #'
 #' @examples

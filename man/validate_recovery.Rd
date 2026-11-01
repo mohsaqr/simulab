@@ -70,3 +70,8 @@ fit_coefficients <- function(data) {
 estimates <- apply_batch(datasets, fit_coefficients)
 head(validate_recovery(estimates, datasets))
 }
+\references{
+Morris, T. P., White, I. R., & Crowther, M. J. (2019). Using simulation
+studies to evaluate statistical methods. \emph{Statistics in Medicine}, 38(11),
+2074--2102. \doi{10.1002/sim.8086}
+}

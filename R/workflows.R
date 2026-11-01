@@ -15,6 +15,11 @@
 #' @return A base `data.frame` with one row per parameter combination, a
 #'   leading `scenario_id` column numbering the rows, and then one column per
 #'   parameter in the order given.
+#' @references
+#' McKay, M. D., Beckman, R. J., & Conover, W. J. (1979). A comparison of three
+#'   methods for selecting values of input variables in the analysis of output
+#'   from a computer code. *Technometrics*, 21(2), 239--245.
+#'   \doi{10.1080/00401706.1979.10489755}
 #' @export
 #'
 #' @examples
@@ -419,6 +424,10 @@ sample_tna <- function(data, fraction = 0.3, replace = FALSE, seed = NULL,
 #'   (the non-missing count), `mean`, `sd`, `minimum` and `maximum`. Missing
 #'   values are left out of the statistics; a group with none left reports
 #'   `NA` statistics.
+#' @references
+#' Morris, T. P., White, I. R., & Crowther, M. J. (2019). Using simulation
+#'   studies to evaluate statistical methods. *Statistics in Medicine*, 38(11),
+#'   2074--2102. \doi{10.1002/sim.8086}
 #' @export
 #'
 #' @examples

@@ -56,17 +56,26 @@
 
 #' Simulate a tidy network edge list
 #'
-#' @param nodes Number of nodes or unique node labels.
+#' @param nodes Number of nodes or unique node labels. A single number
+#'   produces the integer labels `1:nodes`, as in [simulate_network()].
 #' @param edges Optional exact number of edges.
 #' @param probability Edge probability when `edges` is `NULL`.
-#' @param directed Generate directed edges.
-#' @param loops Permit self-loops.
-#' @param weight Edge-weight distribution.
-#' @param weight_mean,weight_sd,weight_range Weight parameters.
+#' @param directed Single logical. `TRUE` (the default) draws ordered pairs,
+#'   `FALSE` unordered pairs, each undirected edge stored once.
+#' @param loops Single logical. `TRUE` permits self-loops; defaults to `FALSE`.
+#' @param weight Edge-weight distribution: `"binary"` (the default), every
+#'   weight 1; `"uniform"` on `weight_range`; `"normal"` with `weight_mean`
+#'   and `weight_sd`; or `"poisson"` with mean `weight_mean`.
+#' @param weight_mean,weight_sd,weight_range Parameters of `weight`: the mean
+#'   of normal and Poisson weights (default `1`), the standard deviation of
+#'   normal weights (default `1`), and the lower and upper limits of uniform
+#'   weights (default `c(0.1, 1)`). Unused by binary weights.
 #' @param node_type Optional node type for each node.
 #' @param edge_classes Optional number or labels of edge classes.
 #' @param class_probabilities Optional edge-class probabilities.
-#' @param seed Optional seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy `simulab_sim` base `data.frame` with one row per edge and
 #'   columns `from`, `to`, and `weight` (plus `edge_class` when `edge_classes`
@@ -131,13 +140,19 @@ simulate_edge_list <- function(nodes, edges = NULL, probability = 0.1,
 #'   next period.
 #' @param dissolution_probability Probability that an active dyad dissolves at
 #'   the next period.
-#' @param directed Generate directed dyads.
-#' @param loops Permit self-loops.
+#' @param directed Single logical. `TRUE` (the default) draws ordered pairs,
+#'   `FALSE` unordered pairs, each undirected edge stored once.
+#' @param loops Single logical. `TRUE` permits self-loops; defaults to `FALSE`.
 #' @param weight Edge-spell weight distribution. One weight is drawn per spell
 #'   and held constant while the spell is active.
-#' @param weight_mean,weight_sd,weight_range Weight parameters.
+#' @param weight_mean,weight_sd,weight_range Parameters of `weight`: the mean
+#'   of normal and Poisson weights (default `1`), the standard deviation of
+#'   normal weights (default `1`), and the lower and upper limits of uniform
+#'   weights (default `c(0.1, 1)`). Unused by binary weights.
 #' @param node_type Optional node type for each node.
-#' @param seed Optional seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy spell-level `simulab_sim` base `data.frame` with one row per
 #'   activity spell and columns `from`, `to`, `onset`, `terminus`, `weight`,
@@ -308,7 +323,9 @@ simulate_temporal_network <- function(nodes, periods,
 #' @param weight_range Range for continuous weights.
 #' @param frequency_mean Mean positive count for frequency matrices; drawn as
 #'   `1 + rpois(frequency_mean - 1)`, so entries are at least one.
-#' @param seed Optional seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy `simulab_sim` base `data.frame` holding the complete matrix in
 #'   long form: `nodes^2` rows with columns `from`, `to`, and `value`, zeros
@@ -420,9 +437,16 @@ simulate_network_matrix <- function(nodes,
 #' @param events Number or labels of secondary-mode nodes.
 #' @param edges Optional exact number of cross-mode edges.
 #' @param probability Cross-mode edge probability when `edges` is `NULL`.
-#' @param weight Edge-weight distribution.
-#' @param weight_mean,weight_sd,weight_range Weight parameters.
-#' @param seed Optional seed.
+#' @param weight Edge-weight distribution: `"binary"` (the default), every
+#'   weight 1; `"uniform"` on `weight_range`; `"normal"` with `weight_mean`
+#'   and `weight_sd`; or `"poisson"` with mean `weight_mean`.
+#' @param weight_mean,weight_sd,weight_range Parameters of `weight`: the mean
+#'   of normal and Poisson weights (default `1`), the standard deviation of
+#'   normal weights (default `1`), and the lower and upper limits of uniform
+#'   weights (default `c(0.1, 1)`). Unused by binary weights.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy cross-mode edge-list `simulab_sim` base `data.frame` with one
 #'   row per actor-event edge and columns `from` (always an actor), `to`
@@ -519,12 +543,20 @@ simulate_bipartite_network <- function(actors, events, edges = NULL,
 #' @param layers Number of layers or unique layer labels.
 #' @param edges Optional exact edge count, scalar or one value per layer.
 #' @param probability Edge probability, scalar or one value per layer.
-#' @param directed Generate directed edges.
-#' @param loops Permit self-loops.
-#' @param weight Edge-weight distribution.
-#' @param weight_mean,weight_sd,weight_range Weight parameters.
+#' @param directed Single logical. `TRUE` (the default) draws ordered pairs,
+#'   `FALSE` unordered pairs, each undirected edge stored once.
+#' @param loops Single logical. `TRUE` permits self-loops; defaults to `FALSE`.
+#' @param weight Edge-weight distribution: `"binary"` (the default), every
+#'   weight 1; `"uniform"` on `weight_range`; `"normal"` with `weight_mean`
+#'   and `weight_sd`; or `"poisson"` with mean `weight_mean`.
+#' @param weight_mean,weight_sd,weight_range Parameters of `weight`: the mean
+#'   of normal and Poisson weights (default `1`), the standard deviation of
+#'   normal weights (default `1`), and the lower and upper limits of uniform
+#'   weights (default `c(0.1, 1)`). Unused by binary weights.
 #' @param node_type Optional node type for each node.
-#' @param seed Optional base seed; layers use deterministic offsets.
+#' @param seed Optional base seed. A single number, or `NULL` (the default).
+#'   Layer `k` is drawn with `seed + k - 1`, so the call is reproducible and
+#'   the session's random-number state is restored afterwards.
 #'
 #' @return A tidy layered edge-list `simulab_sim` base `data.frame` with one row
 #'   per edge and columns `layer`, `from`, `to`, and `weight`. Every layer is

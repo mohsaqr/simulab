@@ -24,7 +24,9 @@
 #' @param instability_probability Probability of applying that mechanism.
 #' @param perturbation Multiplicative probability perturbation magnitude.
 #' @param unlikely_threshold Maximum probability considered unlikely.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with columns `id`,
 #'   `period`, and `state`, one row per observed sequence position.
@@ -241,7 +243,9 @@ simulate_sequences <- function(n = 100L, transition = NULL, chain_length = 20L,
 #' @param labels Optional sequence-cluster labels.
 #' @param states Optional state labels. When the matrices carry no dimnames and
 #'   `states` is `NULL`, states are labeled by their row index.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with columns `id`,
 #'   `period`, `state`, and the true `sequence_cluster`, one row per sequence
@@ -395,8 +399,13 @@ summarize_transitions <- function(data, id = "id", period = "period",
 #'
 #' @param nodes Number of nodes or node labels. A single number produces the
 #'   integer labels `1:nodes`.
-#' @param model Graph model. Every model except `bernoulli` requires the
-#'   suggested `igraph` package.
+#' @param model Graph model: `"bernoulli"` (the default; independent ties,
+#'   Gilbert 1959, or a stochastic block model when `probability` is a type
+#'   matrix), `"barabasi_albert"` (preferential attachment), `"small_world"`
+#'   (Watts-Strogatz rewiring of a ring lattice), `"block"` (stochastic block
+#'   model), `"regular"` (every node of degree `degree`), `"geometric"`
+#'   (random geometric graph in the unit square) or `"forest_fire"`. Every
+#'   model except `bernoulli` requires the suggested `igraph` package.
 #' @param probability Bernoulli edge probability, node matrix, or type matrix.
 #'   A matrix may instead be given as a tidy data frame with columns `from`,
 #'   `to` and `probability`. Used by the `bernoulli` model only; the `block`
@@ -406,20 +415,43 @@ summarize_transitions <- function(data, id = "id", period = "period",
 #' @param directed Generate directed edges. Ignored by the `small_world` and
 #'   `geometric` models, which are always undirected; the `directed` column of
 #'   the `settings` table reports what was actually generated.
-#' @param loops Permit self-loops.
-#' @param weight Edge-weight distribution.
-#' @param weight_mean,weight_sd,weight_range Weight parameters.
+#' @param loops Single logical. `TRUE` permits self-loops; defaults to `FALSE`.
+#' @param weight Edge-weight distribution: `"binary"` (the default), every
+#'   weight 1; `"uniform"` on `weight_range`; `"normal"` with `weight_mean`
+#'   and `weight_sd`; or `"poisson"` with mean `weight_mean`.
+#' @param weight_mean,weight_sd,weight_range Parameters of `weight`: the mean
+#'   of normal and Poisson weights (default `1`), the standard deviation of
+#'   normal weights (default `1`), and the lower and upper limits of uniform
+#'   weights (default `c(0.1, 1)`). Unused by binary weights.
 #' @param node_type Optional type label for each node. With more than one type
 #'   it also supplies the block membership used by the `block` model.
-#' @param edge_classes Optional number or labels of edge classes.
-#' @param class_probabilities Optional edge-class probabilities.
-#' @param attachment,power Preferential-attachment parameters.
-#' @param neighbors,rewire Small-world parameters.
-#' @param blocks,within_probability,between_probability Block-model parameters.
-#' @param degree Regular-graph degree.
-#' @param radius Geometric-graph connection radius.
-#' @param forward_probability,backward_probability Forest-fire parameters.
-#' @param seed Optional random seed.
+#' @param edge_classes Optional number or labels of edge classes. Each edge
+#'   is assigned one class at random, stored in the `edge_class` column; a
+#'   single number `k` gives the labels `Class 1` to `Class k`.
+#' @param class_probabilities Optional probabilities of the edge classes, one
+#'   per class and summing to one. `NULL` (the default) makes them equal.
+#' @param attachment,power Preferential-attachment parameters: the number of
+#'   edges each new node adds (default `2`) and the power of the attachment
+#'   (default `1`, linear in degree).
+#' @param neighbors,rewire Small-world parameters: each node of the starting
+#'   ring lattice is tied to the nodes within `neighbors` steps (default `2`),
+#'   and each tie is rewired with probability `rewire` (default `0.05`).
+#' @param blocks,within_probability,between_probability Block-model
+#'   parameters: the number of blocks when `node_type` has fewer than two
+#'   types (default `3`, nodes assigned to blocks in turn), and the tie
+#'   probability within a block (default `0.3`) and between blocks (default
+#'   `0.05`).
+#' @param degree Degree of every node in the `regular` model, defaulting to
+#'   `4`.
+#' @param radius Connection radius of the `geometric` model, defaulting to
+#'   `0.25`. Nodes placed uniformly in the unit square are tied when closer
+#'   than `radius`.
+#' @param forward_probability,backward_probability Forward burning
+#'   probability (default `0.35`) and backward burning probability (default
+#'   `0.32`) of the `forest_fire` model.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy edge-list `simulab_sim` base `data.frame` with one row per
 #'   edge and columns `from`, `to`, `weight` (plus `edge_class` when
@@ -429,6 +461,24 @@ summarize_transitions <- function(data, id = "id", period = "period",
 #'   graph is undirected), and a one-row `settings` table. Use `as_igraph()`
 #'   for native graph workflows.
 #' @inheritParams simulate_correlation
+#' @references
+#' Gilbert, E. N. (1959). Random graphs. *The Annals of Mathematical
+#'   Statistics*, 30(4), 1141--1144. \doi{10.1214/aoms/1177706098}
+#'
+#' Holland, P. W., Laskey, K. B., & Leinhardt, S. (1983). Stochastic
+#'   blockmodels: First steps. *Social Networks*, 5(2), 109--137.
+#'   \doi{10.1016/0378-8733(83)90021-7}
+#'
+#' Watts, D. J., & Strogatz, S. H. (1998). Collective dynamics of 'small-world'
+#'   networks. *Nature*, 393, 440--442. \doi{10.1038/30918}
+#'
+#' \enc{Barabási}{Barabasi}, A.-L., & Albert, R. (1999). Emergence of scaling in
+#'   random networks. *Science*, 286(5439), 509--512.
+#'   \doi{10.1126/science.286.5439.509}
+#'
+#' Leskovec, J., Kleinberg, J., & Faloutsos, C. (2007). Graph evolution:
+#'   Densification and shrinking diameters. *ACM Transactions on Knowledge
+#'   Discovery from Data*, 1(1), 2. \doi{10.1145/1217299.1217301}
 #' @export
 #'
 #' @examples

@@ -36,7 +36,8 @@
 #' @param distribution Distribution name.
 #' @param link Link applied to `formula`.
 #'
-#' @return A one-row `simulab_spec` base `data.frame`.
+#' @return A one-row `simulab_spec` base `data.frame` with the character
+#'   columns `variable`, `distribution`, `formula`, `variance` and `link`.
 #' @export
 #'
 #' @examples
@@ -311,7 +312,9 @@ define_variables <- function(...) {
 #'   `define_variable()`.
 #'
 #' @return A `simulab_spec` base `data.frame` with one row per repeated
-#'   variable.
+#'   variable, named `prefix` followed by `1` to `n`, and the columns of
+#'   [define_variable()]: `variable`, `distribution`, `formula`, `variance` and
+#'   `link`.
 #' @export
 #'
 #' @examples
@@ -358,7 +361,8 @@ repeat_variables <- function(n, prefix, formula, variance = 0,
 #' @param formula,variance,distribution,link Replacement values. `NULL` keeps
 #'   the existing value.
 #'
-#' @return An updated `simulab_spec` base `data.frame`.
+#' @return The `simulab_spec` base `data.frame` with the same rows and
+#'   columns as `specification`, the row of `variable` carrying the new values.
 #' @export
 #'
 #' @examples
@@ -400,7 +404,9 @@ update_definition <- function(specification, variable, formula = NULL,
 #' @param file Path to a CSV file containing `variable`, `distribution`,
 #'   `formula`, `variance`, and `link` columns.
 #'
-#' @return A `simulab_spec` base `data.frame`.
+#' @return A `simulab_spec` base `data.frame` with one row per variable of
+#'   the file and the columns of [define_variable()]: `variable`,
+#'   `distribution`, `formula`, `variance` and `link`.
 #' @export
 #'
 #' @examples

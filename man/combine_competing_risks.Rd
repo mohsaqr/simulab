@@ -70,3 +70,8 @@ result <- combine_competing_risks(
 )
 head(result)
 }
+\references{
+Beyersmann, J., Latouche, A., Buchholz, A., & Schumacher, M. (2009).
+Simulating competing risks data in survival analysis. \emph{Statistics in
+Medicine}, 28(6), 956--971. \doi{10.1002/sim.3516}
+}

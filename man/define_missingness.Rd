@@ -46,3 +46,7 @@ variable's own value, which is MNAR.
 \examples{
 define_missingness("outcome", formula = "0.2")
 }
+\references{
+Rubin, D. B. (1976). Inference and missing data. \emph{Biometrika}, 63(3),
+581--592. \doi{10.1093/biomet/63.3.581}
+}

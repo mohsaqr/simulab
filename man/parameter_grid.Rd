@@ -46,3 +46,9 @@ parameter_grid(
   n = 5, method = "latin_hypercube", seed = 1
 )
 }
+\references{
+McKay, M. D., Beckman, R. J., & Conover, W. J. (1979). A comparison of three
+methods for selecting values of input variables in the analysis of output
+from a computer code. \emph{Technometrics}, 21(2), 239--245.
+\doi{10.1080/00401706.1979.10489755}
+}

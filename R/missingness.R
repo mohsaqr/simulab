@@ -23,6 +23,9 @@
 #' @return A one-row `simulab_missing_spec` base `data.frame` with the character
 #'   columns `variable`, `formula` and `link` and the logical columns `baseline`
 #'   and `monotone`.
+#' @references
+#' Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
+#'   581--592. \doi{10.1093/biomet/63.3.581}
 #' @export
 #'
 #' @examples
@@ -225,7 +228,9 @@ define_missingnesses <- function(...) {
 #' @param period Optional period variable that orders a unit's rows. A single
 #'   string naming a column of `data`, or `NULL` (the default). It is required
 #'   by the `baseline` and `monotone` rules and is carried into the mask.
-#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param envir Environment the formulas are evaluated in after the data
 #'   columns. Defaults to the caller's environment.
 #'
@@ -237,6 +242,7 @@ define_missingnesses <- function(...) {
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' data <- data.frame(id = 1:100, baseline = stats::rnorm(100), outcome = stats::rnorm(100))
 #' specification <- define_missingnesses(
 #'   define_missingness("outcome", formula = "0.2")
@@ -320,6 +326,7 @@ missingness_matrix <- function(data, specification, id = NULL, period = NULL,
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' data <- data.frame(id = 1:100, outcome = stats::rnorm(100))
 #' mask <- missingness_matrix(
 #'   data,
@@ -391,7 +398,9 @@ observed_data <- function(data, missingness, id = NULL) {
 #' @param predictor Fully observed predictor that drives MAR missingness. A
 #'   single string naming a column of `data`, required when `mechanism` is
 #'   `"MAR"` and ignored otherwise. Defaults to `NULL`.
-#' @param seed Optional random seed. A single number, or `NULL` (the default).
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with the columns and rows of
 #'   `data`, the drawn cells of the target variables replaced by `NA`.
@@ -401,9 +410,13 @@ observed_data <- function(data, missingness, id = NULL) {
 #'   the logical `missing` and `mechanism`; and `missingness_summary`, one row
 #'   per target variable with columns `variable`, `realized_proportion` and
 #'   `target_proportion`.
+#' @references
+#' Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
+#'   581--592. \doi{10.1093/biomet/63.3.581}
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' data <- data.frame(id = 1:200, x = stats::rnorm(200), y = stats::rnorm(200))
 #'
 #' result <- inject_missingness(

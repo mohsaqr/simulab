@@ -4,18 +4,24 @@
 \name{simulab-package}
 \alias{simulab}
 \alias{simulab-package}
-\title{simulab: Unified simulation of statistical and study data}
+\title{simulab: Simulates a Wide Variety of Data Shapes, Sizes and Distributions}
 \description{
-\code{simulab} provides one consistent interface for declarative study simulation,
-specialized statistical designs, correlated and longitudinal data,
-latent-variable and measurement models, survival processes, sequences, and
-networks.
+\code{simulab} generates data in different shapes, sample sizes, distributions
+and parameters: declared study variables, statistical designs, correlated
+and longitudinal data, latent-variable and measurement models, survival
+processes, sequences of states, and networks. The generating parameters are
+drawn at random or set in advance, and in both cases they are stored with
+the data, so their recovery can be tested.
 }
 \details{
-Every simulator returns a data-frame-native \code{simulab_sim}. Primary data can
-be passed directly to base-R and modeling functions. Use \code{components()} to
-discover ground-truth and design tables, then \code{as.data.frame(x, what = ...)}
-to retrieve them.
+Every generator returns a data-frame-native \code{simulab_sim}, except
+\code{\link[=simulate_tna]{simulate_tna()}}, which returns a native \code{tna} model of class \code{simulab_tna}.
+The primary data can be passed directly to base-R and modeling functions.
+\code{\link[=components]{components()}} lists the stored truth and design tables, and
+\code{as.data.frame(x, what = ...)} returns each of them. Every single-dataset
+generator takes \code{seed}, for reproducible output, and \code{batch}, which returns
+a plain list of that many data sets, each reproducible from its own seed.
+\code{\link[=list_simulators]{list_simulators()}} catalogues the generators.
 }
 \seealso{
 Useful links:

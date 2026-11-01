@@ -20,8 +20,9 @@ trim_events(data, id, period, event, occurrence = 1L, event_value = 1)
 \item{event_value}{Value identifying an event.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} retaining observations through the
-requested event, or all observations when it never occurs.
+A \code{simulab_sim} base \code{data.frame} with the columns of \code{data}.
+Each unit keeps its rows up to and including the period of its
+\code{occurrence}-th event, and all its rows when that event never occurs.
 }
 \description{
 Trim longitudinal records at an event occurrence

@@ -60,3 +60,8 @@ head(simulate_survival(
   seed = 1
 ))
 }
+\references{
+Bender, R., Augustin, T., & Blettner, M. (2005). Generating survival times to
+simulate Cox proportional hazards models. \emph{Statistics in Medicine}, 24(11),
+1713--1723. \doi{10.1002/sim.2059}
+}

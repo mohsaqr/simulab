@@ -98,6 +98,13 @@
 #'   (`model`, `grouped`, `group`, `observations`, `sequence_positions`).
 #'   Use `as_tna_model()` when a native model object is required by `tna`
 #'   plotting or inference functions.
+#' @references
+#' Saqr, M., \enc{López-Pernas}{Lopez-Pernas}, S., \enc{Törmänen}{Tormanen}, T.,
+#'   Kaliisa, R., Misiejuk, K., & Tikka, S. (2025). Transition network analysis:
+#'   A novel framework for modeling, visualizing, and identifying the temporal
+#'   patterns of learners and learning processes. In *Proceedings of the 15th
+#'   International Learning Analytics and Knowledge Conference* (pp. 351--361).
+#'   \doi{10.1145/3706468.3706513}
 #' @export
 #'
 #' @examples
@@ -372,6 +379,13 @@ simulate_group_sequences <- function(groups = 2L, actors = 50L, transitions = NU
 #'   `model_info`, `wide`, and `groups`. The native `group_tna` model is
 #'   accessible through `as_tna_model()`. Requires the suggested `tna` package.
 #' @inheritParams simulate_correlation
+#' @references
+#' Saqr, M., \enc{López-Pernas}{Lopez-Pernas}, S., \enc{Törmänen}{Tormanen}, T.,
+#'   Kaliisa, R., Misiejuk, K., & Tikka, S. (2025). Transition network analysis:
+#'   A novel framework for modeling, visualizing, and identifying the temporal
+#'   patterns of learners and learning processes. In *Proceedings of the 15th
+#'   International Learning Analytics and Knowledge Conference* (pp. 351--361).
+#'   \doi{10.1145/3706468.3706513}
 #' @export
 #'
 #' @examples
@@ -455,6 +469,13 @@ simulate_group_tna <- function(groups = 2L, actors = 50L, transitions = NULL,
 #'   `initial_probabilities`, the generated `sequences` in long form, `wide`
 #'   and `model_info`. Requires the suggested `tna` package, and raises
 #'   `simulab_missing_tna` without it.
+#' @references
+#' Saqr, M., \enc{López-Pernas}{Lopez-Pernas}, S., \enc{Törmänen}{Tormanen}, T.,
+#'   Kaliisa, R., Misiejuk, K., & Tikka, S. (2025). Transition network analysis:
+#'   A novel framework for modeling, visualizing, and identifying the temporal
+#'   patterns of learners and learning processes. In *Proceedings of the 15th
+#'   International Learning Analytics and Knowledge Conference* (pp. 351--361).
+#'   \doi{10.1145/3706468.3706513}
 #' @export
 #'
 #' @examples
@@ -587,7 +608,9 @@ as.data.frame.simulab_tna <- function(x, row.names = NULL, optional = FALSE,
 #' @param loops Permit self transitions when drawing the underlying edges. A
 #'   node left with no outgoing edge is nevertheless given a self transition of
 #'   probability one, so self-loops can appear even when `loops` is `FALSE`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy `simulab_sim` base `data.frame` holding the non-zero
 #'   transitions only, one row per edge, with columns `from`, `to`, and

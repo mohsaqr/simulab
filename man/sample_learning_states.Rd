@@ -13,7 +13,9 @@ at most the number of distinct states in the selected categories.}
 \item{categories}{Categories passed to \code{\link[=learning_states]{learning_states()}}, defaulting to
 \code{"all"}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 }
 \value{
 A tidy base \code{data.frame} with \code{n} rows, one per sampled state, and

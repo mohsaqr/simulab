@@ -24,7 +24,8 @@ column form, as created by \code{\link[=define_variable]{define_variable()}}, \c
 the existing value.}
 }
 \value{
-An updated \code{simulab_spec} base \code{data.frame}.
+The \code{simulab_spec} base \code{data.frame} with the same rows and
+columns as \code{specification}, the row of \code{variable} carrying the new values.
 }
 \description{
 Update one variable definition

@@ -43,3 +43,9 @@ Calibrate random-effect variance for a target ICC
 calibrate_icc(icc = 0.1, distribution = "normal", total_variance = 1)
 calibrate_icc(icc = c(0.05, 0.1), distribution = "binary")
 }
+\references{
+Nakagawa, S., Johnson, P. C. D., & Schielzeth, H. (2017). The coefficient of
+determination R2 and intra-class correlation coefficient from generalized
+linear mixed-effects models revisited and expanded. \emph{Journal of the Royal
+Society Interface}, 14(134), 20170213. \doi{10.1098/rsif.2017.0213}
+}

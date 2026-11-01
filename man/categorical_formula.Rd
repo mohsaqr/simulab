@@ -13,7 +13,8 @@ categorical_formula(probabilities = NULL, categories = NULL)
 \code{probabilities}.}
 }
 \value{
-A one-row \code{simulab_formula} base \code{data.frame}.
+A one-row \code{simulab_formula} base \code{data.frame} with the character
+columns \code{type} and \code{formula}, the formula text a specification accepts.
 }
 \description{
 Supply exactly one of \code{probabilities} and \code{categories}; supplying both, or

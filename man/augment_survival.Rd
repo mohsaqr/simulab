@@ -20,8 +20,9 @@ them may already carry an event name.}
 \item{specification}{Definitions from \code{\link[=define_survivals]{define_survivals()}}, a
 \code{simulab_survival_spec} object.}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default) to
-leave the stream untouched.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{digits}{Optional number of decimal places the event times are rounded
 to. A single non-negative whole number, or \code{NULL} (the default) for

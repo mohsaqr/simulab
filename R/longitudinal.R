@@ -26,7 +26,9 @@
 #'   slope. A single number in `[-1, 1]`, defaulting to `0`.
 #' @param residual_sd Residual standard deviation. A single positive number,
 #'   defaulting to `1`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per unit
 #'   (`sum(cluster_size)` rows) and columns `id`, `cluster`, one column per
@@ -181,7 +183,9 @@ simulate_multilevel <- function(clusters, cluster_size, intercept = 0,
 #'   effects uncorrelated.
 #' @param residual_sd Residual standard deviation. A single positive number,
 #'   defaulting to `1`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with one row per
 #'   unit-occasion (`n * length(times)` rows) and columns `id`, `time` and
@@ -310,7 +314,9 @@ simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
 #'   Temporal carryover resets at each day boundary.
 #' @param burn_in Warm-up occasions generated and then discarded before
 #'   output. A single non-negative whole number, defaulting to `50`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with one row per
 #'   unit-occasion (`n * occasions` rows) and columns `id`, `occasion` and one
@@ -321,6 +327,9 @@ simulate_growth <- function(n, times, intercept = 0, slope = 1, quadratic = 0,
 #'   `coefficient` or `covariance`), and `person_means` (one row per unit with
 #'   columns `id` and one per variable).
 #' @inheritParams simulate_correlation
+#' @references
+#' \enc{Lütkepohl}{Lutkepohl}, H. (2005). *New Introduction to Multiple Time
+#'   Series Analysis*. Springer.
 #' @export
 #'
 #' @examples

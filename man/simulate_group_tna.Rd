@@ -80,3 +80,11 @@ if (requireNamespace("tna", quietly = TRUE)) {
   as.data.frame(drawn, what = "true_transitions")
 }
 }
+\references{
+Saqr, M., \enc{López-Pernas}{Lopez-Pernas}, S., \enc{Törmänen}{Tormanen}, T.,
+Kaliisa, R., Misiejuk, K., & Tikka, S. (2025). Transition network analysis:
+A novel framework for modeling, visualizing, and identifying the temporal
+patterns of learners and learning processes. In \emph{Proceedings of the 15th
+International Learning Analytics and Knowledge Conference} (pp. 351--361).
+\doi{10.1145/3706468.3706513}
+}

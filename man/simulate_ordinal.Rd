@@ -35,7 +35,9 @@ Gaussian generator.}
 
 \item{variable_names}{Optional variable names.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -64,4 +66,9 @@ result <- simulate_ordinal(
 )
 head(result)
 as.data.frame(result, what = "probabilities")
+}
+\references{
+Olsson, U. (1979). Maximum likelihood estimation of the polychoric
+correlation coefficient. \emph{Psychometrika}, 44(4), 443--460.
+\doi{10.1007/BF02296207}
 }

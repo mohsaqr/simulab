@@ -43,7 +43,9 @@ names the states.}
 \item{model}{TNA estimator, one of \code{"tna"} (the default), \code{"ftna"},
 \code{"ctna"} or \code{"atna"}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{...}{Further arguments passed to \code{\link[=simulate_sequences]{simulate_sequences()}}, such as
 \code{concentration} or \code{missing_tail}.}
@@ -88,4 +90,12 @@ if (requireNamespace("tna", quietly = TRUE)) {
   )
   simulate_tna(n = 200, transition = transition, seed = 1)
 }
+}
+\references{
+Saqr, M., \enc{López-Pernas}{Lopez-Pernas}, S., \enc{Törmänen}{Tormanen}, T.,
+Kaliisa, R., Misiejuk, K., & Tikka, S. (2025). Transition network analysis:
+A novel framework for modeling, visualizing, and identifying the temporal
+patterns of learners and learning processes. In \emph{Proceedings of the 15th
+International Learning Analytics and Knowledge Conference} (pp. 351--361).
+\doi{10.1145/3706468.3706513}
 }

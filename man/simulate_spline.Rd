@@ -37,7 +37,9 @@ pair. Values outside \verb{[0, 1]} are rescaled the same way, not clipped.}
 \item{noise_variance}{Non-negative Gaussian noise variance; the noise added
 to each value has standard deviation \code{sqrt(noise_variance)}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -58,6 +60,7 @@ coefficient.
 Add a spline-generated variable
 }
 \examples{
+set.seed(1)
 data <- data.frame(id = 1:100, x = stats::runif(100))
 result <- simulate_spline(
   data, predictor = "x", variable = "y",

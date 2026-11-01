@@ -28,7 +28,9 @@ row. Every target variable of \code{specification} must be one of its columns.}
 string naming a column of \code{data}, or \code{NULL} (the default). It is required
 by the \code{baseline} and \code{monotone} rules and is carried into the mask.}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{envir}{Environment the formulas are evaluated in after the data
 columns. Defaults to the caller's environment.}
@@ -48,6 +50,7 @@ and the mask that hides part of it can both be kept; \code{\link[=observed_data]
 them.
 }
 \examples{
+set.seed(1)
 data <- data.frame(id = 1:100, baseline = stats::rnorm(100), outcome = stats::rnorm(100))
 specification <- define_missingnesses(
   define_missingness("outcome", formula = "0.2")

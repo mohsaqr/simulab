@@ -40,7 +40,9 @@ per hidden state and per observed category. They default to
 \code{"State 1"}, \code{"State 2"}, ... and \code{"Observation 1"}, \code{"Observation 2"},
 ...}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -74,4 +76,9 @@ result <- simulate_hmm(
 )
 head(result)
 components(result)
+}
+\references{
+Rabiner, L. R. (1989). A tutorial on hidden Markov models and selected
+applications in speech recognition. \emph{Proceedings of the IEEE}, 77(2),
+257--286. \doi{10.1109/5.18626}
 }

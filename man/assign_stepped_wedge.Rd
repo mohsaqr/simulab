@@ -51,7 +51,9 @@ only added when \code{lag} is above \code{0}.}
 flag, defaulting to \code{TRUE}. \code{FALSE} fills the waves in the order the
 clusters appear in \code{data}.}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with the columns of \code{data} followed
@@ -81,4 +83,9 @@ result <- assign_stepped_wedge(
   waves = 3, wave_length = 1, start = 2, seed = 1
 )
 head(result)
+}
+\references{
+Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of stepped wedge
+cluster randomized trials. \emph{Contemporary Clinical Trials}, 28(2), 182--191.
+\doi{10.1016/j.cct.2006.05.007}
 }

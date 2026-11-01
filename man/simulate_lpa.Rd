@@ -42,7 +42,9 @@ Defaults to the profile names given with \code{means} (the \code{profile} values
 a tidy table, or the row names of a matrix), else \code{"Profile 1"},
 \code{"Profile 2"} and so on.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -74,4 +76,7 @@ result <- simulate_lpa(
 )
 head(result)
 as.data.frame(result, what = "parameters")
+}
+\references{
+McLachlan, G., & Peel, D. (2000). \emph{Finite Mixture Models}. Wiley.
 }

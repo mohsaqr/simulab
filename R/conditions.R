@@ -5,7 +5,10 @@
 #' @param formula,variance,distribution,link Generation arguments used for
 #'   affected rows.
 #'
-#' @return A one-row `simulab_condition_spec` base `data.frame`.
+#' @return A one-row `simulab_condition_spec` base `data.frame` with the
+#'   character columns `variable`, `condition`, `distribution`, `formula`,
+#'   `variance` and `link`, the form [define_conditions()] stacks and
+#'   [apply_conditions()] reads.
 #' @export
 #'
 #' @examples
@@ -147,12 +150,19 @@ define_conditions <- function(...) {
 #' @param data Input base `data.frame`.
 #' @param specification Rules from [define_conditions()], in either the rule
 #'   form written with `when()` or the `formula`/`variance` column form.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param envir Environment used to resolve values a condition or formula names
 #'   but the data does not carry. Distribution parameters inside `when()` are
 #'   evaluated against the data alone, so they may only name columns.
 #'
-#' @return A `simulab_sim` base `data.frame` with conditional variables added.
+#' @return A `simulab_sim` base `data.frame` with one row per row of `data`:
+#'   the columns of `data`, then each new conditional variable. A rule
+#'   overwrites an existing variable only in the rows that satisfy its
+#'   condition; a new variable is `NA` in the rows no rule covers. The
+#'   `conditions` component, reached with
+#'   `as.data.frame(x, what = "conditions")`, restates the specification.
 #' @export
 #'
 #' @examples

@@ -35,7 +35,9 @@ single formula, so the modeled group is \code{1} and the implicit reference is
 \item{name}{Name of the exposure variable, which must not already exist in
 \code{data}. A single non-empty string, defaulting to \code{"treatment"}.}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{envir}{Environment the formulas are evaluated in after the data
 columns. Defaults to the caller's environment.}
@@ -55,6 +57,7 @@ takes the remaining probability, which makes it the reference category of the
 logit link.
 }
 \examples{
+set.seed(1)
 data <- data.frame(id = 1:100, severity = stats::rnorm(100))
 
 result <- observe_treatment(

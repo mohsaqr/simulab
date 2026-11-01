@@ -49,7 +49,9 @@ consecutive events, drawn uniformly.}
 
 \item{initial}{Initial probabilities.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{...}{Advanced options passed to \code{simulate_group_sequences()}.}
 

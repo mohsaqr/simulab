@@ -22,7 +22,10 @@ define_condition(
 affected rows.}
 }
 \value{
-A one-row \code{simulab_condition_spec} base \code{data.frame}.
+A one-row \code{simulab_condition_spec} base \code{data.frame} with the
+character columns \code{variable}, \code{condition}, \code{distribution}, \code{formula},
+\code{variance} and \code{link}, the form \code{\link[=define_conditions]{define_conditions()}} stacks and
+\code{\link[=apply_conditions]{apply_conditions()}} reads.
 }
 \description{
 Define a conditional data-generation rule

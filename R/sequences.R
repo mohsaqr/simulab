@@ -102,7 +102,9 @@
 #' @param trim_state Optional terminal state. The first occurrence is kept and
 #'   all later observations of that chain are removed.
 #' @param id,period,state Output variable names.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with columns `id`,
 #'   `period`, and `state` (renamed by those arguments), one row per chain
@@ -235,7 +237,9 @@ simulate_markov <- function(n, transition, chain_length, initial = NULL,
 #'   containing each row's starting state. When `NULL`, every chain starts in
 #'   the first state.
 #' @param id,period,state Output variable names.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` combining the input
 #'   variables with one row per chain position: `id`, `period`, `state`,
@@ -340,8 +344,9 @@ augment_markov <- function(data, transition, chain_length, initial = NULL,
 #' @param occurrence Event occurrence at which to stop.
 #' @param event_value Value identifying an event.
 #'
-#' @return A `simulab_sim` base `data.frame` retaining observations through the
-#'   requested event, or all observations when it never occurs.
+#' @return A `simulab_sim` base `data.frame` with the columns of `data`.
+#'   Each unit keeps its rows up to and including the period of its
+#'   `occurrence`-th event, and all its rows when that event never occurs.
 #' @export
 #'
 #' @examples
@@ -403,11 +408,15 @@ trim_events <- function(data, id, period, event, occurrence = 1L,
 #' @param data Long-form base `data.frame`.
 #' @param definition One binary variable definition from `define_variable()`.
 #' @param occurrence,id,period Event trimming arguments.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param envir Formula evaluation environment.
 #'
-#' @return A `simulab_sim` base `data.frame` with the generated event indicator
-#'   and records through the requested occurrence.
+#' @return A `simulab_sim` base `data.frame` with the columns of `data`
+#'   followed by the event indicator named by the variable of `definition`.
+#'   Each unit keeps its rows up to and including the period of its
+#'   `occurrence`-th event, and all its rows when that event never occurs.
 #' @inheritParams simulate_correlation
 #' @export
 #'

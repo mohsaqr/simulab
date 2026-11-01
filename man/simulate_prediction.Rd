@@ -50,7 +50,9 @@ defaulting to \code{1}.}
 \item{outcome}{Outcome-column name. A single non-empty string, defaulting to
 \code{"outcome"}.}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -88,4 +90,15 @@ result <- simulate_prediction(
 )
 head(result)
 as.data.frame(result, what = "coefficients")
+
+# A categorical predictor whose level shifts the outcome.
+with_arm <- simulate_prediction(
+  n = 200,
+  coefficients = c("(Intercept)" = 0.5, x1 = 1),
+  categorical_levels = list(arm = c("control", "treated")),
+  categorical_effects = list(arm = c(0, 0.8)),
+  seed = 1
+)
+head(with_arm)
+as.data.frame(with_arm, what = "categorical_effects")
 }

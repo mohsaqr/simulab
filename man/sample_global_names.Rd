@@ -12,7 +12,9 @@ the chosen regions hold.}
 
 \item{regions}{Regions passed to \code{global_names()}.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 }
 \value{
 A tidy base \code{data.frame} with one row per sampled name and columns

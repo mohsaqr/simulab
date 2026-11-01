@@ -12,7 +12,9 @@
 #'   defaulting to `c("metacognitive", "cognitive")`; see
 #'   [learning_state_categories()]. `NULL` labels the states `State 1`,
 #'   `State 2`, and so on.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A tidy transition-edge `simulab_sim` base `data.frame` with
 #'   `n_states^2` rows and columns `from`, `to`, and `probability`; every
@@ -130,7 +132,9 @@ encode_sequences <- function(data, id = "id", period = "period", state = "state"
 #'   consecutive events, drawn uniformly.
 #' @param transitions Common matrix, one matrix per group, or `NULL`.
 #' @param initial Initial probabilities.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param ... Advanced options passed to `simulate_group_sequences()`.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with one row per actor

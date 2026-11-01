@@ -62,7 +62,9 @@ Temporal carryover resets at each day boundary.}
 \item{burn_in}{Warm-up occasions generated and then discarded before
 output. A single non-negative whole number, defaulting to \code{50}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -100,4 +102,8 @@ result <- simulate_longitudinal(
 )
 head(result)
 components(result)
+}
+\references{
+\enc{Lütkepohl}{Lutkepohl}, H. (2005). \emph{New Introduction to Multiple Time
+Series Analysis}. Springer.
 }

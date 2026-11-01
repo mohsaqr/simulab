@@ -240,8 +240,9 @@ define_survivals <- function(...) {
 #'   them may already carry an event name.
 #' @param specification Definitions from [define_survivals()], a
 #'   `simulab_survival_spec` object.
-#' @param seed Optional random seed. A single number, or `NULL` (the default) to
-#'   leave the stream untouched.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param digits Optional number of decimal places the event times are rounded
 #'   to. A single non-negative whole number, or `NULL` (the default) for
 #'   unrounded times.
@@ -333,6 +334,10 @@ augment_survival <- function(data, specification, seed = NULL, digits = NULL,
 #'   those arguments. The component `events`, reached with
 #'   `as.data.frame(x, what = "events")`, is the codebook, one row per process
 #'   with columns `event_type`, `event_code` and the logical `censoring`.
+#' @references
+#' Beyersmann, J., Latouche, A., Buchholz, A., & Schumacher, M. (2009).
+#'   Simulating competing risks data in survival analysis. *Statistics in
+#'   Medicine*, 28(6), 956--971. \doi{10.1002/sim.3516}
 #' @export
 #'
 #' @examples

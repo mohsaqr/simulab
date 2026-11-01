@@ -34,18 +34,24 @@ next period.}
 \item{dissolution_probability}{Probability that an active dyad dissolves at
 the next period.}
 
-\item{directed}{Generate directed dyads.}
+\item{directed}{Single logical. \code{TRUE} (the default) draws ordered pairs,
+\code{FALSE} unordered pairs, each undirected edge stored once.}
 
-\item{loops}{Permit self-loops.}
+\item{loops}{Single logical. \code{TRUE} permits self-loops; defaults to \code{FALSE}.}
 
 \item{weight}{Edge-spell weight distribution. One weight is drawn per spell
 and held constant while the spell is active.}
 
-\item{weight_mean, weight_sd, weight_range}{Weight parameters.}
+\item{weight_mean, weight_sd, weight_range}{Parameters of \code{weight}: the mean
+of normal and Poisson weights (default \code{1}), the standard deviation of
+normal weights (default \code{1}), and the lower and upper limits of uniform
+weights (default \code{c(0.1, 1)}). Unused by binary weights.}
 
 \item{node_type}{Optional node type for each node.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}

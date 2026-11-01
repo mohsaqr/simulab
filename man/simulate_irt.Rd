@@ -46,7 +46,9 @@ default) makes the abilities uncorrelated.}
 recycled across items (the default, \code{0.2}) or one value per item. It is
 silently reset to zero unless \code{model = "3pl"}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -105,4 +107,14 @@ head(simulate_irt(
   guessing = 0.2,
   seed = 1
 ))
+}
+\references{
+Rasch, G. (1960). \emph{Probabilistic Models for Some Intelligence and Attainment
+Tests}. Danish Institute for Educational Research.
+
+Lord, F. M. (1980). \emph{Applications of Item Response Theory to Practical
+Testing Problems}. Lawrence Erlbaum.
+
+Samejima, F. (1969). Estimation of latent ability using a response pattern of
+graded scores. \emph{Psychometrika}, 34(S1), 1--97. \doi{10.1007/BF03372160}
 }

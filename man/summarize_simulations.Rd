@@ -29,3 +29,8 @@ Summarize simulated numeric variables
 data <- simulate_ttest(n_a = 50, n_b = 50, mean_a = 0, mean_b = 0.6, seed = 1)
 summarize_simulations(data, by = "group", variables = "outcome")
 }
+\references{
+Morris, T. P., White, I. R., & Crowther, M. J. (2019). Using simulation
+studies to evaluate statistical methods. \emph{Statistics in Medicine}, 38(11),
+2074--2102. \doi{10.1002/sim.8086}
+}

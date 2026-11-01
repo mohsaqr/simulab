@@ -9,7 +9,9 @@ run_simulation_scenario(scenario, seed = NULL)
 \arguments{
 \item{scenario}{A single scenario name from \code{\link[=simulation_scenarios]{simulation_scenarios()}}.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 }
 \value{
 The \code{simulab_sim} base \code{data.frame} returned by the simulator the

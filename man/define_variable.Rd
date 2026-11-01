@@ -32,7 +32,8 @@ labels, or distribution-specific secondary parameter.}
 \item{link}{Link applied to \code{formula}.}
 }
 \value{
-A one-row \code{simulab_spec} base \code{data.frame}.
+A one-row \code{simulab_spec} base \code{data.frame} with the character
+columns \code{variable}, \code{distribution}, \code{formula}, \code{variance} and \code{link}.
 }
 \description{
 Define one simulated variable

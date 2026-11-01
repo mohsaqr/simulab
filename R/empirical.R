@@ -5,7 +5,9 @@
 #' @param variables Variables to sample. `NULL` selects every non-identifier
 #'   variable.
 #' @param id Identifier variable in the result.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with `n` rows of jointly resampled
 #'   values, the identifier column first. `as.data.frame(x, what = "provenance")`
@@ -14,6 +16,7 @@
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' source_data <- data.frame(id = 1:100, x = stats::rnorm(100), y = stats::runif(100))
 #' result <- simulate_synthetic(source_data, n = 50, seed = 1)
 #' head(result)
@@ -66,7 +69,9 @@ simulate_synthetic <- function(data, n = nrow(data), variables = NULL,
 #' @param source Source base `data.frame`.
 #' @param variables Variables to resample. `NULL`, the default, resamples every
 #'   variable in `source`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with the resampled variables added,
 #'   one source row drawn per row of `data`.
@@ -75,6 +80,7 @@ simulate_synthetic <- function(data, n = nrow(data), variables = NULL,
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' source_data <- data.frame(x = stats::rnorm(100))
 #' data <- data.frame(id = 1:20)
 #' result <- augment_synthetic(data, source = source_data, variables = "x", seed = 1)
@@ -158,16 +164,22 @@ augment_synthetic <- function(data, source, variables = NULL, seed = NULL) {
 #' @param keep_missing Draw missing values at the source's missing-data rate, so
 #'   the proportion is reproduced in expectation rather than exactly.
 #' @param id Identifier variable name.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with `n` rows and columns `id` and
 #'   `variable`, one generated density value per row.
 #'   `as.data.frame(x, what = "source")` gives a one-row summary of the source
 #'   values.
 #' @inheritParams simulate_correlation
+#' @references
+#' Silverman, B. W. (1986). *Density Estimation for Statistics and Data
+#'   Analysis*. Chapman and Hall.
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' values <- stats::rnorm(200, mean = 5, sd = 2)
 #' result <- simulate_density(n = 100, values = values, variable = "score", seed = 1)
 #' head(result)
@@ -226,10 +238,13 @@ simulate_density <- function(n, values, variable = "value", use_limits = FALSE,
 #' @param use_limits,keep_missing,seed Density-simulation arguments, as in
 #'   [simulate_density()].
 #'
-#' @return A `simulab_sim` base `data.frame` with the density variable added.
+#' @return A `simulab_sim` base `data.frame` with one row per row of `data`:
+#'   the columns of `data` followed by the drawn values in a column named by
+#'   `variable`.
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' values <- stats::rnorm(200, mean = 5, sd = 2)
 #' data <- data.frame(id = 1:50)
 #' result <- augment_density(data, values = values, variable = "score", seed = 1)

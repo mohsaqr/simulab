@@ -13,7 +13,9 @@ augment_study(data, specification, seed = NULL, envir = parent.frame())
 \code{\link[=define_variables]{define_variables()}}, in either the distribution-call form or the
 \code{formula}/\code{variance} column form.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{envir}{Environment used to resolve functions and external values named
 by a \code{formula}/\code{variance} specification. It is not consulted by the

@@ -14,7 +14,9 @@ augment_synthetic(data, source, variables = NULL, seed = NULL)
 \item{variables}{Variables to resample. \code{NULL}, the default, resamples every
 variable in \code{source}.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with the resampled variables added,
@@ -26,6 +28,7 @@ destination row was drawn from.
 Add jointly resampled source variables to existing data
 }
 \examples{
+set.seed(1)
 source_data <- data.frame(x = stats::rnorm(100))
 data <- data.frame(id = 1:20)
 result <- augment_synthetic(data, source = source_data, variables = "x", seed = 1)

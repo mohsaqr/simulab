@@ -483,7 +483,9 @@ simulate_study <- function(n, specification, id = "id", seed = NULL,
 #' @param specification A tidy definition table created with
 #'   [define_variables()], in either the distribution-call form or the
 #'   `formula`/`variance` column form.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #' @param envir Environment used to resolve functions and external values named
 #'   by a `formula`/`variance` specification. It is not consulted by the
 #'   distribution-call form, whose parameters must be expressions over columns

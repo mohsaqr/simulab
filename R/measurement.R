@@ -39,7 +39,9 @@
 #' @param guessing Lower-asymptote guessing parameters in `[0, 1)`, a scalar
 #'   recycled across items (the default, `0.2`) or one value per item. It is
 #'   silently reset to zero unless `model = "3pl"`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per respondent and
 #'   columns `id` and one integer column per item, coded `0`/`1` for the
@@ -52,6 +54,15 @@
 #'   per item-by-threshold combination, with `parameter` equal to
 #'   `"threshold"`, `category` the threshold index, and no `guessing` column.
 #' @inheritParams simulate_correlation
+#' @references
+#' Rasch, G. (1960). *Probabilistic Models for Some Intelligence and Attainment
+#'   Tests*. Danish Institute for Educational Research.
+#'
+#' Lord, F. M. (1980). *Applications of Item Response Theory to Practical
+#'   Testing Problems*. Lawrence Erlbaum.
+#'
+#' Samejima, F. (1969). Estimation of latent ability using a response pattern of
+#'   graded scores. *Psychometrika*, 34(S1), 1--97. \doi{10.1007/BF03372160}
 #' @export
 #'
 #' @examples
@@ -231,7 +242,9 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
 #'   per hidden state and per observed category. They default to
 #'   `"State 1"`, `"State 2"`, ... and `"Observation 1"`, `"Observation 2"`,
 #'   ...
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A long-form `simulab_sim` base `data.frame` with one row per
 #'   sequence-occasion (`n * chain_length` rows) and columns `id`, `occasion`,
@@ -241,6 +254,10 @@ simulate_irt <- function(n, discrimination = 1, difficulty,
 #'   `probability`) and `initial_probabilities` (columns `state`,
 #'   `probability`) hold the generating parameters in tidy form.
 #' @inheritParams simulate_correlation
+#' @references
+#' Rabiner, L. R. (1989). A tutorial on hidden Markov models and selected
+#'   applications in speech recognition. *Proceedings of the IEEE*, 77(2),
+#'   257--286. \doi{10.1109/5.18626}
 #' @export
 #'
 #' @examples

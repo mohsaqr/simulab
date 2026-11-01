@@ -44,7 +44,9 @@ target otherwise.}
 independently, one of \code{"normal"} (the default, standard normal) or
 \code{"binary"} (Bernoulli with probability 0.5).}
 
-\item{seed}{Optional random seed. A single number, or \code{NULL} (the default).}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -86,4 +88,9 @@ result <- simulate_proportional_survival(
 )
 head(result)
 as.data.frame(result, what = "parameters")
+}
+\references{
+Bender, R., Augustin, T., & Blettner, M. (2005). Generating survival times to
+simulate Cox proportional hazards models. \emph{Statistics in Medicine}, 24(11),
+1713--1723. \doi{10.1002/sim.2059}
 }

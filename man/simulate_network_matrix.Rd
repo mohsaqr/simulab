@@ -36,7 +36,9 @@ the \code{frequency} and \code{transition} types, which are always weighted.}
 \item{frequency_mean}{Mean positive count for frequency matrices; drawn as
 \code{1 + rpois(frequency_mean - 1)}, so entries are at least one.}
 
-\item{seed}{Optional seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}

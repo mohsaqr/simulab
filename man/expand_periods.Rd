@@ -59,8 +59,9 @@ dropped. Defaults to \code{NULL}.}
 \item{value}{Name of the gathered time-varying value. A single non-empty
 string, defaulting to \code{"value"}.}
 
-\item{seed}{Optional random seed for irregular intervals. A single number, or
-\code{NULL} (the default).}
+\item{seed}{Optional random seed for irregular intervals. A single number
+makes the call reproducible and restores the session's random-number state
+afterwards; \code{NULL} (the default) draws from the session's stream.}
 }
 \value{
 A \code{simulab_sim} base \code{data.frame} with one row per unit-period,

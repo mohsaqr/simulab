@@ -34,7 +34,9 @@ Without names there, \code{class_labels} defaults to \code{"Class 1"}, \code{"Cl
 and so on, and \code{category_labels} to the integers \code{1:categories}. The
 category labels are the values written into the indicator columns.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}
@@ -83,4 +85,11 @@ result <- simulate_lca(
 )
 head(result)
 as.data.frame(result, what = "parameters")
+}
+\references{
+Lazarsfeld, P. F., & Henry, N. W. (1968). \emph{Latent Structure Analysis}.
+Houghton Mifflin.
+
+Collins, L. M., & Lanza, S. T. (2010). \emph{Latent Class and Latent Transition
+Analysis}. Wiley.
 }

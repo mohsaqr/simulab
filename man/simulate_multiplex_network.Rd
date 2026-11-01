@@ -29,17 +29,25 @@ simulate_multiplex_network(
 
 \item{probability}{Edge probability, scalar or one value per layer.}
 
-\item{directed}{Generate directed edges.}
+\item{directed}{Single logical. \code{TRUE} (the default) draws ordered pairs,
+\code{FALSE} unordered pairs, each undirected edge stored once.}
 
-\item{loops}{Permit self-loops.}
+\item{loops}{Single logical. \code{TRUE} permits self-loops; defaults to \code{FALSE}.}
 
-\item{weight}{Edge-weight distribution.}
+\item{weight}{Edge-weight distribution: \code{"binary"} (the default), every
+weight 1; \code{"uniform"} on \code{weight_range}; \code{"normal"} with \code{weight_mean}
+and \code{weight_sd}; or \code{"poisson"} with mean \code{weight_mean}.}
 
-\item{weight_mean, weight_sd, weight_range}{Weight parameters.}
+\item{weight_mean, weight_sd, weight_range}{Parameters of \code{weight}: the mean
+of normal and Poisson weights (default \code{1}), the standard deviation of
+normal weights (default \code{1}), and the lower and upper limits of uniform
+weights (default \code{c(0.1, 1)}). Unused by binary weights.}
 
 \item{node_type}{Optional node type for each node.}
 
-\item{seed}{Optional base seed; layers use deterministic offsets.}
+\item{seed}{Optional base seed. A single number, or \code{NULL} (the default).
+Layer \code{k} is drawn with \code{seed + k - 1}, so the call is reproducible and
+the session's random-number state is restored afterwards.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}

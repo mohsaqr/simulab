@@ -25,12 +25,15 @@ and distinct.}
 \code{\link[=simulate_density]{simulate_density()}}.}
 }
 \value{
-A \code{simulab_sim} base \code{data.frame} with the density variable added.
+A \code{simulab_sim} base \code{data.frame} with one row per row of \code{data}:
+the columns of \code{data} followed by the drawn values in a column named by
+\code{variable}.
 }
 \description{
 Add an empirical-density variable to existing data
 }
 \examples{
+set.seed(1)
 values <- stats::rnorm(200, mean = 5, sd = 2)
 data <- data.frame(id = 1:50)
 result <- augment_density(data, values = values, variable = "score", seed = 1)

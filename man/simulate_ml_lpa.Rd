@@ -61,7 +61,9 @@ a tidy table, or the row names of a matrix), else \code{"Profile 1"},
 \item{cluster_class_labels}{Optional cluster-class labels, one unique value
 per cluster class. Defaults to \code{"Class 1"}, \code{"Class 2"} and so on.}
 
-\item{seed}{Optional random seed.}
+\item{seed}{Optional random seed. A single number makes the call reproducible
+and restores the session's random-number state afterwards; \code{NULL} (the
+default) draws from the session's stream and advances it.}
 
 \item{batch}{Optional single positive whole number. When given, the
 simulator runs \code{batch} times and returns a plain \code{list} of \code{batch}

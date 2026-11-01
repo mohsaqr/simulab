@@ -261,7 +261,9 @@ correlation_structure <- function(n_variables, rho = 0,
 #' @param correlation A custom correlation matrix or tidy table returned by
 #'   `correlation_structure()`.
 #' @param variable_names Optional variable names.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id` and one column per variable. Three tidy tables come from
@@ -378,7 +380,9 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
 #'   Gaussian generator.
 #' @param labels Optional category labels.
 #' @param variable_names Optional variable names.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` with one row per observation and
 #'   columns `id` and one column per variable, each holding a category label.
@@ -389,6 +393,10 @@ simulate_correlated <- function(n, means, sds = 1, rho = 0,
 #'   That correlation is the latent Gaussian one, not the correlation of the
 #'   realized categories, which is attenuated by the thresholding.
 #' @inheritParams simulate_correlation
+#' @references
+#' Olsson, U. (1979). Maximum likelihood estimation of the polychoric
+#'   correlation coefficient. *Psychometrika*, 44(4), 443--460.
+#'   \doi{10.1007/BF02296207}
 #' @export
 #'
 #' @examples

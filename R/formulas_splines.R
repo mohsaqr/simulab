@@ -19,7 +19,8 @@
 #' @param variables Variable names. When there is one additional coefficient,
 #'   the first is the intercept.
 #'
-#' @return A one-row `simulab_formula` base `data.frame`.
+#' @return A one-row `simulab_formula` base `data.frame` with the character
+#'   columns `type` and `formula`, the formula text a specification accepts.
 #' @export
 #'
 #' @examples
@@ -47,7 +48,8 @@ linear_formula <- function(coefficients, variables) {
 #' @param probabilities Optional probabilities. Equal probabilities are used by
 #'   default.
 #'
-#' @return A one-row `simulab_formula` base `data.frame`.
+#' @return A one-row `simulab_formula` base `data.frame` with the character
+#'   columns `type` and `formula`, the formula text a specification accepts.
 #' @export
 #'
 #' @examples
@@ -81,7 +83,8 @@ mixture_formula <- function(variables, probabilities = NULL) {
 #' @param categories Number of equal-probability categories, used instead of
 #'   `probabilities`.
 #'
-#' @return A one-row `simulab_formula` base `data.frame`.
+#' @return A one-row `simulab_formula` base `data.frame` with the character
+#'   columns `type` and `formula`, the formula text a specification accepts.
 #' @export
 #'
 #' @examples
@@ -235,7 +238,9 @@ spline_curves <- function(coefficients, knots = c(0.25, 0.5, 0.75),
 #'   pair. Values outside `[0, 1]` are rescaled the same way, not clipped.
 #' @param noise_variance Non-negative Gaussian noise variance; the noise added
 #'   to each value has standard deviation `sqrt(noise_variance)`.
-#' @param seed Optional random seed.
+#' @param seed Optional random seed. A single number makes the call reproducible
+#'   and restores the session's random-number state afterwards; `NULL` (the
+#'   default) draws from the session's stream and advances it.
 #'
 #' @return A `simulab_sim` base `data.frame` holding `data` with the spline
 #'   variable added. `as.data.frame(x, what = "basis")` gives the tidy basis
@@ -246,6 +251,7 @@ spline_curves <- function(coefficients, knots = c(0.25, 0.5, 0.75),
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' data <- data.frame(id = 1:100, x = stats::runif(100))
 #' result <- simulate_spline(
 #'   data, predictor = "x", variable = "y",
