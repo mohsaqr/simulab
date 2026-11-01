@@ -35,7 +35,9 @@ simulate_synthetic(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -57,17 +59,18 @@ synthetic row was drawn from.
 ## Examples
 
 ``` r
+set.seed(1)
 source_data <- data.frame(id = 1:100, x = stats::rnorm(100), y = stats::runif(100))
 result <- simulate_synthetic(source_data, n = 50, seed = 1)
 head(result)
 #> <simulab_sim:synthetic> 6 rows x 3 columns
-#>   id           x          y
-#> 1  1  0.95128307 0.47347613
-#> 2  2 -0.80686530 0.37747662
-#> 3  3 -0.65854506 0.36668013
-#> 4  4  0.08223295 0.81356647
-#> 5  5 -0.22485900 0.88616309
-#> 6  6 -0.38808828 0.01565196
+#>   id           x         y
+#> 1  1  1.46555486 0.7547056
+#> 2  2  1.10002537 0.4296244
+#> 3  3 -0.62645381 0.2675082
+#> 4  4 -0.05380504 0.6314202
+#> 5  5  1.06309984 0.3214921
+#> 6  6  0.69696338 0.9103703
 #> 
 #> Other tables: provenance. Read one with as.data.frame(x, what = "provenance").
 ```

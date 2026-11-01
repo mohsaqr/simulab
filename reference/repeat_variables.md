@@ -32,7 +32,10 @@ repeat_variables(
 
 ## Value
 
-A `simulab_spec` base `data.frame` with one row per repeated variable.
+A `simulab_spec` base `data.frame` with one row per repeated variable,
+named `prefix` followed by `1` to `n`, and the columns of
+[`define_variable()`](https://pak.dynasite.org/simulab/reference/define_variable.md):
+`variable`, `distribution`, `formula`, `variance` and `link`.
 
 ## Examples
 

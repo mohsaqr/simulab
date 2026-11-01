@@ -71,6 +71,13 @@ by those arguments. The component `events`, reached with
 process with columns `event_type`, `event_code` and the logical
 `censoring`.
 
+## References
+
+Beyersmann, J., Latouche, A., Buchholz, A., & Schumacher, M. (2009).
+Simulating competing risks data in survival analysis. *Statistics in
+Medicine*, 28(6), 956–971.
+[doi:10.1002/sim.3516](https://doi.org/10.1002/sim.3516)
+
 ## Examples
 
 ``` r

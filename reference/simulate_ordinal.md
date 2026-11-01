@@ -52,7 +52,9 @@ simulate_ordinal(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -76,6 +78,12 @@ has one row per latent correlation-matrix cell with columns `row`,
 `column` and `correlation`. That correlation is the latent Gaussian one,
 not the correlation of the realized categories, which is attenuated by
 the thresholding.
+
+## References
+
+Olsson, U. (1979). Maximum likelihood estimation of the polychoric
+correlation coefficient. *Psychometrika*, 44(4), 443–460.
+[doi:10.1007/BF02296207](https://doi.org/10.1007/BF02296207)
 
 ## Examples
 

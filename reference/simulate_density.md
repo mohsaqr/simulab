@@ -47,7 +47,9 @@ simulate_density(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -66,20 +68,26 @@ A `simulab_sim` base `data.frame` with `n` rows and columns `id` and
 `as.data.frame(x, what = "source")` gives a one-row summary of the
 source values.
 
+## References
+
+Silverman, B. W. (1986). *Density Estimation for Statistics and Data
+Analysis*. Chapman and Hall.
+
 ## Examples
 
 ``` r
+set.seed(1)
 values <- stats::rnorm(200, mean = 5, sd = 2)
 result <- simulate_density(n = 100, values = values, variable = "score", seed = 1)
 head(result)
 #> <simulab_sim:density> 6 rows x 2 columns
 #>   id    score
-#> 1  1 6.719921
-#> 2  2 3.118475
-#> 3  3 3.888691
-#> 4  4 4.753282
-#> 5  5 4.587366
-#> 6  6 4.722838
+#> 1  1 6.361205
+#> 2  2 4.901417
+#> 3  3 4.377261
+#> 4  4 9.569445
+#> 5  5 4.969786
+#> 6  6 5.088797
 #> 
 #> Other tables: source. Read one with as.data.frame(x, what = "source").
 ```

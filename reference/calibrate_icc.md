@@ -52,6 +52,14 @@ latent variance `pi^2 / 3` for `binary`, `log(1 + 1 / mean)` for
 `poisson`, `trigamma(1 / dispersion)` for `gamma`, and
 `trigamma(1 / (1 / mean + dispersion))` for `negative_binomial`.
 
+## References
+
+Nakagawa, S., Johnson, P. C. D., & Schielzeth, H. (2017). The
+coefficient of determination R2 and intra-class correlation coefficient
+from generalized linear mixed-effects models revisited and expanded.
+*Journal of the Royal Society Interface*, 14(134), 20170213.
+[doi:10.1098/rsif.2017.0213](https://doi.org/10.1098/rsif.2017.0213)
+
 ## Examples
 
 ``` r

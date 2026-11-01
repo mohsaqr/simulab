@@ -1,17 +1,27 @@
-# simulab: Unified simulation of statistical and study data
+# simulab: Simulates a Wide Variety of Data Shapes, Sizes and Distributions
 
-`simulab` provides one consistent interface for declarative study
-simulation, specialized statistical designs, correlated and longitudinal
-data, latent-variable and measurement models, survival processes,
-sequences, and networks.
+`simulab` generates data in different shapes, sample sizes,
+distributions and parameters: declared study variables, statistical
+designs, correlated and longitudinal data, latent-variable and
+measurement models, survival processes, sequences of states, and
+networks. The generating parameters are drawn at random or set in
+advance, and in both cases they are stored with the data, so their
+recovery can be tested.
 
 ## Details
 
-Every simulator returns a data-frame-native `simulab_sim`. Primary data
-can be passed directly to base-R and modeling functions. Use
+Every generator returns a data-frame-native `simulab_sim`, except
+[`simulate_tna()`](https://pak.dynasite.org/simulab/reference/simulate_tna.md),
+which returns a native `tna` model of class `simulab_tna`. The primary
+data can be passed directly to base-R and modeling functions.
 [`components()`](https://pak.dynasite.org/simulab/reference/components.md)
-to discover ground-truth and design tables, then
-`as.data.frame(x, what = ...)` to retrieve them.
+lists the stored truth and design tables, and
+`as.data.frame(x, what = ...)` returns each of them. Every
+single-dataset generator takes `seed`, for reproducible output, and
+`batch`, which returns a plain list of that many data sets, each
+reproducible from its own seed.
+[`list_simulators()`](https://pak.dynasite.org/simulab/reference/list_simulators.md)
+catalogues the generators.
 
 ## See also
 

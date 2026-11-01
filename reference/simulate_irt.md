@@ -68,7 +68,9 @@ simulate_irt(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -106,6 +108,18 @@ For `model = "graded"` the cumulative category probabilities are
 `plogis(discrimination * (theta - threshold))` for each threshold of an
 item, and the category probabilities are their successive differences,
 so the thresholds are also on the ability scale.
+
+## References
+
+Rasch, G. (1960). *Probabilistic Models for Some Intelligence and
+Attainment Tests*. Danish Institute for Educational Research.
+
+Lord, F. M. (1980). *Applications of Item Response Theory to Practical
+Testing Problems*. Lawrence Erlbaum.
+
+Samejima, F. (1969). Estimation of latent ability using a response
+pattern of graded scores. *Psychometrika*, 34(S1), 1–97.
+[doi:10.1007/BF03372160](https://doi.org/10.1007/BF03372160)
 
 ## Examples
 

@@ -59,7 +59,9 @@ simulate_spline(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -82,6 +84,7 @@ coefficient.
 ## Examples
 
 ``` r
+set.seed(1)
 data <- data.frame(id = 1:100, x = stats::runif(100))
 result <- simulate_spline(
   data, predictor = "x", variable = "y",
@@ -91,12 +94,12 @@ result <- simulate_spline(
 head(result)
 #> <simulab_sim:spline> 6 rows x 3 columns
 #>   id         x         y
-#> 1  1 0.9390541 0.7459875
-#> 2  2 0.5585891 0.4881785
-#> 3  3 0.5710001 0.4964202
-#> 4  4 0.1073091 0.2323486
-#> 5  5 0.3887622 0.4466184
-#> 6  6 0.9774780 0.8660810
+#> 1  1 0.2655087 0.3996209
+#> 2  2 0.3721239 0.4470323
+#> 3  3 0.5728534 0.4945659
+#> 4  4 0.9082078 0.6870369
+#> 5  5 0.2016819 0.3323789
+#> 6  6 0.8983897 0.6749814
 #> 
 #> Truth (parameters):
 #>     basis coefficient

@@ -75,14 +75,4 @@ data <- simulate_sequences(n = 60, n_states = 3, chain_length = 12, seed = 1)
 if (requireNamespace("tna", quietly = TRUE)) {
   cross_validate_tna(data, models = c("tna", "ftna"), iterations = 2, seed = 1)
 }
-#>   iteration model   pearson    cosine         mae        rmse   jaccard edges_x
-#> 1         1   tna 0.9838410 0.9929185  0.04560538  0.05282897 0.8888889       9
-#> 2         1  ftna 0.9832673 0.9917742 29.77777778 42.07664963 0.8888889       9
-#> 3         2   tna 0.9903498 0.9954154  0.03047942  0.04354214 1.0000000       9
-#> 4         2  ftna 0.9929774 0.9947696 29.33333333 43.53542619 1.0000000       9
-#>   edges_y
-#> 1       8
-#> 2       8
-#> 3       9
-#> 4       9
 ```

@@ -42,19 +42,25 @@ simulate_multiplex_network(
 
 - directed:
 
-  Generate directed edges.
+  Single logical. `TRUE` (the default) draws ordered pairs, `FALSE`
+  unordered pairs, each undirected edge stored once.
 
 - loops:
 
-  Permit self-loops.
+  Single logical. `TRUE` permits self-loops; defaults to `FALSE`.
 
 - weight:
 
-  Edge-weight distribution.
+  Edge-weight distribution: `"binary"` (the default), every weight 1;
+  `"uniform"` on `weight_range`; `"normal"` with `weight_mean` and
+  `weight_sd`; or `"poisson"` with mean `weight_mean`.
 
 - weight_mean, weight_sd, weight_range:
 
-  Weight parameters.
+  Parameters of `weight`: the mean of normal and Poisson weights
+  (default `1`), the standard deviation of normal weights (default `1`),
+  and the lower and upper limits of uniform weights (default
+  `c(0.1, 1)`). Unused by binary weights.
 
 - node_type:
 
@@ -62,7 +68,9 @@ simulate_multiplex_network(
 
 - seed:
 
-  Optional base seed; layers use deterministic offsets.
+  Optional base seed. A single number, or `NULL` (the default). Layer
+  `k` is drawn with `seed + k - 1`, so the call is reproducible and the
+  session's random-number state is restored afterwards.
 
 - batch:
 

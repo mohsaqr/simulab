@@ -37,21 +37,24 @@ augment_density(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with the density variable added.
+A `simulab_sim` base `data.frame` with one row per row of `data`: the
+columns of `data` followed by the drawn values in a column named by
+`variable`.
 
 ## Examples
 
 ``` r
+set.seed(1)
 values <- stats::rnorm(200, mean = 5, sd = 2)
 data <- data.frame(id = 1:50)
 result <- augment_density(data, values = values, variable = "score", seed = 1)
 head(result)
 #> <simulab_sim:augmented_density> 6 rows x 2 columns
-#>   id     score
-#> 1  1  6.781219
-#> 2  2  3.460304
-#> 3  3  4.658483
-#> 4  4 10.128057
-#> 5  5  5.273414
-#> 6  6  5.401585
+#>   id    score
+#> 1  1 6.361205
+#> 2  2 4.901417
+#> 3  3 4.377261
+#> 4  4 9.569445
+#> 5  5 4.969786
+#> 6  6 5.088797
 ```

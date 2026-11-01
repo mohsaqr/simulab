@@ -36,8 +36,9 @@ trim_events(data, id, period, event, occurrence = 1L, event_value = 1)
 
 ## Value
 
-A `simulab_sim` base `data.frame` retaining observations through the
-requested event, or all observations when it never occurs.
+A `simulab_sim` base `data.frame` with the columns of `data`. Each unit
+keeps its rows up to and including the period of its `occurrence`-th
+event, and all its rows when that event never occurs.
 
 ## Examples
 

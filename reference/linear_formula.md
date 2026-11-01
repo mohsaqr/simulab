@@ -21,7 +21,8 @@ linear_formula(coefficients, variables)
 
 ## Value
 
-A one-row `simulab_formula` base `data.frame`.
+A one-row `simulab_formula` base `data.frame` with the character columns
+`type` and `formula`, the formula text a specification accepts.
 
 ## Examples
 

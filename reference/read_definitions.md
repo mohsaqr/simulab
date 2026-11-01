@@ -17,7 +17,10 @@ read_definitions(file)
 
 ## Value
 
-A `simulab_spec` base `data.frame`.
+A `simulab_spec` base `data.frame` with one row per variable of the file
+and the columns of
+[`define_variable()`](https://pak.dynasite.org/simulab/reference/define_variable.md):
+`variable`, `distribution`, `formula`, `variance` and `link`.
 
 ## Examples
 

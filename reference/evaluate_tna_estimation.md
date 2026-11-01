@@ -101,16 +101,4 @@ if (requireNamespace("tna", quietly = TRUE)) {
     models = "tna", seed = 1
   )
 }
-#> <simulab_sim:tna_estimation> 2 rows x 15 columns
-#>   iteration model   pearson    cosine        mae       rmse   jaccard edges_x
-#> 1         1   tna 0.9873226 0.9963721 0.02853191 0.03352190 1.0000000       9
-#> 2         2   tna 0.9812276 0.9906651 0.04997134 0.06423688 0.8888889       9
-#>   edges_y precision    recall        f1 true_positive false_positive
-#> 1       9         1 1.0000000 1.0000000             9              0
-#> 2       8         1 0.8888889 0.9411765             8              0
-#>   false_negative
-#> 1              0
-#> 2              1
-#> 
-#> Other tables: truth, estimated_edges. Read one with as.data.frame(x, what = "truth").
 ```

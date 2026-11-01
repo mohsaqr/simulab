@@ -44,7 +44,4 @@ networks <- list(
 if (requireNamespace("igraph", quietly = TRUE)) {
   summarize_networks(networks)
 }
-#>        network nodes edges   density mean_weight components
-#> first    first    25    63 0.1050000           1          1
-#> second  second    25   130 0.2166667           1          1
 ```

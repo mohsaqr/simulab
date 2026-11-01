@@ -87,8 +87,9 @@ expand_periods(
 
 - seed:
 
-  Optional random seed for irregular intervals. A single number, or
-  `NULL` (the default).
+  Optional random seed for irregular intervals. A single number makes
+  the call reproducible and restores the session's random-number state
+  afterwards; `NULL` (the default) draws from the session's stream.
 
 ## Value
 

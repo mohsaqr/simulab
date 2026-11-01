@@ -46,7 +46,8 @@ define_variable(
 
 ## Value
 
-A one-row `simulab_spec` base `data.frame`.
+A one-row `simulab_spec` base `data.frame` with the character columns
+`variable`, `distribution`, `formula`, `variance` and `link`.
 
 ## Examples
 

@@ -39,15 +39,22 @@ simulate_bipartite_network(
 
 - weight:
 
-  Edge-weight distribution.
+  Edge-weight distribution: `"binary"` (the default), every weight 1;
+  `"uniform"` on `weight_range`; `"normal"` with `weight_mean` and
+  `weight_sd`; or `"poisson"` with mean `weight_mean`.
 
 - weight_mean, weight_sd, weight_range:
 
-  Weight parameters.
+  Parameters of `weight`: the mean of normal and Poisson weights
+  (default `1`), the standard deviation of normal weights (default `1`),
+  and the lower and upper limits of uniform weights (default
+  `c(0.1, 1)`). Unused by binary weights.
 
 - seed:
 
-  Optional seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 

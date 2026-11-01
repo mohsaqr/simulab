@@ -54,6 +54,12 @@ A one-row `simulab_missing_spec` base `data.frame` with the character
 columns `variable`, `formula` and `link` and the logical columns
 `baseline` and `monotone`.
 
+## References
+
+Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
+581–592.
+[doi:10.1093/biomet/63.3.581](https://doi.org/10.1093/biomet/63.3.581)
+
 ## Examples
 
 ``` r

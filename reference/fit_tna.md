@@ -58,6 +58,15 @@ weights. `as.data.frame(x, what = )` also returns
 when a native model object is required by `tna` plotting or inference
 functions.
 
+## References
+
+Saqr, M., López-Pernas, S., Törmänen, T., Kaliisa, R., Misiejuk, K., &
+Tikka, S. (2025). Transition network analysis: A novel framework for
+modeling, visualizing, and identifying the temporal patterns of learners
+and learning processes. In *Proceedings of the 15th International
+Learning Analytics and Knowledge Conference* (pp. 351–361).
+[doi:10.1145/3706468.3706513](https://doi.org/10.1145/3706468.3706513)
+
 ## Examples
 
 ``` r
@@ -65,14 +74,4 @@ data <- simulate_sequences(n = 40, n_states = 3, chain_length = 12, seed = 1)
 if (requireNamespace("tna", quietly = TRUE)) {
   head(fit_tna(data, model = "tna"))
 }
-#> <simulab_sim:tna_model> 6 rows x 3 columns
-#>      from    to     weight
-#> 1   Learn Learn 0.53112033
-#> 2    Plan Learn 0.17187500
-#> 3 Reflect Learn 0.90370370
-#> 4   Learn  Plan 0.10788382
-#> 5    Plan  Plan 0.17187500
-#> 6 Reflect  Plan 0.03703704
-#> 
-#> Other tables: initial_probabilities, model_info. Read one with as.data.frame(x, what = "initial_probabilities").
 ```

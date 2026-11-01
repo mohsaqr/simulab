@@ -47,7 +47,9 @@ missingness_matrix(
 
 - seed:
 
-  Optional random seed. A single number, or `NULL` (the default).
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - envir:
 
@@ -65,6 +67,7 @@ variable of `specification`, named after that variable. Variables of
 ## Examples
 
 ``` r
+set.seed(1)
 data <- data.frame(id = 1:100, baseline = stats::rnorm(100), outcome = stats::rnorm(100))
 specification <- define_missingnesses(
   define_missingness("outcome", formula = "0.2")

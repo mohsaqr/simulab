@@ -74,14 +74,4 @@ data <- simulate_sequences(n = 40, n_states = 3, chain_length = 12, seed = 1)
 if (requireNamespace("tna", quietly = TRUE)) {
   head(bootstrap_tna(data, model = "tna", repetitions = 5, seed = 1))
 }
-#> <simulab_sim:tna_bootstrap> 6 rows x 4 columns
-#>   iteration    from    to     weight
-#> 1         1   Learn Learn 0.57661290
-#> 2         1    Plan Learn 0.16666667
-#> 3         1 Reflect Learn 0.88636364
-#> 4         1   Learn  Plan 0.08870968
-#> 5         1    Plan  Plan 0.21666667
-#> 6         1 Reflect  Plan 0.02272727
-#> 
-#> Other tables: summary. Read one with as.data.frame(x, what = "summary").
 ```

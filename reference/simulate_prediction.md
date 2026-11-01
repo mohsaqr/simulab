@@ -75,7 +75,9 @@ simulate_prediction(
 
 - seed:
 
-  Optional random seed. A single number, or `NULL` (the default).
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -133,4 +135,33 @@ as.data.frame(result, what = "coefficients")
 #> 1 (Intercept)         0.5
 #> 2          x1         1.0
 #> 3          x2        -1.0
+
+# A categorical predictor whose level shifts the outcome.
+with_arm <- simulate_prediction(
+  n = 200,
+  coefficients = c("(Intercept)" = 0.5, x1 = 1),
+  categorical_levels = list(arm = c("control", "treated")),
+  categorical_effects = list(arm = c(0, 0.8)),
+  seed = 1
+)
+head(with_arm)
+#> <simulab_sim:prediction> 6 rows x 4 columns
+#>   id         x1     arm   outcome
+#> 1  1 -0.6264538 control 0.7672199
+#> 2  2  0.1836433 treated 0.4363452
+#> 3  3 -0.8356286 control 1.6357088
+#> 4  4  1.5952808 control 1.7116487
+#> 5  5  0.3295078 control 2.4836531
+#> 6  6 -0.8204684 control 1.1917443
+#> 
+#> Truth (coefficients):
+#>          term coefficient
+#> 1 (Intercept)         0.5
+#> 2          x1         1.0
+#> 
+#> Other tables: categorical_effects, effects. Read one with as.data.frame(x, what = "categorical_effects").
+as.data.frame(with_arm, what = "categorical_effects")
+#>       variable   level effect probability
+#> arm.1      arm control    0.0         0.5
+#> arm.2      arm treated    0.8         0.5
 ```

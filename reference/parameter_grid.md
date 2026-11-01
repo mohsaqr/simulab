@@ -44,6 +44,13 @@ A base `data.frame` with one row per parameter combination, a leading
 `scenario_id` column numbering the rows, and then one column per
 parameter in the order given.
 
+## References
+
+McKay, M. D., Beckman, R. J., & Conover, W. J. (1979). A comparison of
+three methods for selecting values of input variables in the analysis of
+output from a computer code. *Technometrics*, 21(2), 239–245.
+[doi:10.1080/00401706.1979.10489755](https://doi.org/10.1080/00401706.1979.10489755)
+
 ## Examples
 
 ``` r

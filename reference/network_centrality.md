@@ -46,11 +46,4 @@ network <- simulate_network(nodes = 30, model = "bernoulli", probability = 0.1, 
 if (requireNamespace("igraph", quietly = TRUE)) {
   head(network_centrality(network, measures = c("degree", "strength")))
 }
-#>   node measure value
-#> 1    1  degree     4
-#> 2    2  degree     4
-#> 3    3  degree     6
-#> 4    4  degree     6
-#> 5    5  degree    11
-#> 6    6  degree     4
 ```

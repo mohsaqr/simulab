@@ -67,7 +67,9 @@ simulate_tna(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - ...:
 
@@ -101,6 +103,15 @@ generating `transitions` (columns `from`, `to` and `probability`),
 and `model_info`. Requires the suggested `tna` package, and raises
 `simulab_missing_tna` without it.
 
+## References
+
+Saqr, M., López-Pernas, S., Törmänen, T., Kaliisa, R., Misiejuk, K., &
+Tikka, S. (2025). Transition network analysis: A novel framework for
+modeling, visualizing, and identifying the temporal patterns of learners
+and learning processes. In *Proceedings of the 15th International
+Learning Analytics and Knowledge Conference* (pp. 351–361).
+[doi:10.1145/3706468.3706513](https://doi.org/10.1145/3706468.3706513)
+
 ## Examples
 
 ``` r
@@ -118,31 +129,4 @@ if (requireNamespace("tna", quietly = TRUE)) {
   )
   simulate_tna(n = 200, transition = transition, seed = 1)
 }
-#> State Labels : 
-#> 
-#>    act, plan 
-#> 
-#> Transition Probability Matrix :
-#> 
-#>            act      plan
-#> act  0.3924374 0.6075626
-#> plan 0.6983180 0.3016820
-#> 
-#> Initial Probabilities : 
-#> 
-#>  act plan 
-#>    0    1 
-#> 
-#> Generating Transition Probability Matrix (truth) :
-#> 
-#>      act plan
-#> act  0.4  0.6
-#> plan 0.7  0.3
-#> 
-#> Generating Initial Probabilities (truth) :
-#> 
-#>  act plan 
-#>    0    1 
-#> 
-#> Other tables: edges, sequences, wide, model_info. Read one with as.data.frame(x, what = "edges").
 ```

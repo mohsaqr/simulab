@@ -58,7 +58,9 @@ simulate_hmm(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -79,6 +81,12 @@ emitted category label). Components `transitions` (columns `from`, `to`,
 `probability`), `emissions` (columns `state`, `observation`,
 `probability`) and `initial_probabilities` (columns `state`,
 `probability`) hold the generating parameters in tidy form.
+
+## References
+
+Rabiner, L. R. (1989). A tutorial on hidden Markov models and selected
+applications in speech recognition. *Proceedings of the IEEE*, 77(2),
+257–286. [doi:10.1109/5.18626](https://doi.org/10.1109/5.18626)
 
 ## Examples
 

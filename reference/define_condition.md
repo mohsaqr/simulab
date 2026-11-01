@@ -31,7 +31,13 @@ define_condition(
 
 ## Value
 
-A one-row `simulab_condition_spec` base `data.frame`.
+A one-row `simulab_condition_spec` base `data.frame` with the character
+columns `variable`, `condition`, `distribution`, `formula`, `variance`
+and `link`, the form
+[`define_conditions()`](https://pak.dynasite.org/simulab/reference/define_conditions.md)
+stacks and
+[`apply_conditions()`](https://pak.dynasite.org/simulab/reference/apply_conditions.md)
+reads.
 
 ## Examples
 

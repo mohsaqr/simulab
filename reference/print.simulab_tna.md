@@ -37,33 +37,4 @@ print(x, digits = 3L, ...)
 if (requireNamespace("tna", quietly = TRUE)) {
   print(simulate_tna(n = 30, n_states = 3, seed = 1))
 }
-#> State Labels : 
-#> 
-#>    Learn, Plan, Reflect 
-#> 
-#> Transition Probability Matrix :
-#> 
-#>             Learn       Plan    Reflect
-#> Learn   0.5440252 0.11635220 0.33962264
-#> Plan    0.1566265 0.19277108 0.65060241
-#> Reflect 0.8934911 0.06508876 0.04142012
-#> 
-#> Initial Probabilities : 
-#> 
-#>      Learn       Plan    Reflect 
-#> 0.06666667 0.66666667 0.26666667 
-#> 
-#> Generating Transition Probability Matrix (truth) :
-#> 
-#>         Learn  Plan Reflect
-#> Learn   0.499 0.079   0.422
-#> Plan    0.167 0.169   0.664
-#> Reflect 0.867 0.071   0.063
-#> 
-#> Generating Initial Probabilities (truth) :
-#> 
-#>   Learn    Plan Reflect 
-#>   0.038   0.699   0.262 
-#> 
-#> Other tables: edges, sequences, wide, model_info. Read one with as.data.frame(x, what = "edges").
 ```

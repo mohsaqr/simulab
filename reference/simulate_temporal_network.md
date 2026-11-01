@@ -47,11 +47,12 @@ simulate_temporal_network(
 
 - directed:
 
-  Generate directed dyads.
+  Single logical. `TRUE` (the default) draws ordered pairs, `FALSE`
+  unordered pairs, each undirected edge stored once.
 
 - loops:
 
-  Permit self-loops.
+  Single logical. `TRUE` permits self-loops; defaults to `FALSE`.
 
 - weight:
 
@@ -60,7 +61,10 @@ simulate_temporal_network(
 
 - weight_mean, weight_sd, weight_range:
 
-  Weight parameters.
+  Parameters of `weight`: the mean of normal and Poisson weights
+  (default `1`), the standard deviation of normal weights (default `1`),
+  and the lower and upper limits of uniform weights (default
+  `c(0.1, 1)`). Unused by binary weights.
 
 - node_type:
 
@@ -68,7 +72,9 @@ simulate_temporal_network(
 
 - seed:
 
-  Optional seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 

@@ -62,7 +62,9 @@ simulate_lpa(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -81,6 +83,10 @@ columns `id`, `profile` (the true profile label) and one numeric column
 per indicator. A `parameters` component holds one row per
 profile-by-variable combination with columns `profile`, `variable`,
 `mean`, `sd` and `proportion`.
+
+## References
+
+McLachlan, G., & Peel, D. (2000). *Finite Mixture Models*. Wiley.
 
 ## Examples
 

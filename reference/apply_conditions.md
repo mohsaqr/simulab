@@ -24,7 +24,9 @@ apply_conditions(data, specification, seed = NULL, envir = parent.frame())
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - envir:
 
@@ -34,7 +36,12 @@ apply_conditions(data, specification, seed = NULL, envir = parent.frame())
 
 ## Value
 
-A `simulab_sim` base `data.frame` with conditional variables added.
+A `simulab_sim` base `data.frame` with one row per row of `data`: the
+columns of `data`, then each new conditional variable. A rule overwrites
+an existing variable only in the rows that satisfy its condition; a new
+variable is `NA` in the rows no rule covers. The `conditions` component,
+reached with `as.data.frame(x, what = "conditions")`, restates the
+specification.
 
 ## Examples
 

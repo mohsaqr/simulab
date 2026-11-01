@@ -39,17 +39,17 @@ install.packages("simulab", repos = c("https://mohsaqr.r-universe.dev",
 remotes::install_github("mohsaqr/simulab")
 ```
 
-No suggested package is needed at run time. `tna` (1.2.3 or later) fits
-the transition networks of
+The suggested packages are needed only by the functions that use them.
+`tna` (1.2.3 or later) fits the transition networks of
 [`simulate_tna()`](https://pak.dynasite.org/simulab/reference/simulate_tna.md),
-[`simulate_group_tna()`](https://pak.dynasite.org/simulab/reference/simulate_group_tna.md)
-and
-[`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md);
-`igraph` (2.0.0 or later) supplies the preferential-attachment and
-small-world generators and
-[`as_igraph()`](https://pak.dynasite.org/simulab/reference/as_igraph.md);
-`survival` fits the Cox model in the vignette; `simstudy` is an
-equivalence oracle in the tests.
+[`simulate_group_tna()`](https://pak.dynasite.org/simulab/reference/simulate_group_tna.md),
+[`fit_tna()`](https://pak.dynasite.org/simulab/reference/fit_tna.md) and
+the other TNA workflows; `igraph` (2.0.0 or later) supplies every
+[`simulate_network()`](https://pak.dynasite.org/simulab/reference/simulate_network.md)
+model other than `"bernoulli"`,
+[`as_igraph()`](https://pak.dynasite.org/simulab/reference/as_igraph.md)
+and the centrality and network summaries; `survival` fits the Cox model
+in the vignette; `simstudy` is an equivalence oracle in the tests.
 
 ## Data with and without parameters
 

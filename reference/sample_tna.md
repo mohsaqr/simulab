@@ -76,14 +76,4 @@ data <- simulate_sequences(n = 40, n_states = 3, chain_length = 12, seed = 1)
 if (requireNamespace("tna", quietly = TRUE)) {
   head(sample_tna(data, fraction = 0.5, seed = 1))
 }
-#> <simulab_sim:tna_model> 6 rows x 3 columns
-#>      from    to     weight
-#> 1   Learn Learn 0.51282051
-#> 2    Plan Learn 0.15151515
-#> 3 Reflect Learn 0.87142857
-#> 4   Learn  Plan 0.11111111
-#> 5    Plan  Plan 0.27272727
-#> 6 Reflect  Plan 0.02857143
-#> 
-#> Other tables: initial_probabilities, model_info. Read one with as.data.frame(x, what = "initial_probabilities").
 ```

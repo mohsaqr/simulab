@@ -36,7 +36,8 @@ update_definition(
 
 ## Value
 
-An updated `simulab_spec` base `data.frame`.
+The `simulab_spec` base `data.frame` with the same rows and columns as
+`specification`, the row of `variable` carrying the new values.
 
 ## Examples
 

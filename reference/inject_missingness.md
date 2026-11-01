@@ -59,7 +59,9 @@ inject_missingness(
 
 - seed:
 
-  Optional random seed. A single number, or `NULL` (the default).
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 ## Value
 
@@ -72,9 +74,16 @@ the logical `missing` and `mechanism`; and `missingness_summary`, one
 row per target variable with columns `variable`, `realized_proportion`
 and `target_proportion`.
 
+## References
+
+Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
+581–592.
+[doi:10.1093/biomet/63.3.581](https://doi.org/10.1093/biomet/63.3.581)
+
 ## Examples
 
 ``` r
+set.seed(1)
 data <- data.frame(id = 1:200, x = stats::rnorm(200), y = stats::rnorm(200))
 
 result <- inject_missingness(
@@ -83,12 +92,12 @@ result <- inject_missingness(
 head(result)
 #> <simulab_sim:missingness> 6 rows x 3 columns
 #>   id          x          y
-#> 1  1  1.0744410 -0.3410670
-#> 2  2  1.8956548  1.5024245
-#> 3  3 -0.6029973  0.5283077
-#> 4  4 -0.3908678  0.5421914
-#> 5  5 -0.4162220 -0.1366734
-#> 6  6 -0.3756574 -1.1367339
+#> 1  1 -0.6264538  0.4094018
+#> 2  2  0.1836433  1.6888733
+#> 3  3 -0.8356286  1.5865884
+#> 4  4  1.5952808 -0.3309078
+#> 5  5  0.3295078 -2.2852355
+#> 6  6 -0.8204684  2.4976616
 #> 
 #> Other tables: missingness, missingness_summary. Read one with as.data.frame(x, what = "missingness").
 
@@ -99,12 +108,12 @@ head(inject_missingness(
 ))
 #> <simulab_sim:missingness> 6 rows x 3 columns
 #>   id          x          y
-#> 1  1  1.0744410         NA
-#> 2  2  1.8956548         NA
-#> 3  3 -0.6029973  0.5283077
-#> 4  4 -0.3908678  0.5421914
-#> 5  5 -0.4162220 -0.1366734
-#> 6  6 -0.3756574 -1.1367339
+#> 1  1 -0.6264538  0.4094018
+#> 2  2  0.1836433  1.6888733
+#> 3  3 -0.8356286  1.5865884
+#> 4  4  1.5952808 -0.3309078
+#> 5  5  0.3295078         NA
+#> 6  6 -0.8204684  2.4976616
 #> 
 #> Other tables: missingness, missingness_summary. Read one with as.data.frame(x, what = "missingness").
 ```

@@ -83,7 +83,9 @@ assign_stepped_wedge(
 
 - seed:
 
-  Optional random seed. A single number, or `NULL` (the default).
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 ## Value
 
@@ -93,6 +95,13 @@ variable, one row per input row. The component `schedule`, reached with
 `as.data.frame(x, what = "schedule")`, holds one row per cluster with
 the cluster identifier under its own name plus columns `wave` and
 `treatment_start`.
+
+## References
+
+Hussey, M. A., & Hughes, J. P. (2007). Design and analysis of stepped
+wedge cluster randomized trials. *Contemporary Clinical Trials*, 28(2),
+182–191.
+[doi:10.1016/j.cct.2006.05.007](https://doi.org/10.1016/j.cct.2006.05.007)
 
 ## Examples
 

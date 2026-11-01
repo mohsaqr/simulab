@@ -49,7 +49,9 @@ simulate_lca(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -69,6 +71,14 @@ indicator holding the sampled value of `category_labels`. A `parameters`
 component holds one row per class-by-indicator-by-category combination
 with columns `latent_class`, `indicator`, `category`, `probability` and
 `proportion`.
+
+## References
+
+Lazarsfeld, P. F., & Henry, N. W. (1968). *Latent Structure Analysis*.
+Houghton Mifflin.
+
+Collins, L. M., & Lanza, S. T. (2010). *Latent Class and Latent
+Transition Analysis*. Wiley.
 
 ## Examples
 

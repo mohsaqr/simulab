@@ -34,7 +34,9 @@ simulate_until_event(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - envir:
 
@@ -52,8 +54,10 @@ simulate_until_event(
 
 ## Value
 
-A `simulab_sim` base `data.frame` with the generated event indicator and
-records through the requested occurrence.
+A `simulab_sim` base `data.frame` with the columns of `data` followed by
+the event indicator named by the variable of `definition`. Each unit
+keeps its rows up to and including the period of its `occurrence`-th
+event, and all its rows when that event never occurs.
 
 ## Examples
 

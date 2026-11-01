@@ -46,14 +46,4 @@ if (requireNamespace("tna", quietly = TRUE)) {
   as.data.frame(network)
   as.data.frame(network, what = "transitions")
 }
-#>      from      to probability
-#> 1 Reflect Reflect  0.06261118
-#> 2   Learn Reflect  0.42158819
-#> 3    Plan Reflect  0.66416516
-#> 4 Reflect   Learn  0.86660136
-#> 5   Learn   Learn  0.49915316
-#> 6    Plan   Learn  0.16698516
-#> 7 Reflect    Plan  0.07078746
-#> 8   Learn    Plan  0.07925865
-#> 9    Plan    Plan  0.16884968
 ```

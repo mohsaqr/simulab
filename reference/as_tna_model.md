@@ -37,5 +37,4 @@ if (requireNamespace("tna", quietly = TRUE)) {
   model <- as_tna_model(fit_tna(data, model = "tna"))
   class(model)
 }
-#> [1] "tna"
 ```

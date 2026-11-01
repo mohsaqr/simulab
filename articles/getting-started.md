@@ -1382,39 +1382,6 @@ probabilities that generated the sequences.
 
 network <- simulate_tna(seed = 1)
 network
-#> State Labels : 
-#> 
-#>    Analyze, Elaborate, Learn, Plan, Reflect 
-#> 
-#> Transition Probability Matrix :
-#> 
-#>              Analyze  Elaborate      Learn      Plan    Reflect
-#> Analyze   0.56750572 0.12356979 0.02288330 0.2013730 0.08466819
-#> Elaborate 0.05590062 0.10869565 0.13664596 0.3881988 0.31055901
-#> Learn     0.04237288 0.44067797 0.04237288 0.2627119 0.21186441
-#> Plan      0.22473868 0.04181185 0.07665505 0.3745645 0.28222997
-#> Reflect   0.13363029 0.32962138 0.01781737 0.3006682 0.21826281
-#> 
-#> Initial Probabilities : 
-#> 
-#>   Analyze Elaborate     Learn      Plan   Reflect 
-#>      0.02      0.31      0.09      0.12      0.46 
-#> 
-#> Generating Transition Probability Matrix (truth) :
-#> 
-#>           Analyze Elaborate Learn  Plan Reflect
-#> Analyze     0.553     0.122 0.024 0.194   0.108
-#> Elaborate   0.078     0.070 0.150 0.386   0.317
-#> Learn       0.036     0.381 0.038 0.246   0.298
-#> Plan        0.221     0.034 0.082 0.358   0.305
-#> Reflect     0.113     0.316 0.025 0.327   0.219
-#> 
-#> Generating Initial Probabilities (truth) :
-#> 
-#>   Analyze Elaborate     Learn      Plan   Reflect 
-#>     0.045     0.334     0.134     0.079     0.407 
-#> 
-#> Other tables: edges, sequences, wide, model_info. Read one with as.data.frame(x, what = "edges").
 ```
 
 A given matrix can come from a network estimated on real data. Here it
@@ -1429,71 +1396,6 @@ regulation <- tna::tna(tna::group_regulation)
 known_network <- simulate_tna(n = 2000, transition = regulation$weights,
                               initial = regulation$inits, seed = 1)
 known_network
-#> State Labels : 
-#> 
-#>    adapt, cohesion, consensus, coregulate, discuss, emotion, monitor, plan, synthesis 
-#> 
-#> Transition Probability Matrix :
-#> 
-#>                   adapt   cohesion  consensus coregulate    discuss    emotion
-#> adapt      0.0000000000 0.29629630 0.45634921 0.02777778 0.06349206 0.10846561
-#> cohesion   0.0027386541 0.02895149 0.49647887 0.11306729 0.06964006 0.11893584
-#> consensus  0.0048441449 0.01337405 0.08203454 0.19323926 0.18723673 0.07424179
-#> coregulate 0.0211012199 0.03956479 0.13748764 0.01978239 0.27266733 0.16419387
-#> discuss    0.0697995853 0.04302004 0.32066344 0.08517623 0.19765031 0.10711818
-#> emotion    0.0016806723 0.32845138 0.32653061 0.03385354 0.09339736 0.07515006
-#> monitor    0.0075037519 0.06003002 0.17408704 0.05802901 0.36868434 0.07903952
-#> plan       0.0008699435 0.02718573 0.29284472 0.01729013 0.06383210 0.14582427
-#> synthesis  0.2176063304 0.03659743 0.47477745 0.05341246 0.05539070 0.08209693
-#>               monitor       plan   synthesis
-#> adapt      0.02777778 0.01984127 0.000000000
-#> cohesion   0.03129890 0.13536776 0.003521127
-#> consensus  0.04454507 0.39311289 0.007371525
-#> coregulate 0.09033960 0.23738872 0.017474448
-#> discuss    0.02384243 0.01209399 0.140635798
-#> emotion    0.03577431 0.10180072 0.003361345
-#> monitor    0.01850925 0.21860930 0.015507754
-#> plan       0.07394519 0.37635929 0.001848630
-#> synthesis  0.01582591 0.06429278 0.000000000
-#> 
-#> Initial Probabilities : 
-#> 
-#>      adapt   cohesion  consensus coregulate    discuss    emotion    monitor 
-#>     0.0095     0.0650     0.2355     0.0165     0.1710     0.1355     0.1380 
-#>       plan  synthesis 
-#>     0.2085     0.0205 
-#> 
-#> Generating Transition Probability Matrix (truth) :
-#> 
-#>            adapt cohesion consensus coregulate discuss emotion monitor  plan
-#> adapt      0.000    0.273     0.477      0.022   0.059   0.120   0.033 0.016
-#> cohesion   0.003    0.027     0.498      0.119   0.060   0.116   0.033 0.141
-#> consensus  0.005    0.015     0.082      0.188   0.188   0.073   0.047 0.396
-#> coregulate 0.016    0.036     0.135      0.023   0.274   0.172   0.086 0.239
-#> discuss    0.071    0.048     0.321      0.084   0.195   0.106   0.022 0.012
-#> emotion    0.002    0.325     0.320      0.034   0.102   0.077   0.036 0.100
-#> monitor    0.011    0.056     0.159      0.058   0.375   0.091   0.018 0.216
-#> plan       0.001    0.025     0.290      0.017   0.068   0.147   0.076 0.374
-#> synthesis  0.235    0.034     0.466      0.044   0.063   0.071   0.012 0.075
-#>            synthesis
-#> adapt          0.000
-#> cohesion       0.004
-#> consensus      0.008
-#> coregulate     0.019
-#> discuss        0.141
-#> emotion        0.003
-#> monitor        0.016
-#> plan           0.002
-#> synthesis      0.000
-#> 
-#> Generating Initial Probabilities (truth) :
-#> 
-#>      adapt   cohesion  consensus coregulate    discuss    emotion    monitor 
-#>      0.012      0.060      0.214      0.019      0.176      0.152      0.144 
-#>       plan  synthesis 
-#>      0.204      0.020 
-#> 
-#> Other tables: edges, sequences, wide, model_info. Read one with as.data.frame(x, what = "edges").
 ```
 
 The fitted network and its truth sit in the same result, so the result
@@ -1504,12 +1406,9 @@ is compared with itself, edge by edge.
 network_recovery <- validate_recovery(known_network, known_network,
                                       term = "to", estimate = "weight")
 summarize_simulations(network_recovery, variables = "absolute_error")
-#>         variable observations        mean          sd minimum    maximum
-#> 1 absolute_error           81 0.003937092 0.004688553       0 0.02321182
 ```
 
-Over the 81 edges, the mean absolute error is 0.004 and the largest is
-0.023. In
+In
 [`simulate_group_tna()`](https://pak.dynasite.org/simulab/reference/simulate_group_tna.md),
 one network is simulated and fitted for each of several groups.
 
@@ -1579,12 +1478,7 @@ scale_free <- simulate_network(nodes = 200, model = "barabasi_albert",
 degree <- network_centrality(scale_free, measures = "degree")
 degree_summary <- summarize_simulations(degree, variables = "value")
 degree_summary
-#>   variable observations mean       sd minimum maximum
-#> 1    value          200 3.97 3.471217       2      21
 ```
-
-With `attachment = 2`, each new node adds two edges to existing nodes.
-The degree ranges from 2 to 21, with a mean of 3.97.
 
 ## Temporal, bipartite and multiplex networks
 

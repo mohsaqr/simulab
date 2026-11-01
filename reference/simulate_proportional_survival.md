@@ -72,7 +72,9 @@ simulate_proportional_survival(
 
 - seed:
 
-  Optional random seed. A single number, or `NULL` (the default).
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - batch:
 
@@ -94,6 +96,13 @@ Components: `parameters` (one row per term, columns `term` and `value`,
 holding the coefficients followed by `baseline_rate`, `shape` and the
 solved `censoring_rate`) and `diagnostics` (one row, columns
 `target_censoring`, `realized_censoring` and `baseline`).
+
+## References
+
+Bender, R., Augustin, T., & Blettner, M. (2005). Generating survival
+times to simulate Cox proportional hazards models. *Statistics in
+Medicine*, 24(11), 1713–1723.
+[doi:10.1002/sim.2059](https://doi.org/10.1002/sim.2059)
 
 ## Examples
 

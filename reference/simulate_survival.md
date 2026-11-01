@@ -60,6 +60,13 @@ the identifier (or the supplied covariates) followed by one column per
 event defined in `specification`. The `survival_definitions` component
 holds the specification that generated it.
 
+## References
+
+Bender, R., Augustin, T., & Blettner, M. (2005). Generating survival
+times to simulate Cox proportional hazards models. *Statistics in
+Medicine*, 24(11), 1713–1723.
+[doi:10.1002/sim.2059](https://doi.org/10.1002/sim.2059)
+
 ## Examples
 
 ``` r

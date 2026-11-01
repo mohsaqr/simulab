@@ -72,7 +72,9 @@ simulate_copula(
 
 - seed:
 
-  Optional random seed.
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - envir:
 
@@ -104,6 +106,11 @@ margins, which are pulled apart by their own quantile transforms.
 
 `simulab_no_quantile` when a distribution call names a marginal with no
 quantile function, such as `rice()` or `mixture()`.
+
+## References
+
+Nelsen, R. B. (2006). *An Introduction to Copulas* (2nd ed.). Springer.
+[doi:10.1007/0-387-28678-0](https://doi.org/10.1007/0-387-28678-0)
 
 ## Examples
 

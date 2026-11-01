@@ -44,6 +44,7 @@ row per observation and target variable, with columns `observation`,
 ## Examples
 
 ``` r
+set.seed(1)
 data <- data.frame(id = 1:100, outcome = stats::rnorm(100))
 mask <- missingness_matrix(
   data,
@@ -56,11 +57,11 @@ head(result)
 #> <simulab_sim:observed_data> 6 rows x 2 columns
 #>   id    outcome
 #> 1  1         NA
-#> 2  2 -1.1327594
-#> 3  3  1.4899074
-#> 4  4 -0.2482471
+#> 2  2  0.1836433
+#> 3  3 -0.8356286
+#> 4  4  1.5952808
 #> 5  5         NA
-#> 6  6  0.4048710
+#> 6  6 -0.8204684
 #> 
 #> Other tables: missingness. Read one with as.data.frame(x, what = "missingness").
 ```

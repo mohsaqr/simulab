@@ -55,7 +55,9 @@ observe_treatment(
 
 - seed:
 
-  Optional random seed. A single number, or `NULL` (the default).
+  Optional random seed. A single number makes the call reproducible and
+  restores the session's random-number state afterwards; `NULL` (the
+  default) draws from the session's stream and advances it.
 
 - envir:
 
@@ -74,6 +76,7 @@ observation and group, with columns `observation`, `group` and
 ## Examples
 
 ``` r
+set.seed(1)
 data <- data.frame(id = 1:100, severity = stats::rnorm(100))
 
 result <- observe_treatment(
@@ -81,25 +84,25 @@ result <- observe_treatment(
 )
 head(result)
 #> <simulab_sim:observed_treatment> 6 rows x 3 columns
-#>   id    severity treatment
-#> 1  1  1.13496509         1
-#> 2  2  1.11193185         1
-#> 3  3 -0.87077763         0
-#> 4  4  0.21073159         1
-#> 5  5  0.06939565         0
-#> 6  6 -1.66264885         1
+#>   id   severity treatment
+#> 1  1 -0.6264538         0
+#> 2  2  0.1836433         0
+#> 3  3 -0.8356286         0
+#> 4  4  1.5952808         0
+#> 5  5  0.3295078         0
+#> 6  6 -0.8204684         1
 #> 
 #> Truth (probabilities):
 #>    observation group probability
-#> 1            1     1   0.6006015
-#> 2            1     0   0.3993985
-#> 3            2     1   0.5961733
-#> 4            2     0   0.4038267
-#> 5            3     1   0.2320767
-#> 6            3     0   0.7679233
-#> 7            4     1   0.4178964
-#> 8            4     0   0.5821036
-#> 9            5     1   0.3906732
-#> 10           5     0   0.6093268
+#> 1            1     1   0.2687128
+#> 2            1     0   0.7312872
+#> 3            2     1   0.4126344
+#> 4            2     0   0.5873656
+#> 5            3     1   0.2371257
+#> 6            3     0   0.7628743
+#> 7            4     1   0.6848659
+#> 8            4     0   0.3151341
+#> 9            5     1   0.4411752
+#> 10           5     0   0.5588248
 #> ... 190 more rows
 ```

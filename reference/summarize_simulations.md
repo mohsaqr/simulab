@@ -32,6 +32,13 @@ non-missing count), `mean`, `sd`, `minimum` and `maximum`. Missing
 values are left out of the statistics; a group with none left reports
 `NA` statistics.
 
+## References
+
+Morris, T. P., White, I. R., & Crowther, M. J. (2019). Using simulation
+studies to evaluate statistical methods. *Statistics in Medicine*,
+38(11), 2074–2102.
+[doi:10.1002/sim.8086](https://doi.org/10.1002/sim.8086)
+
 ## Examples
 
 ``` r
